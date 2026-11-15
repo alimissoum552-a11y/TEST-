@@ -12,7 +12,7 @@ const RTL = new Set(['ar'])
 
 const DICT = {
   en: {
-    consentPrefix: "By ticking this box, I accept the", I accept the",
+    consentPrefix: "By ticking this box, I accept the",
     termsLink: "Terms of Use",
     privacyLink: "Privacy Policy",
     andCookies: "and the",
@@ -71,7 +71,7 @@ const DICT = {
     monthName: 'September', year: '2026', save: 'Save', description: 'Description',
   },
   fr: {
-    consentPrefix: "En cochant cette case, j’accepte les", j’accepte les",
+    consentPrefix: "En cochant cette case, j’accepte les",
     termsLink: "conditions générales d’utilisation",
     privacyLink: "politique de confidentialité",
     andCookies: "et la",
@@ -130,7 +130,7 @@ const DICT = {
     monthName: 'Septembre', year: '2026', save: 'Enregistrer', description: 'Description',
   },
   es: {
-    consentPrefix: "Al marcar esta casilla, acepto los", acepto los",
+    consentPrefix: "Al marcar esta casilla, acepto los",
     termsLink: "Términos de uso",
     privacyLink: "Política de privacidad",
     andCookies: "y la",
