@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
+import { useI18n, LanguageSelect } from './i18n/index.jsx'
 import { supabase } from './lib/supabase.js'
 import { getDefaultCalendar, listEvents, createEvent, updateEvent, deleteEvent } from './lib/api.js'
 
 // Maps a DB row to the shape the UI uses (date = day-of-month, time = "HH:MM – HH:MM").
-const hhmm = (d) => new Date(d).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
-const toUI = (r) => ({
+const hhmm = (d, locale) => new Date(d).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })
+const toUI = (r, locale) => ({
   id: r.id,
   title: r.title,
   description: r.description,
@@ -12,17 +13,16 @@ const toUI = (r) => ({
   starts_at: r.starts_at,
   ends_at: r.ends_at,
   date: new Date(r.starts_at).getDate(),
-  time: `${hhmm(r.starts_at)} – ${hhmm(r.ends_at)}`,
+  time: `${hhmm(r.starts_at, locale)} – ${hhmm(r.ends_at, locale)}`,
   tone: r.color_tone || 'bg-neutral-600',
   reminder_minutes: r.reminder_minutes,
 })
 const toneClass = (t) => (t && t.startsWith('bg-') ? t : 'bg-neutral-600')
 
-const TABS = ['Month', 'Week', 'Day', 'Events']
+const TABS = ['month', 'week', 'day', 'events']
 
 
 const HOURS = Array.from({ length: 12 }, (_, i) => 8 + i)
-const DAYS = ['L', 'M', 'M', 'J', 'V', 'S', 'D']
 
 // September 2026: 1st is a Tuesday (Monday-first grid)
 function monthCells() {
@@ -33,6 +33,7 @@ function monthCells() {
 }
 
 function EventDetail({ event, onClose, onDelete }) {
+  const { t, locale } = useI18n()
   return (
     <div className="absolute inset-0 z-10 flex items-end sm:items-center justify-center bg-black/40" onClick={onClose}>
       <div
@@ -43,24 +44,25 @@ function EventDetail({ event, onClose, onDelete }) {
           <span className={`h-3 w-3 rounded-full ${toneClass(event.tone)}`} />
           <h3 className="text-lg md:text-xl font-semibold text-neutral-900">{event.title}</h3>
         </div>
-        <p className="text-sm text-neutral-600">{event.date} septembre · {event.time}</p>
-        <p className="text-xs text-neutral-400">Répétition : aucune · Rappel : 10 min avant</p>
+        <p className="text-sm text-neutral-600">{event.date} {t('monthName').toLowerCase()} · {event.time}</p>
+        <p className="text-xs text-neutral-400">{t('repeat')} : {t('none')} · {t('reminder')} : {t('minBefore')}</p>
         <div className="flex gap-2">
-          <button className="flex-1 py-2 rounded-xl bg-neutral-100 text-neutral-900 text-sm hover:bg-neutral-200">Modifier</button>
-          <button onClick={() => onDelete(event)} className="flex-1 py-2 rounded-xl bg-neutral-900 text-white text-sm hover:bg-neutral-700">Supprimer</button>
+          <button className="flex-1 py-2 rounded-xl bg-neutral-100 text-neutral-900 text-sm hover:bg-neutral-200">{t('edit')}</button>
+          <button onClick={() => onDelete(event)} className="flex-1 py-2 rounded-xl bg-neutral-900 text-white text-sm hover:bg-neutral-700">{t('delete')}</button>
         </div>
-        <button onClick={onClose} className="w-full text-sm text-neutral-500 hover:text-neutral-800">Fermer</button>
+        <button onClick={onClose} className="w-full text-sm text-neutral-500 hover:text-neutral-800">{t('close')}</button>
       </div>
     </div>
   )
 }
 
 function MonthView({ events, selected, setSelected, onOpen }) {
+  const { t, locale } = useI18n()
   return (
     <div className="grid gap-6 md:grid-cols-2 md:gap-8">
       <section>
         <div className="grid grid-cols-7 text-center text-xs text-neutral-400 mb-2">
-          {DAYS.map((d, i) => <span key={i}>{d}</span>)}
+          {t('weekDays').map((d, i) => <span key={i}>{d}</span>)}
         </div>
         <div className="grid grid-cols-7 gap-y-2 text-center">
           {monthCells().map((d, i) => {
@@ -85,7 +87,7 @@ function MonthView({ events, selected, setSelected, onOpen }) {
         </div>
       </section>
       <section>
-        <h2 className="mb-2 text-sm font-medium text-neutral-700">Prochains événements</h2>
+        <h2 className="mb-2 text-sm font-medium text-neutral-700">{t('upcoming')}</h2>
         <ul className="space-y-2">
           {events.map((e) => (
             <li key={e.id}>
@@ -93,7 +95,7 @@ function MonthView({ events, selected, setSelected, onOpen }) {
                 <span className={`h-8 w-1 rounded-full ${toneClass(e.tone)}`} />
                 <span className="flex-1">
                   <span className="block text-sm text-neutral-900">{e.title}</span>
-                  <span className="block text-xs text-neutral-500">{e.date} sept. · {e.time}</span>
+                  <span className="block text-xs text-neutral-500">{e.date} {t('sep')} · {e.time}</span>
                 </span>
               </button>
             </li>
@@ -105,6 +107,7 @@ function MonthView({ events, selected, setSelected, onOpen }) {
 }
 
 function Timeline({ dayEvents, onOpen }) {
+  const { locale } = useI18n()
   return (
     <ol>
       {HOURS.map((h) => {
@@ -127,6 +130,7 @@ function Timeline({ dayEvents, onOpen }) {
 }
 
 function NewEventForm({ calendarId, userId, day, onCreated, onCancel }) {
+  const { t } = useI18n()
   const pad = (n) => String(n).padStart(2, '0')
   const today = new Date()
   const base = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(day || today.getDate())}`
@@ -154,23 +158,24 @@ function NewEventForm({ calendarId, userId, day, onCreated, onCancel }) {
 
   return (
     <form onSubmit={submit} className="space-y-3">
-      <input className={input} required placeholder="Titre" value={title} onChange={(e) => setTitle(e.target.value)} />
-      <input className={input} placeholder="Lieu" value={location} onChange={(e) => setLocation(e.target.value)} />
+      <input className={input} required placeholder={t('title')} value={title} onChange={(e) => setTitle(e.target.value)} />
+      <input className={input} placeholder={t('location')} value={location} onChange={(e) => setLocation(e.target.value)} />
       <div className="grid grid-cols-2 gap-2">
         <input className={input} type="datetime-local" required value={start} onChange={(e) => setStart(e.target.value)} />
         <input className={input} type="datetime-local" required value={end} onChange={(e) => setEnd(e.target.value)} />
       </div>
       {err && <p className="text-sm font-medium text-neutral-900">{err}</p>}
       <div className="flex gap-2">
-        <button type="button" onClick={onCancel} className="flex-1 py-2 rounded-xl bg-neutral-100 text-sm">Annuler</button>
-        <button disabled={busy} className="flex-1 py-2 rounded-xl bg-neutral-900 text-white text-sm disabled:opacity-50">Ajouter</button>
+        <button type="button" onClick={onCancel} className="flex-1 py-2 rounded-xl bg-neutral-100 text-sm">{t('cancel')}</button>
+        <button disabled={busy} className="flex-1 py-2 rounded-xl bg-neutral-900 text-white text-sm disabled:opacity-50">{t('add')}</button>
       </div>
     </form>
   )
 }
 
 export default function App({ user }) {
-  const [tab, setTab] = useState('Month')
+  const { t, locale } = useI18n()
+  const [tab, setTab] = useState('month')
   const [selected, setSelected] = useState(new Date().getDate())
   const [openEvent, setOpenEvent] = useState(null)
   const [adding, setAdding] = useState(false)
@@ -185,11 +190,11 @@ export default function App({ user }) {
       try {
         const cal = await getDefaultCalendar(user.id)
         const rows = await listEvents(cal.id)
-        if (!cancelled) { setCalendar(cal); setEvents(rows.map(toUI)) }
+        if (!cancelled) { setCalendar(cal); setEvents(rows.map((r) => toUI(r, locale))) }
       } catch (ex) { if (!cancelled) setLoadError(ex.message) }
     })()
     return () => { cancelled = true }
-  }, [user])
+  }, [user, locale])
 
   const dayEvents = events.filter((e) => e.date === selected)
 
@@ -208,22 +213,23 @@ export default function App({ user }) {
       <div className="relative w-full md:max-w-3xl lg:max-w-5xl md:h-[min(90vh,820px)] min-h-screen md:min-h-0 bg-white md:rounded-[32px] md:shadow-xl overflow-hidden flex flex-col">
         <header className="px-5 md:px-10 pt-6 md:pt-8 pb-3 flex items-end justify-between gap-4">
           <div>
-            <p className="text-xs md:text-sm text-neutral-500">Septembre 2026</p>
+            <p className="text-xs md:text-sm text-neutral-500">{t('monthName')} {t('year')}</p>
             <h1 className="text-2xl md:text-3xl font-semibold text-neutral-900">
-              {tab === 'Day' ? `${selected} septembre` : 'Calendrier'}
+              {tab === 'day' ? `${selected} ${t('monthName').toLowerCase()}` : t('calendar')}
             </h1>
           </div>
           <div className="flex items-center gap-2">
             {user && (
-              <button onClick={() => setAdding(true)} className="px-3 py-1.5 rounded-xl bg-neutral-900 text-white text-sm">+ Événement</button>
+              <button onClick={() => setAdding(true)} className="px-3 py-1.5 rounded-xl bg-neutral-900 text-white text-sm">{t('newEvent')}</button>
             )}
-            {user && <button onClick={signOut} className="px-3 py-1.5 rounded-xl bg-neutral-100 text-neutral-700 text-sm">Quitter</button>}
+            {user && <button onClick={signOut} className="px-3 py-1.5 rounded-xl bg-neutral-100 text-neutral-700 text-sm">{t('signOut')}</button>}
+            <LanguageSelect />
             <nav className="hidden sm:block">
               <div className="flex gap-1 bg-neutral-100 rounded-xl p-1">
-                {TABS.map((t) => (
-                  <button key={t} onClick={() => setTab(t)} aria-pressed={tab === t}
-                    className={`px-4 py-1.5 text-sm rounded-lg transition ${tab === t ? 'bg-white shadow text-neutral-900 font-medium' : 'text-neutral-500 hover:text-neutral-800'}`}>
-                    {t}
+                {TABS.map((k) => (
+                  <button key={k} onClick={() => setTab(k)} aria-pressed={tab === k}
+                    className={`px-4 py-1.5 text-sm rounded-lg transition ${tab === k ? 'bg-white shadow text-neutral-900 font-medium' : 'text-neutral-500 hover:text-neutral-800'}`}>
+                    {t(k)}
                   </button>
                 ))}
               </div>
@@ -233,10 +239,10 @@ export default function App({ user }) {
 
         <nav className="sm:hidden px-5">
           <div className="grid grid-cols-4 bg-neutral-100 rounded-xl p-1">
-            {TABS.map((t) => (
-              <button key={t} onClick={() => setTab(t)} aria-pressed={tab === t}
-                className={`py-1.5 text-sm rounded-lg transition ${tab === t ? 'bg-white shadow text-neutral-900 font-medium' : 'text-neutral-500'}`}>
-                {t}
+            {TABS.map((k) => (
+              <button key={k} onClick={() => setTab(k)} aria-pressed={tab === k}
+                className={`py-1.5 text-sm rounded-lg transition ${tab === k ? 'bg-white shadow text-neutral-900 font-medium' : 'text-neutral-500'}`}>
+                {t(k)}
               </button>
             ))}
           </div>
@@ -245,14 +251,14 @@ export default function App({ user }) {
         {loadError && <p className="px-5 md:px-10 pt-3 text-sm font-medium text-neutral-900">{loadError}</p>}
 
         <main className="flex-1 overflow-y-auto px-5 md:px-10 py-4 md:py-6">
-          {tab === 'Month' && <MonthView events={events} selected={selected} setSelected={setSelected} onOpen={setOpenEvent} />}
-          {(tab === 'Day' || tab === 'Week') && (
-            <div className={tab === 'Week' ? 'md:grid md:grid-cols-2 md:gap-6' : ''}>
+          {tab === 'month' && <MonthView events={events} selected={selected} setSelected={setSelected} onOpen={setOpenEvent} />}
+          {(tab === 'day' || tab === 'week') && (
+            <div className={tab === 'week' ? 'md:grid md:grid-cols-2 md:gap-6' : ''}>
               <Timeline dayEvents={dayEvents} onOpen={setOpenEvent} />
-              {tab === 'Week' && <Timeline dayEvents={events.filter((e) => e.date === selected + 1)} onOpen={setOpenEvent} />}
+              {tab === 'week' && <Timeline dayEvents={events.filter((e) => e.date === selected + 1)} onOpen={setOpenEvent} />}
             </div>
           )}
-          {tab === 'Events' && (
+          {tab === 'events' && (
             <ul className="grid gap-2 md:grid-cols-2 md:gap-3">
               {events.map((e) => (
                 <li key={e.id}>

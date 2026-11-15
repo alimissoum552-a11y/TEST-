@@ -1,10 +1,13 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import Root from './Root.jsx'
+import { I18nProvider } from './i18n/index.jsx'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <Root />
+    <I18nProvider>
+      <Root />
+    </I18nProvider>
   </React.StrictMode>
 )
