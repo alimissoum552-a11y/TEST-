@@ -4,6 +4,51 @@ import { supabase } from './lib/supabase.js'
 import { getDefaultCalendar, listEvents, createEvent, updateEvent, deleteEvent } from './lib/api.js'
 
 // Maps a DB row to the shape the UI uses (date = day-of-month, time = "HH:MM – HH:MM").
+
+const ICON_PATHS = {
+  month: <><rect x="3" y="4.5" width="18" height="16.5" rx="3" /><path d="M3 9.5h18M8 3v3M16 3v3" /></>,
+  week: <><path d="M4 6h16M4 12h16M4 18h16" /><path d="M8 3v18" strokeOpacity=".4" /></>,
+  day: <><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 2" /></>,
+  events: <><path d="M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z" /><path d="M8 9h8M8 13h5" /></>,
+  add: <path d="M12 5v14M5 12h14" />,
+  logout: <><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3" /><path d="M10 16l-4-4 4-4M6 12h10" /></>,
+  language: <><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c2.5 3 2.5 15 0 18M12 3c-2.5 3-2.5 15 0 18" /></>,
+}
+function Icon({ name, className = 'h-5 w-5' }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"
+      strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      {ICON_PATHS[name]}
+    </svg>
+  )
+}
+
+// Flexible icon bar: horizontal scroll if space runs out, no frames.
+// Mobile: icon only. Tablet and desktop: icon + label.
+function ActionBar({ children }) {
+  return (
+    <div className="flex items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden flex-nowrap min-w-0">
+      {children}
+    </div>
+  )
+}
+function Action({ icon, label, onClick, active = false, ariaLabel }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={ariaLabel || label}
+      aria-pressed={active || undefined}
+      className={`shrink-0 inline-flex items-center gap-2 px-2 py-1.5 md:px-3 text-sm transition-colors ${
+        active ? 'text-neutral-900 font-semibold' : 'text-neutral-400 hover:text-neutral-800'
+      }`}
+    >
+      <Icon name={icon} />
+      <span className="hidden md:inline">{label}</span>
+    </button>
+  )
+}
+
 const hhmm = (d, locale) => new Date(d).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })
 const toUI = (r, locale) => ({
   id: r.id,
@@ -174,11 +219,12 @@ function NewEventForm({ calendarId, userId, day, onCreated, onCancel }) {
 }
 
 export default function App({ user }) {
-  const { t, locale } = useI18n()
+  const { t, locale, lang } = useI18n()
   const [tab, setTab] = useState('month')
   const [selected, setSelected] = useState(new Date().getDate())
   const [openEvent, setOpenEvent] = useState(null)
   const [adding, setAdding] = useState(false)
+  const [langOpen, setLangOpen] = useState(false)
   const [calendar, setCalendar] = useState(null)
   const [events, setEvents] = useState([])
   const [loadError, setLoadError] = useState(null)
@@ -211,42 +257,32 @@ export default function App({ user }) {
   return (
     <div className="min-h-screen bg-neutral-200 flex items-stretch md:items-center justify-center md:p-6">
       <div className="relative w-full md:max-w-3xl lg:max-w-5xl md:h-[min(90vh,820px)] min-h-screen md:min-h-0 bg-white md:rounded-[32px] md:shadow-xl overflow-hidden flex flex-col">
-        <header className="px-5 md:px-10 pt-6 md:pt-8 pb-3 flex items-end justify-between gap-4">
-          <div>
-            <p className="text-xs md:text-sm text-neutral-500">{t('monthName')} {t('year')}</p>
-            <h1 className="text-2xl md:text-3xl font-semibold text-neutral-900">
-              {tab === 'day' ? `${selected} ${t('monthName').toLowerCase()}` : t('calendar')}
-            </h1>
+        <header className="px-4 md:px-10 pt-5 md:pt-8 pb-2 space-y-3">
+          <div className="flex items-end justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-xs md:text-sm text-neutral-500">{t('monthName')} {t('year')}</p>
+              <h1 className="text-2xl md:text-3xl font-semibold text-neutral-900 truncate">
+                {tab === 'day' ? `${selected} ${t('monthName').toLowerCase()}` : t('calendar')}
+              </h1>
+            </div>
+            <div className="flex items-center gap-1">
+              {user && <Action icon="add" label={t('newEvent')} onClick={() => setAdding(true)} />}
+              {user && <Action icon="logout" label={t('signOut')} onClick={signOut} />}
+              <Action icon="language" label={lang.toUpperCase()} ariaLabel={t('language')} onClick={() => setLangOpen((o) => !o)} />
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            {user && (
-              <button onClick={() => setAdding(true)} className="px-3 py-1.5 rounded-xl bg-neutral-900 text-white text-sm">{t('newEvent')}</button>
-            )}
-            {user && <button onClick={signOut} className="px-3 py-1.5 rounded-xl bg-neutral-100 text-neutral-700 text-sm">{t('signOut')}</button>}
-            <LanguageSelect />
-            <nav className="hidden sm:block">
-              <div className="flex gap-1 bg-neutral-100 rounded-xl p-1">
-                {TABS.map((k) => (
-                  <button key={k} onClick={() => setTab(k)} aria-pressed={tab === k}
-                    className={`px-4 py-1.5 text-sm rounded-lg transition ${tab === k ? 'bg-white shadow text-neutral-900 font-medium' : 'text-neutral-500 hover:text-neutral-800'}`}>
-                    {t(k)}
-                  </button>
-                ))}
-              </div>
-            </nav>
-          </div>
+          {langOpen && (
+            <div className="flex justify-end">
+              <LanguageSelect />
+            </div>
+          )}
+          <ActionBar>
+            {TABS.map((k) => (
+              <Action key={k} icon={k} label={t(k)} active={tab === k} onClick={() => setTab(k)} />
+            ))}
+          </ActionBar>
         </header>
 
-        <nav className="sm:hidden px-5">
-          <div className="grid grid-cols-4 bg-neutral-100 rounded-xl p-1">
-            {TABS.map((k) => (
-              <button key={k} onClick={() => setTab(k)} aria-pressed={tab === k}
-                className={`py-1.5 text-sm rounded-lg transition ${tab === k ? 'bg-white shadow text-neutral-900 font-medium' : 'text-neutral-500'}`}>
-                {t(k)}
-              </button>
-            ))}
-          </div>
-        </nav>
 
         {loadError && <p className="px-5 md:px-10 pt-3 text-sm font-medium text-neutral-900">{loadError}</p>}
 
