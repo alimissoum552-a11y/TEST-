@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useI18n } from './i18n/index.jsx'
-import { listMembers, inviteMember, setMemberRole, removeMember, sendInviteEmail } from './lib/api.js'
+import { listMembers, listCalendarInvites, inviteMember, setMemberRole, removeMember, sendInviteEmail } from './lib/api.js'
 
 const ROLES = ['administrator', 'contributor', 'reader']
 
@@ -11,10 +11,14 @@ export default function SharePanel({ calendarId, currentUserId, onClose }) {
   const [role, setRole] = useState('reader')
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState(null)
+  const [pending, setPending] = useState([])
   const input = 'rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:border-neutral-900'
 
   async function refresh() {
-    try { setMembers(await listMembers(calendarId)) } catch (ex) { setMsg({ err: true, text: ex.message }) }
+    try {
+      setMembers(await listMembers(calendarId))
+      setPending(await listCalendarInvites(calendarId))
+    } catch (ex) { setMsg({ err: true, text: ex.message }) }
   }
   useEffect(() => { refresh() }, [calendarId])
 
@@ -23,9 +27,14 @@ export default function SharePanel({ calendarId, currentUserId, onClose }) {
     try {
       const inviteId = await inviteMember(calendarId, email.trim(), role)
       // Notify the invitee by email; a mail failure does not undo the membership.
-      try { await sendInviteEmail(calendarId, email.trim(), role, inviteId) }
-      catch { setMsg({ err: true, text: t('invitedNoMail') }); setEmail(''); await refresh(); return }
-      setEmail(''); setMsg({ text: t('invitedSent') }); await refresh()
+      try {
+        await sendInviteEmail(calendarId, email.trim(), role, inviteId)
+        setEmail(''); setMsg({ text: t('invitedSent') })
+      } catch (ex) {
+        // The invite exists (pending). Show why the e-mail did not go out.
+        setEmail(''); setMsg({ err: true, text: `${t('invitedNoMail')} ${ex.message || ''}`.trim() })
+      }
+      await refresh()
     } catch (ex) {
       setMsg({ err: true, text: ex.message === 'NO_USER' ? t('noUser') : ex.message })
     } finally { setBusy(false) }
@@ -74,7 +83,13 @@ export default function SharePanel({ calendarId, currentUserId, onClose }) {
               </span>
             </li>
           ))}
-          {members.length === 0 && <li className="text-sm text-neutral-500">{t('noMembers')}</li>}
+          {members.length === 0 && pending.length === 0 && <li className="text-sm text-neutral-500">{t('noMembers')}</li>}
+          {pending.map((i) => (
+            <li key={i.id} className="flex items-center justify-between gap-2 text-sm">
+              <span className="min-w-0 truncate text-neutral-500">{i.invitee_email}</span>
+              <span className="shrink-0 rounded-full border border-neutral-200 px-3 py-1 text-xs text-neutral-500">{t('pending')}</span>
+            </li>
+          ))}
         </ul>
 
         <button onClick={onClose} className="w-full py-2 rounded-xl bg-neutral-100 text-sm">{t('close')}</button>

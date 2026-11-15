@@ -13,6 +13,7 @@ const RTL = new Set(['ar'])
 
 const DICT = {
   en: {
+    pending: "Pending",
     joining: "Joining the team…",
     joinedTitle: "You joined the team",
     joinedText: "The calendar is now in your account with the role you were given.",
@@ -78,6 +79,7 @@ const DICT = {
     monthName: 'September', year: '2026', save: 'Save', description: 'Description',
   },
   fr: {
+    pending: "En attente",
     joining: "Vous rejoignez l’équipe…",
     joinedTitle: "Vous avez rejoint l’équipe",
     joinedText: "Le calendrier est maintenant dans votre compte, avec le rôle qui vous a été attribué.",
@@ -143,6 +145,7 @@ const DICT = {
     monthName: 'Septembre', year: '2026', save: 'Enregistrer', description: 'Description',
   },
   es: {
+    pending: "Pendiente",
     joining: "Uniéndote al equipo…",
     joinedTitle: "Te uniste al equipo",
     joinedText: "El calendario ya está en tu cuenta con el rol que se te asignó.",
@@ -208,6 +211,7 @@ const DICT = {
     monthName: 'Septiembre', year: '2026', save: 'Guardar', description: 'Descripción',
   },
   de: {
+    pending: "Ausstehend",
     joining: "Du trittst dem Team bei…",
     joinedTitle: "Du bist dem Team beigetreten",
     joinedText: "Der Kalender ist jetzt in deinem Konto mit der dir zugewiesenen Rolle.",
@@ -273,6 +277,7 @@ const DICT = {
     monthName: 'September', year: '2026', save: 'Speichern', description: 'Beschreibung',
   },
   ar: {
+    pending: "معلّقة",
     joining: "جارٍ الانضمام إلى الفريق…",
     joinedTitle: "انضممت إلى الفريق",
     joinedText: "التقويم أصبح الآن في حسابك بالدور الممنوح لك.",
@@ -338,6 +343,7 @@ const DICT = {
     monthName: 'سبتمبر', year: '2026', save: 'حفظ', description: 'الوصف',
   },
   pt: {
+    pending: "Pendente",
     joining: "Entrando na equipe…",
     joinedTitle: "Você entrou na equipe",
     joinedText: "O calendário agora está na sua conta, com a função que você recebeu.",

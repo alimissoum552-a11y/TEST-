@@ -178,3 +178,15 @@ export async function listEventsForCalendars(calendarIds) {
   if (error) throw error
   return data
 }
+
+// Pending invites for a calendar, shown to its owner/administrators.
+export async function listCalendarInvites(calendarId) {
+  const { data, error } = await supabase
+    .from('calendar_invites')
+    .select('id, invitee_email, role, status, created_at')
+    .eq('calendar_id', calendarId)
+    .eq('status', 'pending')
+    .order('created_at', { ascending: false })
+  if (error) throw error
+  return data || []
+}
