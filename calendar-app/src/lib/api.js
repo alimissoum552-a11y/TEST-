@@ -135,3 +135,34 @@ export async function getMyProfile(userId) {
   if (error) throw error
   return data
 }
+
+// All calendars the user can access: their own plus those they are a member of.
+export async function listAccessibleCalendars(userId) {
+  const { data: own, error: e1 } = await supabase
+    .from('calendars').select('id, name, owner_id, is_default').eq('owner_id', userId)
+  if (e1) throw e1
+  const { data: memberships, error: e2 } = await supabase
+    .from('calendar_members').select('calendar_id, role').eq('user_id', userId)
+  if (e2) throw e2
+  const sharedIds = (memberships || []).map((m) => m.calendar_id).filter((id) => !own.some((c) => c.id === id))
+  let shared = []
+  if (sharedIds.length) {
+    const { data, error } = await supabase
+      .from('calendars').select('id, name, owner_id, is_default').in('id', sharedIds)
+    if (error) throw error
+    shared = data.map((c) => ({ ...c, my_role: memberships.find((m) => m.calendar_id === c.id)?.role }))
+  }
+  return [
+    ...own.map((c) => ({ ...c, my_role: 'owner' })),
+    ...shared,
+  ]
+}
+
+// Events across several calendars, each tagged with its calendar id.
+export async function listEventsForCalendars(calendarIds) {
+  if (!calendarIds.length) return []
+  const { data, error } = await supabase
+    .from('events').select('*').in('calendar_id', calendarIds).order('starts_at')
+  if (error) throw error
+  return data
+}

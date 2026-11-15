@@ -6,7 +6,7 @@ import ProfilePanel from './ProfilePanel.jsx'
 import Avatar from './Avatar.jsx'
 import { getMyProfile } from './lib/api.js'
 import { supabase } from './lib/supabase.js'
-import { getDefaultCalendar, listEvents, createEvent, updateEvent, deleteEvent, subscribeToEvents, listHistory, restoreVersion } from './lib/api.js'
+import { getDefaultCalendar, listAccessibleCalendars, listEventsForCalendars, createEvent, updateEvent, deleteEvent, subscribeToEvents, listHistory, restoreVersion } from './lib/api.js'
 
 // Maps a DB row to the shape the UI uses (date = day-of-month, time = "HH:MM – HH:MM").
 
@@ -62,6 +62,8 @@ function Action({ icon, label, onClick, active = false, ariaLabel }) {
 const hhmm = (d, locale) => new Date(d).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })
 const toUI = (r, locale) => ({
   id: r.id,
+  calendar_id: r.calendar_id,
+  owner_id: r.owner_id,
   title: r.title,
   description: r.description,
   location: r.location,
@@ -159,7 +161,7 @@ function EventDetail({ event, onClose, onDelete, onSave }) {
   )
 }
 
-function MonthView({ events, selected, setSelected, onOpen }) {
+function MonthView({ events, selected, setSelected, onOpen, calendarName }) {
   const { t, locale } = useI18n()
   return (
     <div className="grid gap-6 md:grid-cols-2 md:gap-8">
@@ -198,7 +200,7 @@ function MonthView({ events, selected, setSelected, onOpen }) {
                 <span className={`h-8 w-1 rounded-full ${toneClass(e.tone)}`} />
                 <span className="flex-1">
                   <span className="block text-sm text-neutral-900">{e.title}</span>
-                  <span className="block text-xs text-neutral-500">{e.date} {t('sep')} · {e.time}</span>
+                  <span className="block text-xs text-neutral-500">{e.date} {t('sep')} · {e.time}{calendarName(e.calendar_id) && <> · <em className="not-italic text-neutral-400">{calendarName(e.calendar_id)}</em></>}</span>
                 </span>
               </button>
             </li>
@@ -349,20 +351,31 @@ export default function App({ user }) {
     getMyProfile(user.id).then(setMe).catch(() => {})
   }, [user])
 
+  const [calendars, setCalendars] = useState([])
+
   useEffect(() => {
     if (!user) return
     let cancelled = false
     ;(async () => {
       try {
-        const cal = await getDefaultCalendar(user.id)
-        const rows = await listEvents(cal.id)
-        if (!cancelled) { setCalendar(cal); setEvents(rows.map((r) => toUI(r, locale))) }
+        const [def, all] = await Promise.all([getDefaultCalendar(user.id), listAccessibleCalendars(user.id)])
+        const rows = await listEventsForCalendars(all.map((c) => c.id))
+        if (!cancelled) {
+          setCalendar(def)
+          setCalendars(all)
+          setEvents(rows.map((r) => toUI(r, locale)))
+        }
       } catch (ex) { if (!cancelled) setLoadError(ex.message) }
     })()
     return () => { cancelled = true }
   }, [user, locale])
 
   const dayEvents = events.filter((e) => e.date === selected)
+  const calendarNameOf = (id) => {
+    const c = calendars.find((x) => x.id === id)
+    if (!c || c.my_role === 'owner') return null
+    return c.name || c.owner_id
+  }
 
   async function handleDelete(ev) {
     try {
@@ -379,8 +392,8 @@ export default function App({ user }) {
   }
 
   useEffect(() => {
-    if (!calendar) return
-    return subscribeToEvents(calendar.id, (payload) => {
+    if (!calendars.length) return
+    const unsubs = calendars.map((c) => subscribeToEvents(c.id, (payload) => {
       const { eventType, new: row, old } = payload
       if (eventType === 'DELETE') {
         setEvents((l) => l.filter((x) => x.id !== old.id))
@@ -392,8 +405,9 @@ export default function App({ user }) {
           return next.sort((a, b) => a.starts_at.localeCompare(b.starts_at))
         })
       }
-    })
-  }, [calendar, locale])
+    }))
+    return () => unsubs.forEach((u) => u())
+  }, [calendars, locale])
 
   async function signOut() { await supabase.auth.signOut() }
 
@@ -424,7 +438,7 @@ export default function App({ user }) {
         {loadError && <p className="px-5 md:px-10 pt-3 text-sm font-medium text-neutral-900">{loadError}</p>}
 
         <main className="flex-1 overflow-y-auto px-5 md:px-10 py-4 md:py-6">
-          {tab === 'month' && <MonthView events={events} selected={selected} setSelected={setSelected} onOpen={setOpenEvent} />}
+          {tab === 'month' && <MonthView events={events} selected={selected} setSelected={setSelected} onOpen={setOpenEvent} calendarName={calendarNameOf} />}
           {(tab === 'day' || tab === 'week') && (
             <div className={tab === 'week' ? 'md:grid md:grid-cols-2 md:gap-6' : ''}>
               <Timeline dayEvents={dayEvents} onOpen={setOpenEvent} />
