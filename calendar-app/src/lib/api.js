@@ -108,3 +108,30 @@ export async function getProfile(userId) {
   if (error) throw error
   return data
 }
+
+// ---- Avatars ----
+// Uploads a photo to avatars/<uid>/avatar-<ts>.<ext> and stores its public URL on the profile.
+export async function uploadAvatar(userId, file) {
+  const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '')
+  const path = `${userId}/avatar-${Date.now()}.${ext}`
+  const { error: upErr } = await supabase.storage.from('avatars')
+    .upload(path, file, { upsert: false, contentType: file.type || 'image/jpeg' })
+  if (upErr) throw upErr
+  const { data } = supabase.storage.from('avatars').getPublicUrl(path)
+  const url = data.publicUrl
+  const { error } = await supabase.from('profiles').update({ avatar_url: url }).eq('id', userId)
+  if (error) throw error
+  return url
+}
+
+export async function removeAvatar(userId) {
+  const { error } = await supabase.from('profiles').update({ avatar_url: null }).eq('id', userId)
+  if (error) throw error
+}
+
+export async function getMyProfile(userId) {
+  const { data, error } = await supabase
+    .from('profiles').select('display_name, email, avatar_url').eq('id', userId).single()
+  if (error) throw error
+  return data
+}

@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react'
 import { useI18n, LanguageSelect } from './i18n/index.jsx'
 import SharePanel from './SharePanel.jsx'
 import TeamPanel from './TeamPanel.jsx'
+import ProfilePanel from './ProfilePanel.jsx'
+import Avatar from './Avatar.jsx'
+import { getMyProfile } from './lib/api.js'
 import { supabase } from './lib/supabase.js'
 import { getDefaultCalendar, listEvents, createEvent, updateEvent, deleteEvent, subscribeToEvents, listHistory, restoreVersion } from './lib/api.js'
 
@@ -331,9 +334,16 @@ export default function App({ user }) {
   const [langOpen, setLangOpen] = useState(false)
   const [sharing, setSharing] = useState(false)
   const [team, setTeam] = useState(false)
+  const [me, setMe] = useState(null)
+  const [profileOpen, setProfileOpen] = useState(false)
   const [calendar, setCalendar] = useState(null)
   const [events, setEvents] = useState([])
   const [loadError, setLoadError] = useState(null)
+
+  useEffect(() => {
+    if (!user) return
+    getMyProfile(user.id).then(setMe).catch(() => {})
+  }, [user])
 
   useEffect(() => {
     if (!user) return
@@ -398,6 +408,11 @@ export default function App({ user }) {
               {user && <Action icon="add" label={t('newEvent')} onClick={() => setAdding(true)} />}
               {user && calendar && <Action icon="team" label={t('team')} active={team} onClick={() => setTeam(true)} />}
               {user && calendar && <Action icon="share" label={t('sharing')} onClick={() => setSharing(true)} />}
+              {user && (
+                <button type="button" onClick={() => setProfileOpen(true)} aria-label={t('profile')} className="shrink-0 rounded-full p-0.5 hover:opacity-80">
+                  <Avatar name={me?.display_name} email={me?.email || user.email} url={me?.avatar_url} />
+                </button>
+              )}
               {user && <Action icon="logout" label={t('signOut')} onClick={signOut} />}
               <div className="relative">
                 <Action icon="language" label={lang.toUpperCase()} ariaLabel={t('language')} active={langOpen} onClick={() => setLangOpen((o) => !o)} />
@@ -448,6 +463,7 @@ export default function App({ user }) {
           </div>
         )}
 
+        {profileOpen && user && <ProfilePanel user={user} onClose={() => setProfileOpen(false)} onChanged={(url) => setMe((m) => ({ ...(m || {}), avatar_url: url }))} />}
         {team && calendar && <TeamPanel calendarId={calendar.id} ownerId={calendar.owner_id} onClose={() => setTeam(false)} />}
         {sharing && calendar && <SharePanel calendarId={calendar.id} currentUserId={user.id} onClose={() => setSharing(false)} />}
         {openEvent && <EventDetail event={openEvent} onClose={() => setOpenEvent(null)} onDelete={handleDelete} onSave={handleSave} />}
