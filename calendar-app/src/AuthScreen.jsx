@@ -28,7 +28,7 @@ export default function AuthScreen() {
   return (
     <div className="min-h-screen bg-neutral-200 flex items-center justify-center p-4">
       <div className="w-full max-w-sm space-y-3">
-        <div className="flex justify-end"><LanguageSelect /></div>
+        <div className="flex justify-end relative"><LanguageSelect /></div>
       <form onSubmit={submit} className="bg-white rounded-3xl shadow-xl p-8 space-y-4">
         <h1 className="text-2xl font-semibold text-neutral-900">
           {mode === 'signin' ? t('signIn') : t('createAccount')}

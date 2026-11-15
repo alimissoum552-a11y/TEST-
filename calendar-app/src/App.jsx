@@ -268,14 +268,12 @@ export default function App({ user }) {
             <div className="flex items-center gap-1">
               {user && <Action icon="add" label={t('newEvent')} onClick={() => setAdding(true)} />}
               {user && <Action icon="logout" label={t('signOut')} onClick={signOut} />}
-              <Action icon="language" label={lang.toUpperCase()} ariaLabel={t('language')} onClick={() => setLangOpen((o) => !o)} />
+              <div className="relative">
+                <Action icon="language" label={lang.toUpperCase()} ariaLabel={t('language')} active={langOpen} onClick={() => setLangOpen((o) => !o)} />
+                {langOpen && <LanguageSelect onPick={() => setLangOpen(false)} />}
+              </div>
             </div>
           </div>
-          {langOpen && (
-            <div className="flex justify-end">
-              <LanguageSelect />
-            </div>
-          )}
           <ActionBar>
             {TABS.map((k) => (
               <Action key={k} icon={k} label={t(k)} active={tab === k} onClick={() => setTab(k)} />
