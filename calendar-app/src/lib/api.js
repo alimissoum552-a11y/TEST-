@@ -42,3 +42,53 @@ export function subscribeToEvents(calendarId, onChange) {
     .subscribe()
   return () => supabase.removeChannel(channel)
 }
+
+// ---- Sharing ----
+export async function listMembers(calendarId) {
+  const { data, error } = await supabase
+    .from('calendar_members')
+    .select('user_id, role, profiles(display_name, email)')
+    .eq('calendar_id', calendarId)
+  if (error) throw error
+  return data
+}
+
+// Looks up a user by exact email (admins only, enforced in SQL) and adds them.
+export async function inviteMember(calendarId, email, role) {
+  const { data: found, error: findErr } = await supabase
+    .rpc('find_user_for_share', { cal: calendarId, target_email: email })
+  if (findErr) throw findErr
+  const target = found?.[0]
+  if (!target) throw new Error('NO_USER')
+  const { error } = await supabase
+    .from('calendar_members')
+    .upsert({ calendar_id: calendarId, user_id: target.user_id, role })
+  if (error) throw error
+}
+
+export async function setMemberRole(calendarId, userId, role) {
+  const { error } = await supabase
+    .from('calendar_members').update({ role }).eq('calendar_id', calendarId).eq('user_id', userId)
+  if (error) throw error
+}
+
+export async function removeMember(calendarId, userId) {
+  const { error } = await supabase
+    .from('calendar_members').delete().eq('calendar_id', calendarId).eq('user_id', userId)
+  if (error) throw error
+}
+
+// ---- History ----
+export async function listHistory(eventId) {
+  const { data, error } = await supabase
+    .from('event_history').select('*').eq('event_id', eventId)
+    .order('created_at', { ascending: false }).limit(50)
+  if (error) throw error
+  return data
+}
+
+export async function restoreVersion(historyId) {
+  const { data, error } = await supabase.rpc('restore_event_version', { history_id: historyId })
+  if (error) throw error
+  return data
+}

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useI18n, LanguageSelect } from './i18n/index.jsx'
+import SharePanel from './SharePanel.jsx'
 import { supabase } from './lib/supabase.js'
-import { getDefaultCalendar, listEvents, createEvent, updateEvent, deleteEvent, subscribeToEvents } from './lib/api.js'
+import { getDefaultCalendar, listEvents, createEvent, updateEvent, deleteEvent, subscribeToEvents, listHistory, restoreVersion } from './lib/api.js'
 
 // Maps a DB row to the shape the UI uses (date = day-of-month, time = "HH:MM – HH:MM").
 
@@ -11,6 +12,7 @@ const ICON_PATHS = {
   day: <><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 2" /></>,
   events: <><path d="M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z" /><path d="M8 9h8M8 13h5" /></>,
   add: <path d="M12 5v14M5 12h14" />,
+  share: <><circle cx="6" cy="12" r="2.5" /><circle cx="18" cy="6" r="2.5" /><circle cx="18" cy="18" r="2.5" /><path d="M8.3 10.8l7.4-3.6M8.3 13.2l7.4 3.6" /></>,
   logout: <><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3" /><path d="M10 16l-4-4 4-4M6 12h10" /></>,
   language: <><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c2.5 3 2.5 15 0 18M12 3c-2.5 3-2.5 15 0 18" /></>,
 }
@@ -77,6 +79,42 @@ function monthCells() {
   return cells
 }
 
+function ActivityList({ eventId, onRestored }) {
+  const { t, locale } = useI18n()
+  const [items, setItems] = useState(null)
+  const [msg, setMsg] = useState(null)
+  const load = () => listHistory(eventId).then(setItems).catch((ex) => setMsg(ex.message))
+  useEffect(() => { load() }, [eventId])
+
+  async function restore(h) {
+    try {
+      const row = await restoreVersion(h.id)
+      setMsg(t('restored')); onRestored(row); load()
+    } catch (ex) { setMsg(ex.message) }
+  }
+
+  const verb = { insert: t('created'), update: t('updated'), delete: t('deleted') }
+  return (
+    <div className="space-y-2">
+      <h4 className="text-xs font-medium uppercase tracking-wide text-neutral-500">{t('activity')}</h4>
+      {msg && <p className="text-xs text-neutral-700">{msg}</p>}
+      {items && items.length === 0 && <p className="text-xs text-neutral-400">{t('noHistory')}</p>}
+      <ul className="space-y-2 max-h-40 overflow-y-auto">
+        {(items || []).map((h) => (
+          <li key={h.id} className="flex items-center justify-between gap-2 text-xs text-neutral-600">
+            <span className="min-w-0 truncate">
+              {verb[h.action]} · {new Date(h.created_at).toLocaleString(locale, { dateStyle: 'short', timeStyle: 'short' })}
+            </span>
+            {h.action !== 'delete' && (
+              <button onClick={() => restore(h)} className="shrink-0 text-neutral-900 underline underline-offset-2">{t('restore')}</button>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
 function EventDetail({ event, onClose, onDelete, onSave }) {
   const { t, locale } = useI18n()
   const [editing, setEditing] = useState(false)
@@ -106,6 +144,7 @@ function EventDetail({ event, onClose, onDelete, onSave }) {
           <button onClick={() => setEditing(true)} className="flex-1 py-2 rounded-xl bg-neutral-100 text-neutral-900 text-sm hover:bg-neutral-200">{t('edit')}</button>
           <button onClick={() => onDelete(event)} className="flex-1 py-2 rounded-xl bg-neutral-900 text-white text-sm hover:bg-neutral-700">{t('delete')}</button>
         </div>
+        <ActivityList eventId={event.id} onRestored={(row) => onSave(row)} />
         <button onClick={onClose} className="w-full text-sm text-neutral-500 hover:text-neutral-800">{t('close')}</button>
       </div>
     </div>
@@ -288,6 +327,7 @@ export default function App({ user }) {
   const [openEvent, setOpenEvent] = useState(null)
   const [adding, setAdding] = useState(false)
   const [langOpen, setLangOpen] = useState(false)
+  const [sharing, setSharing] = useState(false)
   const [calendar, setCalendar] = useState(null)
   const [events, setEvents] = useState([])
   const [loadError, setLoadError] = useState(null)
@@ -353,6 +393,7 @@ export default function App({ user }) {
             </div>
             <div className="flex items-center gap-1">
               {user && <Action icon="add" label={t('newEvent')} onClick={() => setAdding(true)} />}
+              {user && calendar && <Action icon="share" label={t('sharing')} onClick={() => setSharing(true)} />}
               {user && <Action icon="logout" label={t('signOut')} onClick={signOut} />}
               <div className="relative">
                 <Action icon="language" label={lang.toUpperCase()} ariaLabel={t('language')} active={langOpen} onClick={() => setLangOpen((o) => !o)} />
@@ -403,6 +444,7 @@ export default function App({ user }) {
           </div>
         )}
 
+        {sharing && calendar && <SharePanel calendarId={calendar.id} currentUserId={user.id} onClose={() => setSharing(false)} />}
         {openEvent && <EventDetail event={openEvent} onClose={() => setOpenEvent(null)} onDelete={handleDelete} onSave={handleSave} />}
       </div>
     </div>
