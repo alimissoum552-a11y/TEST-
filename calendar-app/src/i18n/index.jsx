@@ -12,6 +12,9 @@ const RTL = new Set(['ar'])
 
 const DICT = {
   en: {
+    menu: "Menu",
+    views: "Views",
+    actions: "Actions",
     profile: "Profile",
     changePhoto: "Change photo",
     removePhoto: "Remove photo",
@@ -52,6 +55,9 @@ const DICT = {
     monthName: 'September', year: '2026', save: 'Save', description: 'Description',
   },
   fr: {
+    menu: "Menu",
+    views: "Affichages",
+    actions: "Actions",
     profile: "Profil",
     changePhoto: "Changer la photo",
     removePhoto: "Supprimer la photo",
@@ -92,6 +98,9 @@ const DICT = {
     monthName: 'Septembre', year: '2026', save: 'Enregistrer', description: 'Description',
   },
   es: {
+    menu: "Menú",
+    views: "Vistas",
+    actions: "Acciones",
     profile: "Perfil",
     changePhoto: "Cambiar foto",
     removePhoto: "Quitar foto",
@@ -132,6 +141,9 @@ const DICT = {
     monthName: 'Septiembre', year: '2026', save: 'Guardar', description: 'Descripción',
   },
   de: {
+    menu: "Menü",
+    views: "Ansichten",
+    actions: "Aktionen",
     profile: "Profil",
     changePhoto: "Foto ändern",
     removePhoto: "Foto entfernen",
@@ -172,6 +184,9 @@ const DICT = {
     monthName: 'September', year: '2026', save: 'Speichern', description: 'Beschreibung',
   },
   ar: {
+    menu: "القائمة",
+    views: "العروض",
+    actions: "الإجراءات",
     profile: "الملف الشخصي",
     changePhoto: "تغيير الصورة",
     removePhoto: "حذف الصورة",

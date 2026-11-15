@@ -16,6 +16,9 @@ const ICON_PATHS = {
   day: <><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 2" /></>,
   events: <><path d="M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z" /><path d="M8 9h8M8 13h5" /></>,
   add: <path d="M12 5v14M5 12h14" />,
+  profile: <><circle cx="12" cy="8.5" r="3.5" /><path d="M5 20c1.2-3.4 3.8-5 7-5s5.8 1.6 7 5" /></>,
+  menu: <><path d="M4 7h16M4 12h16M4 17h16" /></>,
+  close: <><path d="M6 6l12 12M18 6L6 18" /></>,
   team: <><circle cx="9" cy="8" r="3.2" /><path d="M3.5 19.5c.8-3 3-4.8 5.5-4.8s4.7 1.8 5.5 4.8" /><circle cx="17" cy="9" r="2.5" /><path d="M16 14.3c2.4.2 4.2 1.7 4.9 4.2" /></>,
   share: <><circle cx="6" cy="12" r="2.5" /><circle cx="18" cy="6" r="2.5" /><circle cx="18" cy="18" r="2.5" /><path d="M8.3 10.8l7.4-3.6M8.3 13.2l7.4 3.6" /></>,
   logout: <><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3" /><path d="M10 16l-4-4 4-4M6 12h10" /></>,
@@ -336,6 +339,7 @@ export default function App({ user }) {
   const [team, setTeam] = useState(false)
   const [me, setMe] = useState(null)
   const [profileOpen, setProfileOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
   const [calendar, setCalendar] = useState(null)
   const [events, setEvents] = useState([])
   const [loadError, setLoadError] = useState(null)
@@ -396,35 +400,24 @@ export default function App({ user }) {
   return (
     <div className="min-h-screen bg-neutral-200 flex items-stretch md:items-center justify-center md:p-6">
       <div className="relative w-full md:max-w-3xl lg:max-w-5xl md:h-[min(90vh,820px)] min-h-screen md:min-h-0 bg-white md:rounded-[32px] md:shadow-xl overflow-hidden flex flex-col">
-        <header className="px-4 md:px-10 pt-5 md:pt-8 pb-2 space-y-3">
-          <div className="flex items-end justify-between gap-3">
-            <div className="min-w-0">
-              <p className="text-xs md:text-sm text-neutral-500">{t('monthName')} {t('year')}</p>
-              <h1 className="text-2xl md:text-3xl font-semibold text-neutral-900 truncate">
-                {tab === 'day' ? `${selected} ${t('monthName').toLowerCase()}` : t('calendar')}
-              </h1>
-            </div>
-            <div className="flex items-center gap-1">
-              {user && <Action icon="add" label={t('newEvent')} onClick={() => setAdding(true)} />}
-              {user && calendar && <Action icon="team" label={t('team')} active={team} onClick={() => setTeam(true)} />}
-              {user && calendar && <Action icon="share" label={t('sharing')} onClick={() => setSharing(true)} />}
-              {user && (
-                <button type="button" onClick={() => setProfileOpen(true)} aria-label={t('profile')} className="shrink-0 rounded-full p-0.5 hover:opacity-80">
-                  <Avatar name={me?.display_name} email={me?.email || user.email} url={me?.avatar_url} />
-                </button>
-              )}
-              {user && <Action icon="logout" label={t('signOut')} onClick={signOut} />}
-              <div className="relative">
-                <Action icon="language" label={lang.toUpperCase()} ariaLabel={t('language')} active={langOpen} onClick={() => setLangOpen((o) => !o)} />
-                {langOpen && <LanguageSelect onPick={() => setLangOpen(false)} />}
-              </div>
-            </div>
+        <header className="px-4 md:px-10 pt-5 md:pt-8 pb-3 flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-xs md:text-sm text-neutral-500">{t('monthName')} {t('year')}</p>
+            <h1 className="text-2xl md:text-3xl font-semibold text-neutral-900 truncate">
+              {tab === 'day' ? `${selected} ${t('monthName').toLowerCase()}` : t('calendar')}
+            </h1>
           </div>
-          <ActionBar>
-            {TABS.map((k) => (
-              <Action key={k} icon={k} label={t(k)} active={tab === k} onClick={() => setTab(k)} />
-            ))}
-          </ActionBar>
+          <div className="flex items-center gap-3 shrink-0">
+            {user && (
+              <button type="button" onClick={() => setProfileOpen(true)} aria-label={t('profile')} className="rounded-full p-0.5 hover:opacity-80">
+                <Avatar name={me?.display_name} email={me?.email || user.email} url={me?.avatar_url} />
+              </button>
+            )}
+            <button type="button" onClick={() => setMenuOpen(true)} aria-label={t('menu')}
+              className="p-1.5 text-neutral-700 hover:text-neutral-900">
+              <Icon name="menu" className="h-6 w-6" />
+            </button>
+          </div>
         </header>
 
 
@@ -460,6 +453,52 @@ export default function App({ user }) {
                 onCreated={(row) => { setEvents((l) => [...l, toUI(row, locale)].sort((a, b) => a.starts_at.localeCompare(b.starts_at))); setAdding(false) }}
                 onCancel={() => setAdding(false)} />
             </div>
+          </div>
+        )}
+
+        {menuOpen && (
+          <div className="absolute inset-0 z-20 flex justify-end bg-black/40" onClick={() => setMenuOpen(false)}>
+            <aside className="h-full w-full sm:w-80 bg-white shadow-xl p-6 flex flex-col gap-6 overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-neutral-900">{t('menu')}</h2>
+                <button type="button" onClick={() => setMenuOpen(false)} aria-label={t('close')} className="p-1 text-neutral-700 hover:text-neutral-900">
+                  <Icon name="close" className="h-6 w-6" />
+                </button>
+              </div>
+
+              <section className="space-y-1">
+                <h3 className="text-xs font-medium uppercase tracking-wide text-neutral-500 mb-2">{t('views')}</h3>
+                {TABS.map((k) => (
+                  <button key={k} onClick={() => { setTab(k); setMenuOpen(false) }} aria-pressed={tab === k}
+                    className={`w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-start ${tab === k ? 'font-semibold text-neutral-900' : 'text-neutral-600 hover:text-neutral-900'}`}>
+                    <Icon name={k} /> <span>{t(k)}</span>
+                  </button>
+                ))}
+              </section>
+
+              {user && (
+                <section className="space-y-1">
+                  <h3 className="text-xs font-medium uppercase tracking-wide text-neutral-500 mb-2">{t('actions')}</h3>
+                  <button onClick={() => { setAdding(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="add" /> <span>{t('newEvent')}</span></button>
+                  {calendar && <button onClick={() => { setTeam(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="team" /> <span>{t('team')}</span></button>}
+                  {calendar && <button onClick={() => { setSharing(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="share" /> <span>{t('sharing')}</span></button>}
+                  <button onClick={() => { setProfileOpen(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="profile" /> <span>{t('profile')}</span></button>
+                  <button onClick={signOut} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="logout" /> <span>{t('signOut')}</span></button>
+                </section>
+              )}
+
+              <section className="space-y-1">
+                <h3 className="text-xs font-medium uppercase tracking-wide text-neutral-500 mb-2">{t('language')}</h3>
+                <div className="relative">
+                  <button onClick={() => setLangOpen((o) => !o)} aria-expanded={langOpen}
+                    className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900">
+                    <Icon name="language" /> <span>{lang.toUpperCase()}</span>
+                  </button>
+                  {langOpen && <LanguageSelect onPick={() => setLangOpen(false)} placement="down" />}
+                </div>
+              </section>
+            </aside>
           </div>
         )}
 
