@@ -7,7 +7,8 @@ export const LEGAL_ROUTES = ['terms', 'privacy', 'cookies']
 export function parseRoute(hash) {
   const legal = hash.match(/^#\/(terms|privacy|cookies)(?:\?from=(?:signin|signup))?$/)?.[1] ?? null
   const auth = hash.match(/^#\/(signin|signup)$/)?.[1] ?? null
-  return { legal, auth }
+  const invite = hash.match(/^#\/join\?invite=([0-9a-f-]{36})$/i)?.[1] ?? null
+  return { legal, auth, invite }
 }
 
 export function useLegalRoute() {

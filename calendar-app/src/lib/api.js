@@ -55,9 +55,10 @@ export async function listMembers(calendarId) {
 
 // Sends an invitation. The invitee is NOT a member until they accept.
 export async function inviteMember(calendarId, email, role) {
-  const { error } = await supabase
+  const { data, error } = await supabase
     .rpc('invite_to_calendar', { cal: calendarId, target_email: email, target_role: role })
   if (error) throw error
+  return data // invite id, used in the join link
 }
 
 // Invites addressed to the signed-in user, waiting for an answer.
@@ -105,9 +106,9 @@ export async function restoreVersion(historyId) {
 }
 
 // Sends the invitation email via the send-invite Edge Function (Resend, server-side).
-export async function sendInviteEmail(calendarId, email, role) {
+export async function sendInviteEmail(calendarId, email, role, inviteId) {
   const { data, error } = await supabase.functions.invoke('send-invite', {
-    body: { calendar_id: calendarId, email, role },
+    body: { calendar_id: calendarId, email, role, invite_id: inviteId },
   })
   if (error) throw error
   return data

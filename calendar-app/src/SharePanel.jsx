@@ -21,9 +21,9 @@ export default function SharePanel({ calendarId, currentUserId, onClose }) {
   async function invite(e) {
     e.preventDefault(); setBusy(true); setMsg(null)
     try {
-      await inviteMember(calendarId, email.trim(), role)
+      const inviteId = await inviteMember(calendarId, email.trim(), role)
       // Notify the invitee by email; a mail failure does not undo the membership.
-      try { await sendInviteEmail(calendarId, email.trim(), role) }
+      try { await sendInviteEmail(calendarId, email.trim(), role, inviteId) }
       catch { setMsg({ err: true, text: t('invitedNoMail') }); setEmail(''); await refresh(); return }
       setEmail(''); setMsg({ text: t('invitedSent') }); await refresh()
     } catch (ex) {
