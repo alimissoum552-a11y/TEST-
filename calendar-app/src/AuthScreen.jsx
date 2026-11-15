@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { supabase } from './lib/supabase.js'
 import { useI18n, LanguageSelect, LanguageButton } from './i18n/index.jsx'
+import { goLegal } from './router.js'
 
 export default function AuthScreen() {
   const { t } = useI18n()
@@ -10,10 +11,12 @@ export default function AuthScreen() {
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
   const [busy, setBusy] = useState(false)
+  const [accepted, setAccepted] = useState(false)
   const [message, setMessage] = useState(null)
 
   async function submit(e) {
     e.preventDefault()
+    if (mode === 'signup' && !accepted) { setMessage({ type: 'error', text: t('mustAcceptTerms') }); return }
     setBusy(true); setMessage(null)
     const res = mode === 'signin'
       ? await supabase.auth.signInWithPassword({ email, password })
@@ -40,6 +43,19 @@ export default function AuthScreen() {
         <input className={input} type="password" required minLength={6} placeholder={t('password')} value={password} onChange={(e) => setPassword(e.target.value)} />
         {message && (
           <p className={`text-sm ${message.type === 'error' ? 'text-neutral-900 font-medium' : 'text-neutral-600'}`}>{message.text}</p>
+        )}
+        {mode === 'signup' && (
+          <label className="flex items-start gap-2 text-xs leading-relaxed text-neutral-600">
+            <input type="checkbox" required checked={accepted} onChange={(e) => setAccepted(e.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 accent-neutral-900" />
+            <span>
+              {t('consentPrefix')}{' '}
+              <button type="button" onClick={() => goLegal('terms')} className="underline underline-offset-2 hover:text-neutral-900">{t('termsLink')}</button>,{' '}
+              <button type="button" onClick={() => goLegal('privacy')} className="underline underline-offset-2 hover:text-neutral-900">{t('privacyLink')}</button>{' '}
+              {t('andCookies')}{' '}
+              <button type="button" onClick={() => goLegal('cookies')} className="underline underline-offset-2 hover:text-neutral-900">{t('cookiesLink')}</button>.
+            </span>
+          </label>
         )}
         <button disabled={busy} className="w-full py-2.5 rounded-xl bg-neutral-900 text-white text-sm hover:bg-neutral-700 disabled:opacity-50">
           {busy ? '…' : mode === 'signin' ? 'Se connecter' : 'Créer le compte'}

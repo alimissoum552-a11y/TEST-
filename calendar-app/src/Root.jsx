@@ -2,8 +2,11 @@ import { useEffect, useState } from 'react'
 import App from './App.jsx'
 import AuthScreen from './AuthScreen.jsx'
 import { supabase, supabaseConfigured } from './lib/supabase.js'
+import LegalPage from './LegalPage.jsx'
+import { useLegalRoute, goHome } from './router.js'
 
 export default function Root() {
+  const legal = useLegalRoute()
   const [session, setSession] = useState(undefined) // undefined = loading
 
   useEffect(() => {
@@ -13,6 +16,7 @@ export default function Root() {
     return () => sub.subscription.unsubscribe()
   }, [])
 
+  if (legal) return <LegalPage kind={legal} onBack={goHome} />
   if (session === undefined) return <div className="min-h-screen bg-neutral-200" />
   if (!supabaseConfigured) return <App user={null} />
   if (!session) return <AuthScreen />
