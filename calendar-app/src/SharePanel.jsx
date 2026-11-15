@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useI18n } from './i18n/index.jsx'
-import { listMembers, inviteMember, setMemberRole, removeMember } from './lib/api.js'
+import { listMembers, inviteMember, setMemberRole, removeMember, sendInviteEmail } from './lib/api.js'
 
 const ROLES = ['administrator', 'contributor', 'reader']
 
@@ -22,6 +22,9 @@ export default function SharePanel({ calendarId, currentUserId, onClose }) {
     e.preventDefault(); setBusy(true); setMsg(null)
     try {
       await inviteMember(calendarId, email.trim(), role)
+      // Notify the invitee by email; a mail failure does not undo the membership.
+      try { await sendInviteEmail(calendarId, email.trim(), role) }
+      catch { setMsg({ err: true, text: t('invitedNoMail') }); setEmail(''); await refresh(); return }
       setEmail(''); setMsg({ text: t('invited') }); await refresh()
     } catch (ex) {
       setMsg({ err: true, text: ex.message === 'NO_USER' ? t('noUser') : ex.message })

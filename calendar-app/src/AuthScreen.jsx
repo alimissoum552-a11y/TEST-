@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { supabase } from './lib/supabase.js'
-import { useI18n, LanguageSelect } from './i18n/index.jsx'
+import { useI18n, LanguageSelect, LanguageButton } from './i18n/index.jsx'
 
 export default function AuthScreen() {
   const { t } = useI18n()
+  const [langOpen, setLangOpen] = useState(false)
   const [mode, setMode] = useState('signin')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -28,7 +29,6 @@ export default function AuthScreen() {
   return (
     <div className="min-h-screen bg-neutral-200 flex items-center justify-center p-4">
       <div className="w-full max-w-sm space-y-3">
-        <div className="flex justify-end relative"><LanguageSelect /></div>
       <form onSubmit={submit} className="bg-white rounded-3xl shadow-xl p-8 space-y-4">
         <h1 className="text-2xl font-semibold text-neutral-900">
           {mode === 'signin' ? t('signIn') : t('createAccount')}
@@ -48,6 +48,10 @@ export default function AuthScreen() {
           className="w-full text-sm text-neutral-500 hover:text-neutral-800">
           {mode === 'signin' ? t('noAccount') : t('haveAccount')}
         </button>
+        <div className="relative flex justify-center pt-2">
+          <LanguageButton open={langOpen} onToggle={() => setLangOpen((o) => !o)} />
+          {langOpen && <LanguageSelect onPick={() => setLangOpen(false)} placement="up" />}
+        </div>
       </form>
       </div>
     </div>

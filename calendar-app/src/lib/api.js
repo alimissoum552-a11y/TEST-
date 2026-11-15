@@ -92,3 +92,12 @@ export async function restoreVersion(historyId) {
   if (error) throw error
   return data
 }
+
+// Sends the invitation email via the send-invite Edge Function (Resend, server-side).
+export async function sendInviteEmail(calendarId, email, role) {
+  const { data, error } = await supabase.functions.invoke('send-invite', {
+    body: { calendar_id: calendarId, email, role },
+  })
+  if (error) throw error
+  return data
+}

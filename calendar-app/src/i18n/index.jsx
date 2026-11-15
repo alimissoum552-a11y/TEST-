@@ -12,6 +12,7 @@ const RTL = new Set(['ar'])
 
 const DICT = {
   en: {
+    invitedNoMail: "Member added, but the invitation email could not be sent.",
     share: "Share calendar",
     invite: "Invite",
     invited: "Member added.",
@@ -42,6 +43,7 @@ const DICT = {
     monthName: 'September', year: '2026', save: 'Save', description: 'Description',
   },
   fr: {
+    invitedNoMail: "Membre ajouté, mais l'email d'invitation n'a pas pu être envoyé.",
     share: "Partager le calendrier",
     invite: "Inviter",
     invited: "Membre ajouté.",
@@ -72,6 +74,7 @@ const DICT = {
     monthName: 'Septembre', year: '2026', save: 'Enregistrer', description: 'Description',
   },
   es: {
+    invitedNoMail: "Miembro añadido, pero no se pudo enviar el email de invitación.",
     share: "Compartir calendario",
     invite: "Invitar",
     invited: "Miembro añadido.",
@@ -102,6 +105,7 @@ const DICT = {
     monthName: 'Septiembre', year: '2026', save: 'Guardar', description: 'Descripción',
   },
   de: {
+    invitedNoMail: "Mitglied hinzugefügt, aber die Einladungs-E-Mail konnte nicht gesendet werden.",
     share: "Kalender teilen",
     invite: "Einladen",
     invited: "Mitglied hinzugefügt.",
@@ -132,6 +136,7 @@ const DICT = {
     monthName: 'September', year: '2026', save: 'Speichern', description: 'Beschreibung',
   },
   ar: {
+    invitedNoMail: "تمت إضافة العضو، لكن تعذّر إرسال بريد الدعوة.",
     share: "مشاركة التقويم",
     invite: "دعوة",
     invited: "تمت إضافة العضو.",
@@ -193,11 +198,12 @@ export function useI18n() {
   return ctx
 }
 
-export function LanguageSelect({ onPick }) {
+export function LanguageSelect({ onPick, placement = 'down' }) {
   const { lang, setLang, t } = useI18n()
+  const pos = placement === 'up' ? 'bottom-full mb-2 left-1/2 -translate-x-1/2' : 'end-0 top-full mt-2'
   return (
     <ul role="listbox" aria-label={t('language')}
-      className="absolute end-0 top-full z-20 mt-2 w-44 overflow-hidden rounded-2xl bg-white p-1 shadow-xl ring-1 ring-neutral-200">
+      className={`absolute z-20 w-44 ${pos} overflow-hidden rounded-2xl bg-white p-1 shadow-xl ring-1 ring-neutral-200`}>
       {LANGUAGES.map((l) => (
         <li key={l.code}>
           <button type="button" role="option" aria-selected={lang === l.code}
@@ -211,5 +217,19 @@ export function LanguageSelect({ onPick }) {
         </li>
       ))}
     </ul>
+  )
+}
+
+export function LanguageButton({ open, onToggle }) {
+  const { lang, t } = useI18n()
+  return (
+    <button type="button" onClick={onToggle} aria-label={t('language')} aria-expanded={open}
+      className={`inline-flex items-center gap-2 px-2 py-1.5 text-sm transition-colors ${
+        open ? 'text-neutral-900 font-semibold' : 'text-neutral-400 hover:text-neutral-800'}`}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5" aria-hidden="true">
+        <circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c2.5 3 2.5 15 0 18M12 3c-2.5 3-2.5 15 0 18" />
+      </svg>
+      <span>{lang.toUpperCase()}</span>
+    </button>
   )
 }
