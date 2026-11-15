@@ -3,6 +3,7 @@ import { useI18n, LanguageSelect } from './i18n/index.jsx'
 import SharePanel from './SharePanel.jsx'
 import TeamPanel from './TeamPanel.jsx'
 import ProfilePanel from './ProfilePanel.jsx'
+import InvitesPanel from './InvitesPanel.jsx'
 import Avatar from './Avatar.jsx'
 import { getMyProfile } from './lib/api.js'
 import { supabase } from './lib/supabase.js'
@@ -353,6 +354,7 @@ export default function App({ user }) {
 
   const [calendars, setCalendars] = useState([])
 
+  const [reloadKey, setReloadKey] = useState(0)
   useEffect(() => {
     if (!user) return
     let cancelled = false
@@ -368,7 +370,7 @@ export default function App({ user }) {
       } catch (ex) { if (!cancelled) setLoadError(ex.message) }
     })()
     return () => { cancelled = true }
-  }, [user, locale])
+  }, [user, locale, reloadKey])
 
   const dayEvents = events.filter((e) => e.date === selected)
   const calendarNameOf = (id) => {
@@ -516,6 +518,7 @@ export default function App({ user }) {
           </div>
         )}
 
+        {user && <InvitesPanel onAnswered={() => setReloadKey((k) => k + 1)} />}
         {profileOpen && user && <ProfilePanel user={user} onClose={() => setProfileOpen(false)} onChanged={(url) => setMe((m) => ({ ...(m || {}), avatar_url: url }))} />}
         {team && calendar && <TeamPanel calendarId={calendar.id} ownerId={calendar.owner_id} onClose={() => setTeam(false)} />}
         {sharing && calendar && <SharePanel calendarId={calendar.id} currentUserId={user.id} onClose={() => setSharing(false)} />}

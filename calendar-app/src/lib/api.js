@@ -53,16 +53,27 @@ export async function listMembers(calendarId) {
   return data
 }
 
-// Looks up a user by exact email (admins only, enforced in SQL) and adds them.
+// Sends an invitation. The invitee is NOT a member until they accept.
 export async function inviteMember(calendarId, email, role) {
-  const { data: found, error: findErr } = await supabase
-    .rpc('find_user_for_share', { cal: calendarId, target_email: email })
-  if (findErr) throw findErr
-  const target = found?.[0]
-  if (!target) throw new Error('NO_USER')
   const { error } = await supabase
-    .from('calendar_members')
-    .upsert({ calendar_id: calendarId, user_id: target.user_id, role })
+    .rpc('invite_to_calendar', { cal: calendarId, target_email: email, target_role: role })
+  if (error) throw error
+}
+
+// Invites addressed to the signed-in user, waiting for an answer.
+export async function listMyInvites() {
+  const { data, error } = await supabase.rpc('my_pending_invites')
+  if (error) throw error
+  return data || []
+}
+
+export async function acceptInvite(inviteId) {
+  const { error } = await supabase.rpc('accept_invite', { inv: inviteId })
+  if (error) throw error
+}
+
+export async function declineInvite(inviteId) {
+  const { error } = await supabase.rpc('decline_invite', { inv: inviteId })
   if (error) throw error
 }
 

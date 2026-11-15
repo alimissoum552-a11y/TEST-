@@ -25,7 +25,7 @@ export default function SharePanel({ calendarId, currentUserId, onClose }) {
       // Notify the invitee by email; a mail failure does not undo the membership.
       try { await sendInviteEmail(calendarId, email.trim(), role) }
       catch { setMsg({ err: true, text: t('invitedNoMail') }); setEmail(''); await refresh(); return }
-      setEmail(''); setMsg({ text: t('invited') }); await refresh()
+      setEmail(''); setMsg({ text: t('invitedSent') }); await refresh()
     } catch (ex) {
       setMsg({ err: true, text: ex.message === 'NO_USER' ? t('noUser') : ex.message })
     } finally { setBusy(false) }
