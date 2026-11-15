@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useI18n, LanguageSelect } from './i18n/index.jsx'
 import { supabase } from './lib/supabase.js'
-import { getDefaultCalendar, listEvents, createEvent, updateEvent, deleteEvent } from './lib/api.js'
+import { getDefaultCalendar, listEvents, createEvent, updateEvent, deleteEvent, subscribeToEvents } from './lib/api.js'
 
 // Maps a DB row to the shape the UI uses (date = day-of-month, time = "HH:MM – HH:MM").
 
@@ -77,8 +77,19 @@ function monthCells() {
   return cells
 }
 
-function EventDetail({ event, onClose, onDelete }) {
+function EventDetail({ event, onClose, onDelete, onSave }) {
   const { t, locale } = useI18n()
+  const [editing, setEditing] = useState(false)
+  if (editing) {
+    return (
+      <div className="absolute inset-0 z-10 flex items-end sm:items-center justify-center bg-black/40" onClick={onClose}>
+        <div className="w-full sm:max-w-md bg-white rounded-t-3xl sm:rounded-3xl p-6 md:p-8 shadow-xl" onClick={(ev) => ev.stopPropagation()}>
+          <h3 className="text-lg font-semibold text-neutral-900 mb-4">{t('edit')}</h3>
+          <EventEditForm event={event} onSaved={(row) => { onSave(row); setEditing(false) }} onCancel={() => setEditing(false)} />
+        </div>
+      </div>
+    )
+  }
   return (
     <div className="absolute inset-0 z-10 flex items-end sm:items-center justify-center bg-black/40" onClick={onClose}>
       <div
@@ -92,7 +103,7 @@ function EventDetail({ event, onClose, onDelete }) {
         <p className="text-sm text-neutral-600">{event.date} {t('monthName').toLowerCase()} · {event.time}</p>
         <p className="text-xs text-neutral-400">{t('repeat')} : {t('none')} · {t('reminder')} : {t('minBefore')}</p>
         <div className="flex gap-2">
-          <button className="flex-1 py-2 rounded-xl bg-neutral-100 text-neutral-900 text-sm hover:bg-neutral-200">{t('edit')}</button>
+          <button onClick={() => setEditing(true)} className="flex-1 py-2 rounded-xl bg-neutral-100 text-neutral-900 text-sm hover:bg-neutral-200">{t('edit')}</button>
           <button onClick={() => onDelete(event)} className="flex-1 py-2 rounded-xl bg-neutral-900 text-white text-sm hover:bg-neutral-700">{t('delete')}</button>
         </div>
         <button onClick={onClose} className="w-full text-sm text-neutral-500 hover:text-neutral-800">{t('close')}</button>
@@ -174,6 +185,58 @@ function Timeline({ dayEvents, onOpen }) {
   )
 }
 
+function EventEditForm({ event, onSaved, onCancel }) {
+  const { t } = useI18n()
+  const toLocal = (iso) => {
+    const d = new Date(iso); const p = (n) => String(n).padStart(2, '0')
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`
+  }
+  const [title, setTitle] = useState(event.title || '')
+  const [location, setLocation] = useState(event.location || '')
+  const [description, setDescription] = useState(event.description || '')
+  const [start, setStart] = useState(toLocal(event.starts_at))
+  const [end, setEnd] = useState(toLocal(event.ends_at))
+  const [reminder, setReminder] = useState(event.reminder_minutes ?? 10)
+  const [busy, setBusy] = useState(false)
+  const [err, setErr] = useState(null)
+  const input = 'w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:border-neutral-900'
+
+  async function submit(e) {
+    e.preventDefault(); setBusy(true); setErr(null)
+    try {
+      const row = await updateEvent(event.id, {
+        title, location: location || null, description: description || null,
+        starts_at: new Date(start).toISOString(), ends_at: new Date(end).toISOString(),
+        reminder_minutes: Number(reminder),
+      })
+      onSaved(row)
+    } catch (ex) { setErr(ex.message) } finally { setBusy(false) }
+  }
+
+  return (
+    <form onSubmit={submit} className="space-y-3">
+      <input className={input} required placeholder={t('title')} value={title} onChange={(e) => setTitle(e.target.value)} />
+      <input className={input} placeholder={t('location')} value={location} onChange={(e) => setLocation(e.target.value)} />
+      <textarea className={input} rows={3} placeholder={t('description')} value={description} onChange={(e) => setDescription(e.target.value)} />
+      <div className="grid grid-cols-2 gap-2">
+        <input className={input} type="datetime-local" required value={start} onChange={(e) => setStart(e.target.value)} />
+        <input className={input} type="datetime-local" required value={end} onChange={(e) => setEnd(e.target.value)} />
+      </div>
+      <label className="flex items-center justify-between text-sm text-neutral-700">
+        {t('reminder')}
+        <select className={input + ' w-auto'} value={reminder} onChange={(e) => setReminder(e.target.value)}>
+          {[0, 5, 10, 15, 30, 60].map((m) => <option key={m} value={m}>{m} min</option>)}
+        </select>
+      </label>
+      {err && <p className="text-sm font-medium text-neutral-900">{err}</p>}
+      <div className="flex gap-2">
+        <button type="button" onClick={onCancel} className="flex-1 py-2 rounded-xl bg-neutral-100 text-sm">{t('cancel')}</button>
+        <button disabled={busy} className="flex-1 py-2 rounded-xl bg-neutral-900 text-white text-sm disabled:opacity-50">{t('save')}</button>
+      </div>
+    </form>
+  )
+}
+
 function NewEventForm({ calendarId, userId, day, onCreated, onCancel }) {
   const { t } = useI18n()
   const pad = (n) => String(n).padStart(2, '0')
@@ -252,6 +315,29 @@ export default function App({ user }) {
     } catch (ex) { setLoadError(ex.message) }
   }
 
+  function handleSave(row) {
+    const ui = toUI(row, locale)
+    setEvents((l) => l.map((x) => (x.id === row.id ? ui : x)).sort((a, b) => a.starts_at.localeCompare(b.starts_at)))
+    setOpenEvent(ui)
+  }
+
+  useEffect(() => {
+    if (!calendar) return
+    return subscribeToEvents(calendar.id, (payload) => {
+      const { eventType, new: row, old } = payload
+      if (eventType === 'DELETE') {
+        setEvents((l) => l.filter((x) => x.id !== old.id))
+      } else {
+        const ui = toUI(row, locale)
+        setEvents((l) => {
+          const exists = l.some((x) => x.id === row.id)
+          const next = exists ? l.map((x) => (x.id === row.id ? ui : x)) : [...l, ui]
+          return next.sort((a, b) => a.starts_at.localeCompare(b.starts_at))
+        })
+      }
+    })
+  }, [calendar, locale])
+
   async function signOut() { await supabase.auth.signOut() }
 
   return (
@@ -317,7 +403,7 @@ export default function App({ user }) {
           </div>
         )}
 
-        {openEvent && <EventDetail event={openEvent} onClose={() => setOpenEvent(null)} onDelete={handleDelete} />}
+        {openEvent && <EventDetail event={openEvent} onClose={() => setOpenEvent(null)} onDelete={handleDelete} onSave={handleSave} />}
       </div>
     </div>
   )

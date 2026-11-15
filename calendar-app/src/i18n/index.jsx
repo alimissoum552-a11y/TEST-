@@ -22,7 +22,7 @@ const DICT = {
     haveAccount: 'Already have an account? Sign in', noAccount: 'No account? Create one',
     checkEmail: 'Check your email to confirm your account.', language: 'Language',
     sep: 'Sep', dayShort: 'Day', weekDays: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
-    monthName: 'September', year: '2026',
+    monthName: 'September', year: '2026', save: 'Save', description: 'Description',
   },
   fr: {
     month: 'Mois', week: 'Semaine', day: 'Jour', events: 'Événements',
@@ -35,7 +35,7 @@ const DICT = {
     haveAccount: 'Déjà un compte ? Se connecter', noAccount: 'Pas de compte ? Créer un compte',
     checkEmail: 'Vérifiez votre email pour confirmer le compte.', language: 'Langue',
     sep: 'sept.', dayShort: 'Jour', weekDays: ['L', 'M', 'M', 'J', 'V', 'S', 'D'],
-    monthName: 'Septembre', year: '2026',
+    monthName: 'Septembre', year: '2026', save: 'Enregistrer', description: 'Description',
   },
   es: {
     month: 'Mes', week: 'Semana', day: 'Día', events: 'Eventos',
@@ -48,7 +48,7 @@ const DICT = {
     haveAccount: '¿Ya tienes cuenta? Inicia sesión', noAccount: '¿No tienes cuenta? Crea una',
     checkEmail: 'Revisa tu email para confirmar la cuenta.', language: 'Idioma',
     sep: 'sep.', dayShort: 'Día', weekDays: ['L', 'M', 'X', 'J', 'V', 'S', 'D'],
-    monthName: 'Septiembre', year: '2026',
+    monthName: 'Septiembre', year: '2026', save: 'Guardar', description: 'Descripción',
   },
   de: {
     month: 'Monat', week: 'Woche', day: 'Tag', events: 'Termine',
@@ -61,7 +61,7 @@ const DICT = {
     haveAccount: 'Schon ein Konto? Anmelden', noAccount: 'Kein Konto? Jetzt erstellen',
     checkEmail: 'Bitte prüfe deine E-Mails, um das Konto zu bestätigen.', language: 'Sprache',
     sep: 'Sep.', dayShort: 'Tag', weekDays: ['M', 'D', 'M', 'D', 'F', 'S', 'S'],
-    monthName: 'September', year: '2026',
+    monthName: 'September', year: '2026', save: 'Speichern', description: 'Beschreibung',
   },
   ar: {
     month: 'الشهر', week: 'الأسبوع', day: 'اليوم', events: 'الأحداث',
@@ -74,7 +74,7 @@ const DICT = {
     haveAccount: 'لديك حساب؟ سجّل الدخول', noAccount: 'ليس لديك حساب؟ أنشئ واحداً',
     checkEmail: 'تحقق من بريدك الإلكتروني لتأكيد الحساب.', language: 'اللغة',
     sep: 'سبت.', dayShort: 'يوم', weekDays: ['ن', 'ث', 'ر', 'خ', 'ج', 'س', 'ح'],
-    monthName: 'سبتمبر', year: '2026',
+    monthName: 'سبتمبر', year: '2026', save: 'حفظ', description: 'الوصف',
   },
 }
 

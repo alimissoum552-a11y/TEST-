@@ -31,3 +31,14 @@ export async function deleteEvent(id) {
   const { error } = await supabase.from('events').delete().eq('id', id)
   if (error) throw error
 }
+
+// Live updates for events of one calendar. Returns an unsubscribe function.
+export function subscribeToEvents(calendarId, onChange) {
+  const channel = supabase
+    .channel(`events:${calendarId}`)
+    .on('postgres_changes',
+      { event: '*', schema: 'public', table: 'events', filter: `calendar_id=eq.${calendarId}` },
+      (payload) => onChange(payload))
+    .subscribe()
+  return () => supabase.removeChannel(channel)
+}
