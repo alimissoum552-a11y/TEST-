@@ -1,12 +1,26 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { supabase } from './lib/supabase.js'
 import { useI18n, LanguageSelect, LanguageButton } from './i18n/index.jsx'
-import { goLegal } from './router.js'
+import { goLegal, parseRoute } from './router.js'
 
 export default function AuthScreen() {
   const { t } = useI18n()
   const [langOpen, setLangOpen] = useState(false)
-  const [mode, setMode] = useState('signin')
+  // Mode is read from the URL (#/signin or #/signup) so returning from a legal page restores it.
+  const initial = parseRoute(typeof window !== 'undefined' ? window.location.hash : '').auth || 'signin'
+  const [mode, setModeState] = useState(initial)
+  const setMode = (m) => {
+    setModeState(m)
+    window.location.hash = `/${m}`
+  }
+  useEffect(() => {
+    const onHash = () => {
+      const a = parseRoute(window.location.hash).auth
+      if (a) setModeState(a)
+    }
+    window.addEventListener('hashchange', onHash)
+    return () => window.removeEventListener('hashchange', onHash)
+  }, [])
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
@@ -50,10 +64,10 @@ export default function AuthScreen() {
               className="mt-0.5 h-4 w-4 shrink-0 accent-neutral-900" />
             <span>
               {t('consentPrefix')}{' '}
-              <button type="button" onClick={() => goLegal('terms')} className="underline underline-offset-2 hover:text-neutral-900">{t('termsLink')}</button>,{' '}
-              <button type="button" onClick={() => goLegal('privacy')} className="underline underline-offset-2 hover:text-neutral-900">{t('privacyLink')}</button>{' '}
+              <button type="button" onClick={() => goLegal('terms', mode)} className="underline underline-offset-2 hover:text-neutral-900">{t('termsLink')}</button>,{' '}
+              <button type="button" onClick={() => goLegal('privacy', mode)} className="underline underline-offset-2 hover:text-neutral-900">{t('privacyLink')}</button>{' '}
               {t('andCookies')}{' '}
-              <button type="button" onClick={() => goLegal('cookies')} className="underline underline-offset-2 hover:text-neutral-900">{t('cookiesLink')}</button>.
+              <button type="button" onClick={() => goLegal('cookies', mode)} className="underline underline-offset-2 hover:text-neutral-900">{t('cookiesLink')}</button>.
             </span>
           </label>
         )}

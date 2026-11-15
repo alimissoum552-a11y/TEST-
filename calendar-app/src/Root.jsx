@@ -3,7 +3,7 @@ import App from './App.jsx'
 import AuthScreen from './AuthScreen.jsx'
 import { supabase, supabaseConfigured } from './lib/supabase.js'
 import LegalPage from './LegalPage.jsx'
-import { useLegalRoute, goHome } from './router.js'
+import { useLegalRoute, goBackFromLegal } from './router.js'
 
 export default function Root() {
   const legal = useLegalRoute()
@@ -16,7 +16,7 @@ export default function Root() {
     return () => sub.subscription.unsubscribe()
   }, [])
 
-  if (legal) return <LegalPage kind={legal} onBack={goHome} />
+  if (legal) return <LegalPage kind={legal} onBack={goBackFromLegal} />
   if (session === undefined) return <div className="min-h-screen bg-neutral-200" />
   if (!supabaseConfigured) return <App user={null} />
   if (!session) return <AuthScreen />
