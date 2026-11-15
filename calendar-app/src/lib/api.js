@@ -101,3 +101,10 @@ export async function sendInviteEmail(calendarId, email, role) {
   if (error) throw error
   return data
 }
+
+export async function getProfile(userId) {
+  const { data, error } = await supabase
+    .from('profiles').select('display_name, email').eq('id', userId).single()
+  if (error) throw error
+  return data
+}

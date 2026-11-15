@@ -12,6 +12,8 @@ const RTL = new Set(['ar'])
 
 const DICT = {
   en: {
+    owner: "Owner",
+    team: "Team",
     invitedNoMail: "Member added, but the invitation email could not be sent.",
     share: "Share calendar",
     invite: "Invite",
@@ -43,6 +45,8 @@ const DICT = {
     monthName: 'September', year: '2026', save: 'Save', description: 'Description',
   },
   fr: {
+    owner: "Propriétaire",
+    team: "Équipe",
     invitedNoMail: "Membre ajouté, mais l'email d'invitation n'a pas pu être envoyé.",
     share: "Partager le calendrier",
     invite: "Inviter",
@@ -74,6 +78,8 @@ const DICT = {
     monthName: 'Septembre', year: '2026', save: 'Enregistrer', description: 'Description',
   },
   es: {
+    owner: "Propietario",
+    team: "Equipo",
     invitedNoMail: "Miembro añadido, pero no se pudo enviar el email de invitación.",
     share: "Compartir calendario",
     invite: "Invitar",
@@ -105,6 +111,8 @@ const DICT = {
     monthName: 'Septiembre', year: '2026', save: 'Guardar', description: 'Descripción',
   },
   de: {
+    owner: "Eigentümer",
+    team: "Team",
     invitedNoMail: "Mitglied hinzugefügt, aber die Einladungs-E-Mail konnte nicht gesendet werden.",
     share: "Kalender teilen",
     invite: "Einladen",
@@ -136,6 +144,8 @@ const DICT = {
     monthName: 'September', year: '2026', save: 'Speichern', description: 'Beschreibung',
   },
   ar: {
+    owner: "المالك",
+    team: "الفريق",
     invitedNoMail: "تمت إضافة العضو، لكن تعذّر إرسال بريد الدعوة.",
     share: "مشاركة التقويم",
     invite: "دعوة",
