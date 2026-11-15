@@ -275,9 +275,9 @@ export default function App({ user }) {
         {adding && (
           <div className="absolute inset-0 z-10 flex items-end sm:items-center justify-center bg-black/40" onClick={() => setAdding(false)}>
             <div className="w-full sm:max-w-md bg-white rounded-t-3xl sm:rounded-3xl p-6 md:p-8 shadow-xl" onClick={(ev) => ev.stopPropagation()}>
-              <h3 className="text-lg font-semibold text-neutral-900 mb-4">Nouvel événement</h3>
+              <h3 className="text-lg font-semibold text-neutral-900 mb-4">{t('newEventTitle')}</h3>
               <NewEventForm calendarId={calendar?.id} userId={user?.id} day={selected}
-                onCreated={(row) => { setEvents((l) => [...l, toUI(row)].sort((a, b) => a.starts_at.localeCompare(b.starts_at))); setAdding(false) }}
+                onCreated={(row) => { setEvents((l) => [...l, toUI(row, locale)].sort((a, b) => a.starts_at.localeCompare(b.starts_at))); setAdding(false) }}
                 onCancel={() => setAdding(false)} />
             </div>
           </div>
