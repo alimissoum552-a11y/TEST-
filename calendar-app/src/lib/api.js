@@ -260,3 +260,35 @@ export async function askAssistant(messages, timezone, locale) {
   }
   return data
 }
+
+// ---- Team chat ----
+// Latest messages of a calendar, oldest first.
+export async function listMessages(calendarId) {
+  const { data, error } = await supabase
+    .from('messages').select('id, calendar_id, user_id, content, created_at')
+    .eq('calendar_id', calendarId).order('created_at', { ascending: false }).limit(100)
+  if (error) throw error
+  return (data || []).reverse()
+}
+
+export async function sendMessage(calendarId, userId, content) {
+  const { data, error } = await supabase
+    .from('messages').insert({ calendar_id: calendarId, user_id: userId, content })
+    .select('id, calendar_id, user_id, content, created_at').single()
+  if (error) throw error
+  return data
+}
+
+export async function deleteMessage(messageId) {
+  const { error } = await supabase.from('messages').delete().eq('id', messageId)
+  if (error) throw error
+}
+
+// Display names for message authors (readable by members of the same calendar).
+export async function getNamesByIds(ids) {
+  if (!ids.length) return []
+  const { data, error } = await supabase
+    .from('profiles').select('id, display_name, email').in('id', ids)
+  if (error) throw error
+  return data || []
+}

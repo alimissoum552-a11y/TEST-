@@ -5,6 +5,7 @@ import TeamPanel from './TeamPanel.jsx'
 import ProfilePanel from './ProfilePanel.jsx'
 import InvitesPanel from './InvitesPanel.jsx'
 import AssistantPanel from './AssistantPanel.jsx'
+import ChatPanel from './ChatPanel.jsx'
 import Avatar from './Avatar.jsx'
 import { getMyProfile } from './lib/api.js'
 import { supabase } from './lib/supabase.js'
@@ -19,6 +20,7 @@ const ICON_PATHS = {
   day: <><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 2" /></>,
   events: <><path d="M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z" /><path d="M8 9h8M8 13h5" /></>,
   add: <path d="M12 5v14M5 12h14" />,
+  chat: <><path d="M4 5.5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-8l-4.5 3.5V16.5H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1z" /></>,
   ai: <><path d="M9.5 4.5c.4 3 2.1 4.8 5.1 5.2-3 .4-4.7 2.2-5.1 5.2-.4-3-2.1-4.8-5.1-5.2 3-.4 4.7-2.2 5.1-5.2z" /><path d="M18 3.5c.2 1.4.9 2.1 2.3 2.3-1.4.2-2.1.9-2.3 2.3-.2-1.4-.9-2.1-2.3-2.3 1.4-.2 2.1-.9 2.3-2.3z" /><path d="M17.5 14.5c.15 1 .6 1.45 1.6 1.6-1 .15-1.45.6-1.6 1.6-.15-1-.6-1.45-1.6-1.6 1-.15 1.45-.6 1.6-1.6z" /></>,
   profile: <><circle cx="12" cy="8.5" r="3.5" /><path d="M5 20c1.2-3.4 3.8-5 7-5s5.8 1.6 7 5" /></>,
   menu: <><path d="M4 7h16M4 12h16M4 17h16" /></>,
@@ -415,6 +417,7 @@ export default function App({ user, initialCalendarId = null }) {
   const [sharing, setSharing] = useState(false)
   const [team, setTeam] = useState(false)
   const [assistant, setAssistant] = useState(false)
+  const [chat, setChat] = useState(false)
   const [me, setMe] = useState(null)
   const [profileOpen, setProfileOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -597,6 +600,7 @@ export default function App({ user, initialCalendarId = null }) {
                 <section className="space-y-1">
                   <h3 className="text-xs font-medium uppercase tracking-wide text-neutral-500 mb-2">{t('actions')}</h3>
                   {canWrite && <button onClick={() => { setAdding(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="add" /> <span>{t('newEvent')}</span></button>}
+                  {activeCalendar && <button onClick={() => { setChat(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="chat" /> <span>{t('chat')}</span></button>}
                   <button onClick={() => { setAssistant(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="ai" /> <span>{t('assistant')}</span></button>
                   {calendar && <button onClick={() => { setTeam(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="team" /> <span>{t('team')}</span></button>}
                   {calendar && <button onClick={() => { setSharing(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="share" /> <span>{t('sharing')}</span></button>}
@@ -621,6 +625,7 @@ export default function App({ user, initialCalendarId = null }) {
 
         {user && <InvitesPanel onAnswered={() => setReloadKey((k) => k + 1)} />}
         {profileOpen && user && <ProfilePanel user={user} onClose={() => setProfileOpen(false)} onChanged={(url) => setMe((m) => ({ ...(m || {}), avatar_url: url }))} />}
+        {chat && user && activeCalendar && <ChatPanel key={activeCalendar.id} calendarId={activeCalendar.id} user={user} canWrite={canWrite} onClose={() => setChat(false)} />}
         {assistant && user && <AssistantPanel user={user} onClose={() => setAssistant(false)} />}
         {team && activeCalendar && <TeamPanel calendarId={activeCalendar.id} ownerId={activeCalendar.owner_id} onClose={() => setTeam(false)} />}
         {sharing && activeCalendar && <SharePanel calendarId={activeCalendar.id} canManage={['owner','administrator'].includes(activeCalendar.my_role)} onClose={() => setSharing(false)} />}
