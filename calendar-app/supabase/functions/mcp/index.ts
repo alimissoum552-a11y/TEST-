@@ -82,7 +82,8 @@ type Cal = { id: string; name: string; role: string }
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors })
   const url = new URL(req.url)
-  const base = `${Deno.env.get('SUPABASE_URL')}/functions/v1/mcp`
+  // Public address clients use (collyo.app/mcp, rewritten by Vercel). Falls back to the Supabase function URL.
+  const base = Deno.env.get('MCP_PUBLIC_URL') ?? `${Deno.env.get('SUPABASE_URL')}/functions/v1/mcp`
 
   if (req.method === 'GET' && url.pathname.endsWith('/metadata')) {
     return json({

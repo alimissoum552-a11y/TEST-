@@ -2,9 +2,7 @@ import { useState } from 'react'
 import { useI18n } from './i18n/index.jsx'
 
 // In-app guide: how to add Collyo to Claude as a custom connector, with the server address to copy.
-const SERVER_URL = import.meta.env.VITE_SUPABASE_URL
-  ? `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/mcp`
-  : ''
+const SERVER_URL = typeof window !== 'undefined' ? `${window.location.origin}/mcp` : ''
 
 export default function ConnectorGuide({ onClose }) {
   const { t } = useI18n()
