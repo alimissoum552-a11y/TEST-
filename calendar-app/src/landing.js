@@ -20,7 +20,7 @@ export const LANDING = {
     aiQ: 'Free hour tomorrow, 9 to 18?', aiAsk: 'Ask', aiA: 'Suggested: 10:00 to 11:00',
     remindBtn: 'Remind me 10 min before', remindToast: 'Starts in 10 minutes',
     copy: 'Copy address', copied: 'Copied',
-    footer: 'AI Solution Hub · Porto, Portugal',
+    footer: 'AI Solution Hub®',
   },
   fr: {
     title: 'Votre calendrier, votre équipe, votre temps, au même endroit.',
@@ -42,7 +42,7 @@ export const LANDING = {
     aiQ: 'Une heure libre demain, de 9 h à 18 h ?', aiAsk: 'Demander', aiA: 'Proposition : 10 h à 11 h',
     remindBtn: 'Me rappeler 10 min avant', remindToast: 'Commence dans 10 minutes',
     copy: 'Copier l’adresse', copied: 'Copié',
-    footer: 'AI Solution Hub · Porto, Portugal',
+    footer: 'AI Solution Hub®',
   },
   es: {
     title: 'Tu calendario, tu equipo, tu tiempo, en un solo lugar.',
@@ -64,7 +64,7 @@ export const LANDING = {
     aiQ: '¿Una hora libre mañana, de 9 a 18?', aiAsk: 'Preguntar', aiA: 'Propuesta: 10:00 a 11:00',
     remindBtn: 'Recordarme 10 min antes', remindToast: 'Empieza en 10 minutos',
     copy: 'Copiar dirección', copied: 'Copiado',
-    footer: 'AI Solution Hub · Oporto, Portugal',
+    footer: 'AI Solution Hub®',
   },
   de: {
     title: 'Dein Kalender, dein Team, deine Zeit, an einem Ort.',
@@ -86,7 +86,7 @@ export const LANDING = {
     aiQ: 'Eine freie Stunde morgen, 9 bis 18 Uhr?', aiAsk: 'Fragen', aiA: 'Vorschlag: 10 bis 11 Uhr',
     remindBtn: 'Erinnere mich 10 Min. vorher', remindToast: 'Beginnt in 10 Minuten',
     copy: 'Adresse kopieren', copied: 'Kopiert',
-    footer: 'AI Solution Hub · Porto, Portugal',
+    footer: 'AI Solution Hub®',
   },
   ar: {
     title: 'تقويمك وفريقك ووقتك، في مكان واحد.',
@@ -108,7 +108,7 @@ export const LANDING = {
     aiQ: 'ساعة فارغة غداً، من التاسعة إلى السادسة؟', aiAsk: 'اسأل', aiA: 'المقترح: من 10 إلى 11',
     remindBtn: 'ذكّرني قبل 10 دقائق', remindToast: 'يبدأ بعد 10 دقائق',
     copy: 'نسخ العنوان', copied: 'تم النسخ',
-    footer: 'AI Solution Hub · بورتو، البرتغال',
+    footer: 'AI Solution Hub®',
   },
   pt: {
     title: 'O seu calendário, a sua equipa, o seu tempo, num só lugar.',
@@ -130,6 +130,6 @@ export const LANDING = {
     aiQ: 'Uma hora livre amanhã, das 9h às 18h?', aiAsk: 'Perguntar', aiA: 'Sugestão: 10h às 11h',
     remindBtn: 'Lembrar-me 10 min antes', remindToast: 'Começa em 10 minutos',
     copy: 'Copiar endereço', copied: 'Copiado',
-    footer: 'AI Solution Hub · Porto, Portugal',
+    footer: 'AI Solution Hub®',
   },
 }
