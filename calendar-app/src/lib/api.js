@@ -231,3 +231,32 @@ export async function isMemberOf(calendarId, userId) {
   if (error) throw error
   return Boolean(data)
 }
+
+// ---- AI assistant ----
+// Date the signed-in user accepted the assistant policy, or null.
+export async function getAiAcceptedAt(userId) {
+  const { data, error } = await supabase
+    .from('profiles').select('ai_accepted_at').eq('id', userId).maybeSingle()
+  if (error) throw error
+  return data?.ai_accepted_at ?? null
+}
+
+export async function acceptAssistantPolicy(userId) {
+  const { error } = await supabase
+    .from('profiles').update({ ai_accepted_at: new Date().toISOString() }).eq('id', userId)
+  if (error) throw error
+}
+
+// Sends the conversation to the assistant Edge Function. Returns { reply, consulted }.
+// Errors carry a short code (consent_required, daily_limit, assistant_not_configured, ...).
+export async function askAssistant(messages, timezone, locale) {
+  const { data, error } = await supabase.functions.invoke('assistant', {
+    body: { messages, timezone, locale },
+  })
+  if (error) {
+    let code = 'server_error'
+    try { code = (await error.context.json()).error || code } catch { /* no JSON body */ }
+    throw new Error(code)
+  }
+  return data
+}

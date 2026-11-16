@@ -62,6 +62,7 @@ export default function JoinPage({ inviteId, user, onJoined, onDone }) {
           <>
             <p className="text-base font-semibold text-neutral-900">{t('joinedTitle')}</p>
             <p className="text-sm text-neutral-600">{t('joinedText')}</p>
+            <p className="text-xs text-neutral-500">{t('aiNotice')}</p>
             <button onClick={() => onDone?.(calendarId)} className={`${button} bg-neutral-900 text-white`}>{t('openCalendar')}</button>
           </>
         )}

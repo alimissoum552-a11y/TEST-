@@ -22,7 +22,8 @@ export const PAGES = {
       { h: "7. Termination", p: "You may delete your account at any time. We may suspend accounts that breach these terms." },
       { h: "8. Liability", p: "To the extent permitted by law, the operator is not liable for indirect losses, including missed events or losses resulting from a shared calendar being changed by another member." },
       { h: "9. Governing law", p: "These terms are governed by Portuguese law. The courts of Porto have jurisdiction, without prejudice to the mandatory consumer rights of your country of residence." },
-      { h: "10. Contact", p: "Questions: support@collyo.app." },
+      { h: "10. AI assistant", p: "The AI assistant is optional. It answers questions about your calendars and suggests free times. It reads your own events and, for shared calendars, only the busy times of their members. You must accept this policy before first use. Do not use the assistant to monitor or pressure other people. Its suggestions are not binding and may contain errors: check them before you act. Members of a shared calendar are informed of this possibility." },
+      { h: "11. Contact", p: "Questions: support@collyo.app." },
     ],
     privacy: [
       { h: "1. Who we are", p: "Data controller: AI Solution Hub, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal. Contact: support@collyo.app." },
@@ -35,7 +36,8 @@ export const PAGES = {
       { h: "8. Security", p: "Data is encrypted in transit (HTTPS). Access to data is restricted by row-level security rules so that each user only reaches the calendars they own or were invited to. No system is perfectly secure; we will notify you of any breach as required by law." },
       { h: "9. Children", p: "The service is not directed at children under 16 (or the national digital consent age)." },
       { h: "10. International transfers", p: "Transfers outside the EU/EEA rely on adequacy decisions or the Standard Contractual Clauses." },
-      { h: "11. Changes", p: "We update this policy when our practices change. Last updated: 16 November 2026." },
+      { h: "11. AI assistant", p: "If you use the assistant, your question and the calendar information needed to answer it (your events with titles, and the busy times of shared calendars) are sent to Anthropic, our AI model provider, which processes them on our behalf. Processing may take place outside the EU/EEA under Standard Contractual Clauses. We do not store the content of your questions, only the number of requests and tokens, to run the service and set prices. Legal basis: your consent, given when you accept the assistant policy (Art. 6(1)(a)); you can withdraw it at any time. The busy times of a shared calendar may be used by the assistant of anyone who can access that calendar, and its members are informed of this." },
+      { h: "12. Changes", p: "We update this policy when our practices change. Last updated: 16 November 2026." },
     ],
     cookies: [
       { h: "1. What we use", p: "Calendar App does not use advertising, tracking or analytics cookies. It uses browser storage (localStorage) for two purposes only." },
@@ -57,7 +59,8 @@ export const PAGES = {
       { h: "7. Résiliation", p: "Vous pouvez supprimer votre compte à tout moment. Nous pouvons suspendre les comptes qui enfreignent ces conditions." },
       { h: "8. Responsabilité", p: "Dans la mesure permise par la loi, l’exploitant n’est pas responsable des dommages indirects, notamment des événements manqués ou des pertes résultant de la modification d’un calendrier partagé par un autre membre." },
       { h: "9. Droit applicable", p: "Les présentes conditions sont régies par le droit portugais. Les tribunaux de Porto sont compétents, sans préjudice des droits impératifs des consommateurs de votre pays de résidence." },
-      { h: "10. Contact", p: "Questions : support@collyo.app." },
+      { h: "10. Assistant IA", p: "L’assistant IA est facultatif. Il répond à vos questions sur vos calendriers et propose des créneaux libres. Il lit vos propres événements et, pour les calendriers partagés, seulement les plages occupées des membres. Vous devez accepter cette politique avant la première utilisation. Ne l’utilisez pas pour surveiller ou mettre la pression sur d’autres personnes. Ses suggestions ne sont pas contraignantes et peuvent contenir des erreurs : vérifiez-les avant d’agir. Les membres d’un calendrier partagé sont informés de cette possibilité." },
+      { h: "11. Contact", p: "Questions : support@collyo.app." },
     ],
     privacy: [
       { h: "1. Qui nous sommes", p: "Responsable du traitement : AI Solution Hub, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal. Contact : support@collyo.app." },
@@ -70,7 +73,8 @@ export const PAGES = {
       { h: "8. Sécurité", p: "Les données sont chiffrées en transit (HTTPS). L’accès aux données est restreint par des règles de sécurité au niveau des lignes, de sorte que chaque utilisateur n’accède qu’aux calendriers qu’il possède ou auxquels il a été invité. Aucun système n’est parfaitement sûr ; nous vous informerons de toute violation comme la loi l’exige." },
       { h: "9. Enfants", p: "Le service ne s’adresse pas aux enfants de moins de 16 ans (ou à l’âge national du consentement numérique)." },
       { h: "10. Transferts internationaux", p: "Les transferts hors UE/EEE reposent sur des décisions d’adéquation ou sur les clauses contractuelles types." },
-      { h: "11. Modifications", p: "Nous mettons à jour cette politique lorsque nos pratiques changent. Dernière mise à jour : 16 novembre 2026." },
+      { h: "11. Assistant IA", p: "Si vous utilisez l’assistant, votre question et les informations du calendrier nécessaires à la réponse (vos événements avec leurs titres, et les plages occupées des calendriers partagés) sont envoyées à Anthropic, notre fournisseur de modèles d’IA, qui les traite pour notre compte. Le traitement peut avoir lieu hors UE/EEE, sous clauses contractuelles types. Nous ne conservons pas le contenu de vos questions, seulement le nombre de requêtes et de jetons, pour la gestion du service et la tarification. Base juridique : votre consentement, donné en acceptant la politique de l’assistant (art. 6.1.a) ; vous pouvez le retirer à tout moment. Les plages occupées d’un calendrier partagé peuvent être utilisées par l’assistant des personnes ayant accès à ce calendrier, et ses membres en sont informés." },
+      { h: "12. Modifications", p: "Nous mettons à jour cette politique lorsque nos pratiques changent. Dernière mise à jour : 16 novembre 2026." },
     ],
     cookies: [
       { h: "1. Ce que nous utilisons", p: "Calendar App n’utilise ni cookies publicitaires, ni cookies de suivi, ni cookies d’analyse. Il utilise le stockage du navigateur (localStorage) dans deux seuls buts." },
@@ -92,7 +96,8 @@ export const PAGES = {
       { h: "7. Terminación", p: "Puedes eliminar tu cuenta en cualquier momento. Podemos suspender las cuentas que incumplan estos términos." },
       { h: "8. Responsabilidad", p: "En la medida que permita la ley, el operador no es responsable de pérdidas indirectas, incluidos eventos perdidos o pérdidas causadas por la modificación de un calendario compartido por otro miembro." },
       { h: "9. Ley aplicable", p: "Estos términos se rigen por el derecho portugués. Los tribunales de Oporto son competentes, sin perjuicio de los derechos imperativos de los consumidores en tu país de residencia." },
-      { h: "10. Contacto", p: "Preguntas: support@collyo.app." },
+      { h: "10. Asistente IA", p: "El asistente IA es opcional. Responde a tus preguntas sobre tus calendarios y propone horas libres. Lee tus propios eventos y, en los calendarios compartidos, solo las horas ocupadas de los miembros. Debes aceptar esta política antes del primer uso. No utilices el asistente para vigilar o presionar a otras personas. Sus sugerencias no son vinculantes y pueden contener errores: verifícalas antes de actuar. Los miembros de un calendario compartido son informados de esta posibilidad." },
+      { h: "11. Contacto", p: "Preguntas: support@collyo.app." },
     ],
     privacy: [
       { h: "1. Quiénes somos", p: "Responsable del tratamiento: AI Solution Hub, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal. Contacto: support@collyo.app." },
@@ -105,7 +110,8 @@ export const PAGES = {
       { h: "8. Seguridad", p: "Los datos se cifran en tránsito (HTTPS). El acceso a los datos está restringido por reglas de seguridad a nivel de fila, de modo que cada usuario solo accede a los calendarios que posee o a los que fue invitado. Ningún sistema es perfectamente seguro; te notificaremos cualquier brecha según exija la ley." },
       { h: "9. Menores", p: "El servicio no está dirigido a menores de 16 años (o a la edad nacional de consentimiento digital)." },
       { h: "10. Transferencias internacionales", p: "Las transferencias fuera del EEE se amparan en decisiones de adecuación o en las cláusulas contractuales tipo." },
-      { h: "11. Cambios", p: "Actualizamos esta política cuando cambian nuestras prácticas. Última actualización: 16 de noviembre de 2026." },
+      { h: "11. Asistente IA", p: "Si usas el asistente, tu pregunta y la información del calendario necesaria para responderla (tus eventos con títulos y las horas ocupadas de los calendarios compartidos) se envían a Anthropic, nuestro proveedor de modelos de IA, que los trata por nuestra cuenta. El tratamiento puede realizarse fuera del EEE, con cláusulas contractuales tipo. No almacenamos el contenido de tus preguntas, solo el número de solicitudes y de tokens, para gestionar el servicio y fijar precios. Base jurídica: tu consentimiento, dado al aceptar la política del asistente (art. 6.1.a); puedes retirarlo en cualquier momento. Las horas ocupadas de un calendario compartido pueden ser usadas por el asistente de quienes tienen acceso a ese calendario, y sus miembros son informados." },
+      { h: "12. Cambios", p: "Actualizamos esta política cuando cambian nuestras prácticas. Última actualización: 16 de noviembre de 2026." },
     ],
     cookies: [
       { h: "1. Lo que usamos", p: "Calendar App no utiliza cookies publicitarias, de seguimiento ni de análisis. Usa el almacenamiento del navegador (localStorage) solo para dos fines." },
@@ -127,7 +133,8 @@ export const PAGES = {
       { h: "7. Kündigung", p: "Du kannst dein Konto jederzeit löschen. Wir können Konten sperren, die gegen diese Bedingungen verstoßen." },
       { h: "8. Haftung", p: "Soweit gesetzlich zulässig, haftet der Betreiber nicht für indirekte Schäden, einschließlich verpasster Termine oder Verluste, die daraus entstehen, dass ein geteilter Kalender von einem anderen Mitglied geändert wurde." },
       { h: "9. Anwendbares Recht", p: "Für diese Bedingungen gilt portugiesisches Recht. Zuständig sind die Gerichte in Porto, unbeschadet zwingender Verbraucherrechte in deinem Wohnsitzland." },
-      { h: "10. Kontakt", p: "Fragen: support@collyo.app." },
+      { h: "10. KI-Assistent", p: "Der KI-Assistent ist optional. Er beantwortet Fragen zu deinen Kalendern und schlägt freie Zeiten vor. Er liest deine eigenen Termine und in geteilten Kalendern nur die belegten Zeiten der Mitglieder. Du musst diese Richtlinie vor der ersten Nutzung akzeptieren. Nutze den Assistenten nicht, um andere Personen zu überwachen oder unter Druck zu setzen. Seine Vorschläge sind unverbindlich und können Fehler enthalten: prüfe sie, bevor du handelst. Mitglieder eines geteilten Kalenders werden über diese Möglichkeit informiert." },
+      { h: "11. Kontakt", p: "Fragen: support@collyo.app." },
     ],
     privacy: [
       { h: "1. Wer wir sind", p: "Verantwortlicher: AI Solution Hub, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal. Kontakt: support@collyo.app." },
@@ -140,7 +147,8 @@ export const PAGES = {
       { h: "8. Sicherheit", p: "Daten werden bei der Übertragung verschlüsselt (HTTPS). Der Zugriff auf Daten ist durch Sicherheitsregeln auf Zeilenebene beschränkt, sodass jeder Nutzer nur die Kalender erreicht, die er besitzt oder zu denen er eingeladen wurde. Kein System ist vollkommen sicher; wir informieren dich über Datenpannen, soweit das Gesetz es verlangt." },
       { h: "9. Kinder", p: "Der Dienst richtet sich nicht an Kinder unter 16 Jahren (oder das nationale Alter für die digitale Einwilligung)." },
       { h: "10. Internationale Übermittlungen", p: "Übermittlungen außerhalb der EU/des EWR stützen sich auf Angemessenheitsbeschlüsse oder die Standardvertragsklauseln." },
-      { h: "11. Änderungen", p: "Wir aktualisieren diese Erklärung, wenn sich unsere Praxis ändert. Zuletzt aktualisiert: 16. November 2026." },
+      { h: "11. KI-Assistent", p: "Wenn du den Assistenten nutzt, werden deine Frage und die für die Antwort nötigen Kalenderdaten (deine Termine mit Titeln und die belegten Zeiten geteilter Kalender) an Anthropic übermittelt, unseren Anbieter von KI-Modellen, der sie in unserem Auftrag verarbeitet. Die Verarbeitung kann außerhalb des EWR erfolgen, auf Grundlage der Standardvertragsklauseln. Wir speichern den Inhalt deiner Fragen nicht, nur die Anzahl der Anfragen und Token, zur Steuerung des Dienstes und für die Preisgestaltung. Rechtsgrundlage: deine Einwilligung, die du mit der Annahme der Richtlinie des Assistenten erteilst (Art. 6 Abs. 1 lit. a); du kannst sie jederzeit widerrufen. Die belegten Zeiten eines geteilten Kalenders können vom Assistenten all jener genutzt werden, die auf diesen Kalender zugreifen; die Mitglieder werden darüber informiert." },
+      { h: "12. Änderungen", p: "Wir aktualisieren diese Erklärung, wenn sich unsere Praxis ändert. Zuletzt aktualisiert: 16. November 2026." },
     ],
     cookies: [
       { h: "1. Was wir verwenden", p: "Calendar App verwendet keine Werbe-, Tracking- oder Analyse-Cookies. Sie nutzt den Browserspeicher (localStorage) nur für zwei Zwecke." },
@@ -162,7 +170,8 @@ export const PAGES = {
       { h: "7. الإنهاء", p: "يمكنك حذف حسابك في أي وقت. قد نعلّق الحسابات التي تخالف هذه الشروط." },
       { h: "8. المسؤولية", p: "بالقدر الذي يسمح به القانون، لا يتحمل المشغّل مسؤولية الخسائر غير المباشرة، بما في ذلك الأحداث الفائتة أو الخسائر الناجمة عن تعديل تقويم مشترك من عضو آخر." },
       { h: "9. القانون الواجب التطبيق", p: "تخضع هذه الشروط للقانون البرتغالي. تختص محاكم بورتو، دون المساس بالحقوق الإلزامية للمستهلكين في بلد إقامتك." },
-      { h: "10. التواصل", p: "للاستفسارات: support@collyo.app." },
+      { h: "10. مساعد الذكاء الاصطناعي", p: "مساعد الذكاء الاصطناعي اختياري. يجيب عن أسئلتك حول تقويماتك ويقترح أوقاتاً فارغة. يقرأ أحداثك الخاصة، وفي التقاويم المشتركة يقرأ فقط الأوقات المشغولة لأعضائها. يجب أن تقبل هذه السياسة قبل أول استخدام. لا تستخدم المساعد لمراقبة الآخرين أو الضغط عليهم. اقتراحاته غير ملزمة وقد تحتوي على أخطاء: تحقق منها قبل التصرف. يُعلَم أعضاء التقويم المشترك بهذه الإمكانية." },
+      { h: "11. التواصل", p: "للاستفسارات: support@collyo.app." },
     ],
     privacy: [
       { h: "1. من نحن", p: "المسؤول عن معالجة البيانات: AI Solution Hub، Rua Oscar da Silva 83, 2L, 4200-399 Porto، البرتغال. للتواصل: support@collyo.app." },
@@ -175,7 +184,8 @@ export const PAGES = {
       { h: "8. الأمان", p: "تُشفَّر البيانات أثناء النقل (HTTPS). يُقيَّد الوصول إلى البيانات بقواعد أمان على مستوى الصفوف، بحيث لا يصل كل مستخدم إلا إلى التقاويم التي يملكها أو التي دُعي إليها. لا يوجد نظام آمن تماماً؛ وسنخطرك بأي خرق كما يقتضي القانون." },
       { h: "9. الأطفال", p: "الخدمة غير موجهة للأطفال دون 16 عاماً (أو سن الموافقة الرقمية الوطني)." },
       { h: "10. عمليات النقل الدولية", p: "تستند عمليات النقل خارج الاتحاد الأوروبي/المنطقة الاقتصادية إلى قرارات الملاءمة أو البنود التعاقدية النموذجية." },
-      { h: "11. التغييرات", p: "نحدّث هذه السياسة عند تغيّر ممارساتنا. آخر تحديث: 16 نوفمبر 2026." },
+      { h: "11. مساعد الذكاء الاصطناعي", p: "عند استخدام المساعد، ترسل سؤالك ومعلومات التقويم اللازمة للإجابة (أحداثك بعناوينها، والأوقات المشغولة للتقاويم المشتركة) إلى Anthropic، مزود نماذج الذكاء الاصطناعي لدينا، الذي يعالجها نيابةً عنا. قد تتم المعالجة خارج المنطقة الاقتصادية الأوروبية بموجب البنود التعاقدية النموذجية. لا نحتفظ بمحتوى أسئلتك، بل بعدد الطلبات والرموز فقط لإدارة الخدمة وتحديد الأسعار. الأساس القانوني: موافقتك عند قبول سياسة المساعد (المادة 6(1)(أ))، ويمكنك سحبها في أي وقت. قد يستخدم مساعد أي شخص له حق الوصول إلى التقويم المشترك الأوقات المشغولة فيه، ويُعلَم الأعضاء بذلك." },
+      { h: "12. التغييرات", p: "نحدّث هذه السياسة عند تغيّر ممارساتنا. آخر تحديث: 16 نوفمبر 2026." },
     ],
     cookies: [
       { h: "1. ما نستخدمه", p: "لا يستخدم تطبيق التقويم ملفات تعريف ارتباط إعلانية أو للتتبع أو للتحليل. يستخدم تخزين المتصفح (localStorage) لغرضين فقط." },
@@ -197,7 +207,8 @@ export const PAGES = {
       { h: "7. Encerramento", p: "Você pode excluir sua conta a qualquer momento. Podemos suspender contas que violem estes termos." },
       { h: "8. Responsabilidade", p: "Na medida permitida pela lei, o operador não se responsabiliza por perdas indiretas, incluindo eventos perdidos ou perdas decorrentes da alteração de um calendário compartilhado por outro membro." },
       { h: "9. Lei aplicável", p: "Estes termos são regidos pelo direito português. Os tribunais do Porto são competentes, sem prejuízo dos direitos obrigatórios do consumidor no seu país de residência." },
-      { h: "10. Contato", p: "Dúvidas: support@collyo.app." },
+      { h: "10. Assistente de IA", p: "O assistente de IA é opcional. Responde a perguntas sobre os seus calendários e sugere horários livres. Lê os seus próprios eventos e, nos calendários partilhados, apenas os horários ocupados dos membros. Deve aceitar esta política antes da primeira utilização. Não use o assistente para vigiar ou pressionar outras pessoas. As sugestões não vinculam e podem conter erros: verifique-as antes de agir. Os membros de um calendário partilhado são informados desta possibilidade." },
+      { h: "11. Contato", p: "Dúvidas: support@collyo.app." },
     ],
     privacy: [
       { h: "1. Quem somos", p: "Controlador dos dados: AI Solution Hub, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal. Contato: support@collyo.app." },
@@ -210,7 +221,8 @@ export const PAGES = {
       { h: "8. Segurança", p: "Os dados são criptografados em trânsito (HTTPS). O acesso é restrito por regras de segurança em nível de linha, de modo que cada usuário alcança apenas os calendários que possui ou para os quais foi convidado. Nenhum sistema é totalmente seguro; notificaremos qualquer incidente conforme exigido por lei." },
       { h: "9. Crianças", p: "O serviço não é destinado a menores de 16 anos (ou à idade nacional de consentimento digital)." },
       { h: "10. Transferências internacionais", p: "As transferências fora da UE/EEE usam decisões de adequação ou as Cláusulas Contratuais Padrão." },
-      { h: "11. Alterações", p: "Atualizamos esta política quando nossas práticas mudarem. Última atualização: 16 de novembro de 2026." },
+      { h: "11. Assistente de IA", p: "Se usar o assistente, a sua pergunta e as informações do calendário necessárias para a responder (os seus eventos com títulos e os horários ocupados dos calendários partilhados) são enviadas à Anthropic, o nosso fornecedor de modelos de IA, que as trata em nosso nome. O tratamento pode ocorrer fora da UE/EEE, com Cláusulas Contratuais Padrão. Não guardamos o conteúdo das suas perguntas, apenas o número de pedidos e de tokens, para gerir o serviço e definir preços. Base legal: o seu consentimento, dado ao aceitar a política do assistente (art. 6.º, n.º 1, al. a)); pode retirá-lo a qualquer momento. Os horários ocupados de um calendário partilhado podem ser usados pelo assistente de quem tem acesso a esse calendário, e os membros são informados." },
+      { h: "12. Alterações", p: "Atualizamos esta política quando nossas práticas mudarem. Última atualização: 16 de novembro de 2026." },
     ],
     cookies: [
       { h: "1. O que usamos", p: "O Calendar App não usa cookies de publicidade, rastreamento ou análise. Usa o armazenamento do navegador (localStorage) somente para duas finalidades." },

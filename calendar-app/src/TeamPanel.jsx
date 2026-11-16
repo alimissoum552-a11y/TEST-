@@ -22,6 +22,7 @@ export default function TeamPanel({ calendarId, ownerId, onClose }) {
       <div className="w-full sm:max-w-md bg-white rounded-t-3xl sm:rounded-3xl p-6 md:p-8 shadow-xl space-y-4 max-h-[90%] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}>
         <h3 className="text-lg font-semibold text-neutral-900">{t('team')}</h3>
+        <p className="text-xs text-neutral-500">{t('aiNotice')}</p>
 
         {err && <p className="text-sm font-medium text-neutral-900">{err}</p>}
         {members === null && !err && <p className="text-sm text-neutral-400">…</p>}
