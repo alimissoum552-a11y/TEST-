@@ -13,6 +13,8 @@ const RTL = new Set(['ar'])
 
 const DICT = {
   en: {
+    cancelInvite: "Cancel",
+    inviteCancelled: "Invitation cancelled.",
     pending: "Pending",
     joining: "Joining the team…",
     joinedTitle: "You joined the team",
@@ -79,6 +81,8 @@ const DICT = {
     monthName: 'September', year: '2026', save: 'Save', description: 'Description',
   },
   fr: {
+    cancelInvite: "Annuler",
+    inviteCancelled: "Invitation annulée.",
     pending: "En attente",
     joining: "Vous rejoignez l’équipe…",
     joinedTitle: "Vous avez rejoint l’équipe",
@@ -145,6 +149,8 @@ const DICT = {
     monthName: 'Septembre', year: '2026', save: 'Enregistrer', description: 'Description',
   },
   es: {
+    cancelInvite: "Anular",
+    inviteCancelled: "Invitación cancelada.",
     pending: "Pendiente",
     joining: "Uniéndote al equipo…",
     joinedTitle: "Te uniste al equipo",
@@ -211,6 +217,8 @@ const DICT = {
     monthName: 'Septiembre', year: '2026', save: 'Guardar', description: 'Descripción',
   },
   de: {
+    cancelInvite: "Abbrechen",
+    inviteCancelled: "Einladung abgebrochen.",
     pending: "Ausstehend",
     joining: "Du trittst dem Team bei…",
     joinedTitle: "Du bist dem Team beigetreten",
@@ -277,6 +285,8 @@ const DICT = {
     monthName: 'September', year: '2026', save: 'Speichern', description: 'Beschreibung',
   },
   ar: {
+    cancelInvite: "إلغاء",
+    inviteCancelled: "تم إلغاء الدعوة.",
     pending: "معلّقة",
     joining: "جارٍ الانضمام إلى الفريق…",
     joinedTitle: "انضممت إلى الفريق",
@@ -343,6 +353,8 @@ const DICT = {
     monthName: 'سبتمبر', year: '2026', save: 'حفظ', description: 'الوصف',
   },
   pt: {
+    cancelInvite: "Cancelar",
+    inviteCancelled: "Convite cancelado.",
     pending: "Pendente",
     joining: "Entrando na equipe…",
     joinedTitle: "Você entrou na equipe",

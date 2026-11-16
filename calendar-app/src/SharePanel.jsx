@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useI18n } from './i18n/index.jsx'
-import { listMembers, listCalendarInvites, inviteMember, setMemberRole, removeMember, sendInviteEmail } from './lib/api.js'
+import { listMembers, listCalendarInvites, inviteMember, setMemberRole, removeMember, sendInviteEmail, cancelInvite } from './lib/api.js'
 
 const ROLES = ['administrator', 'contributor', 'reader']
 
@@ -38,6 +38,14 @@ export default function SharePanel({ calendarId, currentUserId, onClose }) {
     } catch (ex) {
       setMsg({ err: true, text: ex.message === 'NO_USER' ? t('noUser') : ex.message })
     } finally { setBusy(false) }
+  }
+
+  async function cancel(id) {
+    try {
+      await cancelInvite(id)
+      setMsg({ text: t('inviteCancelled') })
+      await refresh()
+    } catch (ex) { setMsg({ err: true, text: ex.message }) }
   }
 
   async function changeRole(userId, newRole) {
@@ -86,8 +94,12 @@ export default function SharePanel({ calendarId, currentUserId, onClose }) {
           {members.length === 0 && pending.length === 0 && <li className="text-sm text-neutral-500">{t('noMembers')}</li>}
           {pending.map((i) => (
             <li key={i.id} className="flex items-center justify-between gap-2 text-sm">
-              <span className="min-w-0 truncate text-neutral-500">{i.invitee_email}</span>
-              <span className="shrink-0 rounded-full border border-neutral-200 px-3 py-1 text-xs text-neutral-500">{t('pending')}</span>
+              <span className="flex min-w-0 items-center gap-2">
+                <span className="truncate text-neutral-500">{i.invitee_email}</span>
+                <span className="shrink-0 rounded-full border border-neutral-200 px-2 py-0.5 text-xs text-neutral-500">{t('pending')}</span>
+              </span>
+              <button onClick={() => cancel(i.id)} aria-label={`${t('cancelInvite')} ${i.invitee_email}`}
+                className="shrink-0 text-xs text-neutral-500 hover:text-neutral-900">{t('cancelInvite')}</button>
             </li>
           ))}
         </ul>

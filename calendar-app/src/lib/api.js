@@ -190,3 +190,9 @@ export async function listCalendarInvites(calendarId) {
   if (error) throw error
   return data || []
 }
+
+// Cancels a pending invitation. The join link stops working immediately.
+export async function cancelInvite(inviteId) {
+  const { error } = await supabase.from('calendar_invites').delete().eq('id', inviteId)
+  if (error) throw error
+}
