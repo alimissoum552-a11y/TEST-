@@ -4,8 +4,9 @@ A collaborative web calendar: personal and shared calendars, roles, invitations,
 real-time updates, change history with restore, and a monochrome responsive UI in
 six languages.
 
-**Live:** https://calendar-app-rho-ten.vercel.app
-**Domain for e-mail:** `collyo.app` (verified in Resend)
+**Live:** https://collyo.app (`www` redirects to the apex)
+**Domain:** `collyo.app` — Vercel hosting, Resend e-mail, Cloudflare DNS
+**Documentation updated:** 16 November 2026
 
 ## Stack
 
@@ -102,6 +103,21 @@ Every table has row-level security enabled. Roles on a calendar:
 The function requires a signed-in user and only sends for calendars the caller
 can manage; RLS decides that, not the function.
 
+### E-mail addresses on collyo.app
+
+Active as of 16 November 2026. All addresses live in Cloudflare Email Routing
+and Resend; none of them uses a forwarding destination documented here.
+
+| Address | Purpose |
+|---|---|
+| `invites@collyo.app` | Sender of invitation e-mails (`INVITE_FROM`) |
+| `support@collyo.app` | Reply-to of invitations (`INVITE_REPLY_TO`), general contact in the legal pages |
+| `team@collyo.app` | Team contact |
+| `noreply@collyo.app` | Outgoing notifications that should not receive replies |
+
+Domain status: verified in Resend (DKIM, SPF, MX, CNAME all verified), with a
+DMARC record `v=DMARC1; p=none;`.
+
 ## Deployment
 
 Vercel project `calendar-app`, root directory `calendar-app`, framework Vite.
@@ -114,7 +130,7 @@ GitHub would make every push deploy automatically.
 
 Delivered: events CRUD, realtime, sharing with roles, invitations with
 accept/decline/cancel, team panel, change history and restore, avatars, six
-languages, legal pages, custom sending domain.
+languages, legal pages, custom sending domain, custom app domain `collyo.app`.
 
 Not delivered: AI assistant, tasks, focus blocks, scheduling engine, external
 calendar sync, billing and plan enforcement, analytics, notifications.
@@ -124,9 +140,11 @@ See [docs/ROADMAP.md](calendar-app/docs/ROADMAP.md) for the ordered steps and
 
 ## Legal notice
 
-The legal pages are drafts. They must be reviewed by a qualified lawyer before
-publication, and the bracketed placeholders (operator details, governing law,
-processor regions, retention periods) must be filled in.
+The legal pages were completed on 16 November 2026: operator `Collyo`,
+contact `support@collyo.app`, processor locations and retention wording are
+filled in, and no placeholder remains. They still require review by a
+qualified lawyer before publication, and the registered company name and
+postal address must be added to the privacy policy once available.
 
 `calendar-app/Calendar App.fig` is a licensed design file owned by the project
 owner. Do not publish or redistribute it as a standalone file.

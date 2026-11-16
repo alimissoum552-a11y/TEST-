@@ -29,7 +29,7 @@ Deno.serve(async (req) => {
     const { data: { user } } = await supa.auth.getUser()
     const inviter = user?.user_metadata?.display_name || user?.email || 'Someone'
 
-    const appUrl = Deno.env.get('APP_URL') ?? 'https://calendar-app-rho-ten.vercel.app'
+    const appUrl = Deno.env.get('APP_URL') ?? 'https://collyo.app'
     const from = Deno.env.get('INVITE_FROM') ?? 'Calendar <onboarding@resend.dev>'
     // Replies to an invitation go to support, not to the no-reply sender.
     const replyTo = Deno.env.get('INVITE_REPLY_TO') ?? undefined
