@@ -94,12 +94,12 @@ export default function SharePanel({ calendarId, currentUserId, onClose }) {
           {members.length === 0 && pending.length === 0 && <li className="text-sm text-neutral-500">{t('noMembers')}</li>}
           {pending.map((i) => (
             <li key={i.id} className="flex items-center justify-between gap-2 text-sm">
-              <span className="flex min-w-0 items-center gap-2">
-                <span className="truncate text-neutral-500">{i.invitee_email}</span>
-                <span className="shrink-0 rounded-full border border-neutral-200 px-2 py-0.5 text-xs text-neutral-500">{t('pending')}</span>
+              <span className="min-w-0 truncate text-neutral-500">{i.invitee_email}</span>
+              <span className="flex shrink-0 items-center gap-2">
+                <span className="rounded-full border border-neutral-200 px-2 py-0.5 text-xs text-neutral-500">{t('pending')}</span>
+                <button onClick={() => cancel(i.id)} aria-label={`${t('cancelInvite')} ${i.invitee_email}`}
+                  className="text-xs text-neutral-500 hover:text-neutral-900">{t('cancelInvite')}</button>
               </span>
-              <button onClick={() => cancel(i.id)} aria-label={`${t('cancelInvite')} ${i.invitee_email}`}
-                className="shrink-0 text-xs text-neutral-500 hover:text-neutral-900">{t('cancelInvite')}</button>
             </li>
           ))}
         </ul>
