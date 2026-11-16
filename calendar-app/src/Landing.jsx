@@ -246,7 +246,7 @@ function Carousel({ panels, label, startIndex = 0 }) {
         {panels.map((p, i) => (
           <article key={p.id} aria-roledescription="slide" aria-label={`${i + 1} / ${panels.length}`} aria-hidden={i !== index}
             className="snap-center snap-always shrink-0 w-[var(--panel)] rounded-3xl bg-white p-6 md:p-8 shadow-xl ring-1 ring-neutral-200 will-change-transform">
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold bg-neutral-900 text-white">{p.sparkle ? <AiAvatar size="sm" /> : i + 1}</span>
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold bg-neutral-900 text-white">{p.sparkle ? <AiAvatar size="sm" tone="light" /> : i + 1}</span>
             <h3 className="mt-3 text-xl font-semibold text-neutral-900">{p.title}</h3>
             <p className="mt-1 text-sm text-neutral-600">{p.text}</p>
             <div className="mt-5">{p.render(i === index)}</div>
