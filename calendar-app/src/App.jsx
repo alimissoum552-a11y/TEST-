@@ -8,8 +8,9 @@ import Avatar from './Avatar.jsx'
 import { getMyProfile } from './lib/api.js'
 import { supabase } from './lib/supabase.js'
 import { getDefaultCalendar, listAccessibleCalendars, listEventsForCalendars, createEvent, updateEvent, deleteEvent, subscribeToEvents, listHistory, restoreVersion } from './lib/api.js'
+import { dateKey, addDays, addMonths, weekDays, monthGrid, isSameMonth, isSameDay, startOfDay, formatMonth, formatDay, formatWeekRange, formatTime } from './lib/calendar.js'
 
-// Maps a DB row to the shape the UI uses (date = day-of-month, time = "HH:MM – HH:MM").
+// Maps a DB row to the shape the UI uses (dateKey = 'YYYY-MM-DD' local, time = "HH:MM – HH:MM").
 
 const ICON_PATHS = {
   month: <><rect x="3" y="4.5" width="18" height="16.5" rx="3" /><path d="M3 9.5h18M8 3v3M16 3v3" /></>,
@@ -70,7 +71,7 @@ const toUI = (r, locale) => ({
   location: r.location,
   starts_at: r.starts_at,
   ends_at: r.ends_at,
-  date: new Date(r.starts_at).getDate(),
+  dateKey: dateKey(new Date(r.starts_at)),
   time: `${hhmm(r.starts_at, locale)} – ${hhmm(r.ends_at, locale)}`,
   tone: r.color_tone || 'bg-neutral-600',
   reminder_minutes: r.reminder_minutes,
@@ -80,14 +81,16 @@ const toneClass = (t) => (t && t.startsWith('bg-') ? t : 'bg-neutral-600')
 const TABS = ['month', 'week', 'day', 'events']
 
 
-const HOURS = Array.from({ length: 12 }, (_, i) => 8 + i)
+const HOURS = Array.from({ length: 24 }, (_, i) => i)
 
-// September 2026: 1st is a Tuesday (Monday-first grid)
-function monthCells() {
-  const cells = [null]
-  for (let d = 1; d <= 30; d++) cells.push(d)
-  while (cells.length % 7) cells.push(null)
-  return cells
+// Events grouped by 'YYYY-MM-DD', each day sorted by start time.
+function groupByDay(events) {
+  const map = new Map()
+  for (const e of events) {
+    if (!map.has(e.dateKey)) map.set(e.dateKey, [])
+    map.get(e.dateKey).push(e)
+  }
+  return map
 }
 
 function ActivityList({ eventId, onRestored }) {
@@ -149,8 +152,8 @@ function EventDetail({ event, onClose, onDelete, onSave }) {
           <span className={`h-3 w-3 rounded-full ${toneClass(event.tone)}`} />
           <h3 className="text-lg md:text-xl font-semibold text-neutral-900">{event.title}</h3>
         </div>
-        <p className="text-sm text-neutral-600">{event.date} {t('monthName').toLowerCase()} · {event.time}</p>
-        <p className="text-xs text-neutral-400">{t('repeat')} : {t('none')} · {t('reminder')} : {t('minBefore')}</p>
+        <p className="text-sm text-neutral-600">{formatDay(new Date(event.starts_at), locale)} · {event.time}</p>
+        <p className="text-xs text-neutral-400">{t('repeat')} : {t('none')} · {t('reminder')} : {event.reminder_minutes ?? 0} min</p>
         <div className="flex gap-2">
           <button onClick={() => setEditing(true)} className="flex-1 py-2 rounded-xl bg-neutral-100 text-neutral-900 text-sm hover:bg-neutral-200">{t('edit')}</button>
           <button onClick={() => onDelete(event)} className="flex-1 py-2 rounded-xl bg-neutral-900 text-white text-sm hover:bg-neutral-700">{t('delete')}</button>
@@ -162,8 +165,46 @@ function EventDetail({ event, onClose, onDelete, onSave }) {
   )
 }
 
-function MonthView({ events, selected, setSelected, onOpen, calendarName }) {
+// Prev / next / today bar shared by the month, week and day views.
+function Navigator({ label, onPrev, onNext, onToday }) {
+  const { t } = useI18n()
+  const rtl = typeof document !== 'undefined' && document.documentElement.dir === 'rtl'
+  const btn = 'h-9 w-9 rounded-full text-neutral-700 hover:bg-neutral-100 text-lg leading-none'
+  return (
+    <div className="flex items-center justify-between gap-2 mb-4">
+      <div className="flex items-center gap-1 shrink-0">
+        <button type="button" onClick={onPrev} aria-label={t('prev')} className={btn}>{rtl ? '›' : '‹'}</button>
+        <button type="button" onClick={onNext} aria-label={t('next')} className={btn}>{rtl ? '‹' : '›'}</button>
+      </div>
+      <h2 className="min-w-0 truncate text-sm md:text-base font-medium text-neutral-800">{label}</h2>
+      <button type="button" onClick={onToday} className="shrink-0 px-3 py-1.5 rounded-full text-sm bg-neutral-100 hover:bg-neutral-200 text-neutral-900">{t('today')}</button>
+    </div>
+  )
+}
+
+function EventRow({ event, onOpen, calendarName }) {
+  const { locale } = useI18n()
+  const cal = calendarName(event.calendar_id)
+  return (
+    <button onClick={() => onOpen(event)} className="w-full flex items-center gap-3 p-3 rounded-xl bg-neutral-50 hover:bg-neutral-100 text-left">
+      <span className={`h-8 w-1 rounded-full ${toneClass(event.tone)}`} />
+      <span className="flex-1 min-w-0">
+        <span className="block text-sm text-neutral-900 truncate">{event.title}</span>
+        <span className="block text-xs text-neutral-500">
+          {formatTime(new Date(event.starts_at), locale)} – {formatTime(new Date(event.ends_at), locale)}
+          {cal && <> · <em className="not-italic text-neutral-400">{cal}</em></>}
+        </span>
+      </span>
+    </button>
+  )
+}
+
+function MonthView({ events, selected, onSelect, onOpen, calendarName }) {
   const { t, locale } = useI18n()
+  const byDay = groupByDay(events)
+  const grid = monthGrid(selected)
+  const today = startOfDay(new Date())
+  const dayList = byDay.get(dateKey(selected)) || []
   return (
     <div className="grid gap-6 md:grid-cols-2 md:gap-8">
       <section>
@@ -171,19 +212,27 @@ function MonthView({ events, selected, setSelected, onOpen, calendarName }) {
           {t('weekDays').map((d, i) => <span key={i}>{d}</span>)}
         </div>
         <div className="grid grid-cols-7 gap-y-2 text-center">
-          {monthCells().map((d, i) => {
-            const has = d && events.some((e) => e.date === d)
-            const isSel = d === selected
+          {grid.map((d) => {
+            const inMonth = isSameMonth(d, selected)
+            const isSel = isSameDay(d, selected)
+            const isToday = isSameDay(d, today)
+            const has = (byDay.get(dateKey(d)) || []).length > 0
             return (
               <button
-                key={i}
-                disabled={!d}
-                onClick={() => d && setSelected(d)}
+                key={dateKey(d)}
+                type="button"
+                onClick={() => onSelect(startOfDay(d))}
+                aria-label={formatDay(d, locale)}
+                aria-pressed={isSel}
+                aria-current={isToday ? 'date' : undefined}
                 className={`relative mx-auto h-9 w-9 md:h-11 md:w-11 rounded-full text-sm md:text-base transition ${
-                  isSel ? 'bg-neutral-900 text-white' : 'text-neutral-800 hover:bg-neutral-100'
-                } ${!d ? 'invisible' : ''}`}
+                  isSel ? 'bg-neutral-900 text-white'
+                    : isToday ? 'ring-1 ring-inset ring-neutral-900 text-neutral-900'
+                    : inMonth ? 'text-neutral-800 hover:bg-neutral-100'
+                    : 'text-neutral-300 hover:bg-neutral-50'
+                }`}
               >
-                {d}
+                {d.getDate()}
                 {has && !isSel && (
                   <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 h-1 w-1 rounded-full bg-neutral-500" />
                 )}
@@ -193,18 +242,11 @@ function MonthView({ events, selected, setSelected, onOpen, calendarName }) {
         </div>
       </section>
       <section>
-        <h2 className="mb-2 text-sm font-medium text-neutral-700">{t('upcoming')}</h2>
+        <h2 className="mb-2 text-sm font-medium text-neutral-700">{formatDay(selected, locale)}</h2>
+        {dayList.length === 0 && <p className="text-sm text-neutral-400">{t('noEventsDay')}</p>}
         <ul className="space-y-2">
-          {events.map((e) => (
-            <li key={e.id}>
-              <button onClick={() => onOpen(e)} className="w-full flex items-center gap-3 p-3 rounded-xl bg-neutral-50 hover:bg-neutral-100 text-left">
-                <span className={`h-8 w-1 rounded-full ${toneClass(e.tone)}`} />
-                <span className="flex-1">
-                  <span className="block text-sm text-neutral-900">{e.title}</span>
-                  <span className="block text-xs text-neutral-500">{e.date} {t('sep')} · {e.time}{calendarName(e.calendar_id) && <> · <em className="not-italic text-neutral-400">{calendarName(e.calendar_id)}</em></>}</span>
-                </span>
-              </button>
-            </li>
+          {dayList.map((e) => (
+            <li key={e.id}><EventRow event={e} onOpen={onOpen} calendarName={calendarName} /></li>
           ))}
         </ul>
       </section>
@@ -212,19 +254,44 @@ function MonthView({ events, selected, setSelected, onOpen, calendarName }) {
   )
 }
 
+// Seven days, Monday to Sunday, each with its events in order.
+function WeekList({ events, selected, onOpen, calendarName }) {
+  const { locale } = useI18n()
+  const byDay = groupByDay(events)
+  const today = startOfDay(new Date())
+  return (
+    <div className="grid gap-5 md:grid-cols-2 md:gap-6">
+      {weekDays(selected).map((d) => {
+        const list = byDay.get(dateKey(d)) || []
+        return (
+          <section key={dateKey(d)} className={isSameDay(d, today) ? 'rounded-2xl ring-1 ring-inset ring-neutral-900 p-3' : ''}>
+            <h2 className={`mb-2 text-sm font-medium ${isSameDay(d, selected) ? 'text-neutral-900' : 'text-neutral-700'}`}>{formatDay(d, locale)}</h2>
+            {list.length > 0 && (
+              <ul className="space-y-2">
+                {list.map((e) => <li key={e.id}><EventRow event={e} onOpen={onOpen} calendarName={calendarName} /></li>)}
+              </ul>
+            )}
+          </section>
+        )
+      })}
+    </div>
+  )
+}
+
+// One day, 24 hourly rows. Events sit in the row of their start hour.
 function Timeline({ dayEvents, onOpen }) {
   const { locale } = useI18n()
   return (
     <ol>
       {HOURS.map((h) => {
-        const evs = dayEvents.filter((e) => parseInt(e.time.slice(0, 2)) === h)
+        const evs = dayEvents.filter((e) => new Date(e.starts_at).getHours() === h)
         return (
           <li key={h} className="flex gap-3 min-h-[56px] border-t border-neutral-100">
             <span className="w-12 pt-1 text-xs text-neutral-400">{String(h).padStart(2, '0')}:00</span>
             <div className="flex-1 space-y-1 py-1">
               {evs.map((e) => (
                 <button key={e.id} onClick={() => onOpen(e)} className={`w-full text-left rounded-lg px-3 py-1.5 text-xs md:text-sm text-white ${toneClass(e.tone)}`}>
-                  {e.title} · {e.time}
+                  {e.title} · {formatTime(new Date(e.starts_at), locale)}
                 </button>
               ))}
             </div>
@@ -289,13 +356,12 @@ function EventEditForm({ event, onSaved, onCancel }) {
 
 function NewEventForm({ calendarId, userId, day, onCreated, onCancel }) {
   const { t } = useI18n()
-  const pad = (n) => String(n).padStart(2, '0')
-  const today = new Date()
-  const base = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(day || today.getDate())}`
+  const base = dateKey(day || new Date())
   const [title, setTitle] = useState('')
   const [start, setStart] = useState(`${base}T09:00`)
   const [end, setEnd] = useState(`${base}T10:00`)
   const [location, setLocation] = useState('')
+  const [reminder, setReminder] = useState(10)
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState(null)
   const input = 'w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:border-neutral-900'
@@ -308,7 +374,7 @@ function NewEventForm({ calendarId, userId, day, onCreated, onCancel }) {
         location: location || null,
         starts_at: new Date(start).toISOString(),
         ends_at: new Date(end).toISOString(),
-        color_tone: 'bg-neutral-600', reminder_minutes: 10,
+        color_tone: 'bg-neutral-600', reminder_minutes: Number(reminder),
       })
       onCreated(row)
     } catch (ex) { setErr(ex.message) } finally { setBusy(false) }
@@ -322,6 +388,12 @@ function NewEventForm({ calendarId, userId, day, onCreated, onCancel }) {
         <input className={input} type="datetime-local" required value={start} onChange={(e) => setStart(e.target.value)} />
         <input className={input} type="datetime-local" required value={end} onChange={(e) => setEnd(e.target.value)} />
       </div>
+      <label className="flex items-center justify-between text-sm text-neutral-700">
+        {t('reminder')}
+        <select className={input + ' w-auto'} value={reminder} onChange={(e) => setReminder(e.target.value)}>
+          {[0, 5, 10, 15, 30, 60].map((m) => <option key={m} value={m}>{m} min</option>)}
+        </select>
+      </label>
       {err && <p className="text-sm font-medium text-neutral-900">{err}</p>}
       <div className="flex gap-2">
         <button type="button" onClick={onCancel} className="flex-1 py-2 rounded-xl bg-neutral-100 text-sm">{t('cancel')}</button>
@@ -334,7 +406,7 @@ function NewEventForm({ calendarId, userId, day, onCreated, onCancel }) {
 export default function App({ user }) {
   const { t, locale, lang } = useI18n()
   const [tab, setTab] = useState('month')
-  const [selected, setSelected] = useState(new Date().getDate())
+  const [selected, setSelected] = useState(() => startOfDay(new Date()))
   const [openEvent, setOpenEvent] = useState(null)
   const [adding, setAdding] = useState(false)
   const [langOpen, setLangOpen] = useState(false)
@@ -377,7 +449,14 @@ export default function App({ user }) {
   const activeCalendar = calendars.find((c) => c.id === activeId) || calendar || calendars[0] || null
   const canWrite = activeCalendar ? activeCalendar.my_role !== 'reader' : false
 
-  const dayEvents = events.filter((e) => e.date === selected)
+  const dayEvents = events.filter((e) => e.dateKey === dateKey(selected))
+  // Moves the selection by one month, week or day, depending on the active view.
+  const step = (dir) => setSelected((d) => (
+    tab === 'month' ? addMonths(d, dir) : addDays(d, tab === 'week' ? 7 * dir : dir)
+  ))
+  const navLabel = tab === 'month' ? formatMonth(selected, locale)
+    : tab === 'week' ? formatWeekRange(selected, locale)
+    : formatDay(selected, locale)
   const calendarNameOf = (id) => {
     const c = calendars.find((x) => x.id === id)
     if (!c || c.my_role === 'owner') return null
@@ -423,9 +502,9 @@ export default function App({ user }) {
       <div className="relative w-full md:max-w-3xl lg:max-w-5xl md:h-[min(90vh,820px)] min-h-screen md:min-h-0 bg-white md:rounded-[32px] md:shadow-xl overflow-hidden flex flex-col">
         <header className="px-4 md:px-10 pt-5 md:pt-8 pb-3 flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-xs md:text-sm text-neutral-500 truncate">{t('monthName')} {t('year')}{activeCalendar && activeCalendar.my_role !== 'owner' ? ` · ${activeCalendar.name}${activeCalendar.owner_name ? ` (${activeCalendar.owner_name})` : ''}` : ''}</p>
+            <p className="text-xs md:text-sm text-neutral-500 truncate">{t('calendar')}{activeCalendar && activeCalendar.my_role !== 'owner' ? ` · ${activeCalendar.name}${activeCalendar.owner_name ? ` (${activeCalendar.owner_name})` : ''}` : ''}</p>
             <h1 className="text-2xl md:text-3xl font-semibold text-neutral-900 truncate">
-              {tab === 'day' ? `${selected} ${t('monthName').toLowerCase()}` : t('calendar')}
+              {tab === 'events' ? t('events') : navLabel}
             </h1>
           </div>
           <div className="flex items-center gap-3 shrink-0">
@@ -445,13 +524,12 @@ export default function App({ user }) {
         {loadError && <p className="px-5 md:px-10 pt-3 text-sm font-medium text-neutral-900">{loadError}</p>}
 
         <main className="flex-1 overflow-y-auto px-5 md:px-10 py-4 md:py-6">
-          {tab === 'month' && <MonthView events={events} selected={selected} setSelected={setSelected} onOpen={setOpenEvent} calendarName={calendarNameOf} />}
-          {(tab === 'day' || tab === 'week') && (
-            <div className={tab === 'week' ? 'md:grid md:grid-cols-2 md:gap-6' : ''}>
-              <Timeline dayEvents={dayEvents} onOpen={setOpenEvent} />
-              {tab === 'week' && <Timeline dayEvents={events.filter((e) => e.date === selected + 1)} onOpen={setOpenEvent} />}
-            </div>
+          {tab !== 'events' && (
+            <Navigator label={navLabel} onPrev={() => step(-1)} onNext={() => step(1)} onToday={() => setSelected(startOfDay(new Date()))} />
           )}
+          {tab === 'month' && <MonthView events={events} selected={selected} onSelect={setSelected} onOpen={setOpenEvent} calendarName={calendarNameOf} />}
+          {tab === 'week' && <WeekList events={events} selected={selected} onOpen={setOpenEvent} calendarName={calendarNameOf} />}
+          {tab === 'day' && <Timeline dayEvents={dayEvents} onOpen={setOpenEvent} />}
           {tab === 'events' && (
             <ul className="grid gap-2 md:grid-cols-2 md:gap-3">
               {events.map((e) => (
