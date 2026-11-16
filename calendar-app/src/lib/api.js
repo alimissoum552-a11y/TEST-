@@ -265,7 +265,7 @@ export async function askAssistant(messages, timezone, locale) {
 // Latest messages of a calendar, oldest first.
 export async function listMessages(calendarId) {
   const { data, error } = await supabase
-    .from('messages').select('id, calendar_id, user_id, content, created_at')
+    .from('messages').select('id, calendar_id, user_id, content, created_at, is_ai')
     .eq('calendar_id', calendarId).order('created_at', { ascending: false }).limit(100)
   if (error) throw error
   return (data || []).reverse()
@@ -274,7 +274,7 @@ export async function listMessages(calendarId) {
 export async function sendMessage(calendarId, userId, content) {
   const { data, error } = await supabase
     .from('messages').insert({ calendar_id: calendarId, user_id: userId, content })
-    .select('id, calendar_id, user_id, content, created_at').single()
+    .select('id, calendar_id, user_id, content, created_at, is_ai').single()
   if (error) throw error
   return data
 }
@@ -291,4 +291,40 @@ export async function getNamesByIds(ids) {
     .from('profiles').select('id, display_name, email').in('id', ids)
   if (error) throw error
   return data || []
+}
+
+// ---- AI in the team chat ----
+// Whether the AI is switched on for this calendar's chat. Readable by members.
+export async function getChatAi(calendarId) {
+  const { data, error } = await supabase
+    .from('calendars').select('chat_ai_enabled').eq('id', calendarId).maybeSingle()
+  if (error) throw error
+  return Boolean(data?.chat_ai_enabled)
+}
+
+// Owner only: enforced by the calendars_own row policy. Other roles update nothing.
+export async function setChatAi(calendarId, enabled) {
+  const { data, error } = await supabase
+    .from('calendars').update({ chat_ai_enabled: enabled }).eq('id', calendarId).select('chat_ai_enabled')
+  if (error) throw error
+  if (!data?.length) throw new Error('not_allowed')
+  return Boolean(data[0].chat_ai_enabled)
+}
+
+// Asks the AI to answer the latest chat message that mentions it. The reply arrives as a chat message (Realtime).
+export async function askChatAi(calendarId) {
+  const { data, error } = await supabase.functions.invoke('chat-ai', { body: { calendar_id: calendarId } })
+  if (error) {
+    let code = 'server_error'
+    try { code = (await error.context.json()).error || code } catch { /* no JSON body */ }
+    throw new Error(code)
+  }
+  return data
+}
+
+export async function getChatNotes(calendarId) {
+  const { data, error } = await supabase
+    .from('chat_ai_notes').select('content, updated_at').eq('calendar_id', calendarId).maybeSingle()
+  if (error) throw error
+  return data
 }
