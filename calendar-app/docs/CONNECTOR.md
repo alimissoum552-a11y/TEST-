@@ -6,7 +6,7 @@ Read-only. Claude can read your calendars and free times; it cannot create, move
 Server address (production):
 
 ```
-https://oybvllumenwbzekgxjtz.supabase.co/functions/v1/mcp
+https://collyo.app/mcp
 ```
 
 ---

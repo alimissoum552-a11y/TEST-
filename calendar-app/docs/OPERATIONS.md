@@ -87,6 +87,13 @@ curl -s -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
 
 ---
 
+### Public address of the connector
+
+`https://collyo.app/mcp` is rewritten to the `mcp` function by `calendar-app/vercel.json`. The function reads its public
+address from the secret `MCP_PUBLIC_URL` (`https://collyo.app/mcp`) and announces it in the protected-resource metadata
+and in the OAuth challenge. Changing the address needs both: the rewrite and the secret, then a redeploy of the function
+and of the front end.
+
 ### OAuth server (Claude connector)
 
 Enabled on the project through the Management API (`PATCH /v1/projects/<ref>/config/auth`):
