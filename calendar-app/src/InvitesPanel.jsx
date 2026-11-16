@@ -9,6 +9,8 @@ export default function InvitesPanel({ onAnswered }) {
   const [invites, setInvites] = useState([])
   const [busy, setBusy] = useState(null)
   const [err, setErr] = useState(null)
+  // Closing hides the panel for this session only. Nothing is answered, so nothing changes on the account.
+  const [dismissed, setDismissed] = useState(false)
 
   const load = () => listMyInvites().then(setInvites).catch((ex) => setErr(ex.message))
   useEffect(() => { load() }, [])
@@ -22,12 +24,15 @@ export default function InvitesPanel({ onAnswered }) {
     } catch (ex) { setErr(ex.message) } finally { setBusy(null) }
   }
 
-  if (!invites.length && !err) return null
+  if (dismissed || (!invites.length && !err)) return null
 
   return (
     <div className="absolute inset-0 z-20 flex items-end sm:items-center justify-center bg-black/40">
       <div className="w-full sm:max-w-md bg-white rounded-t-3xl sm:rounded-3xl p-6 md:p-8 shadow-xl space-y-4 max-h-[90%] overflow-y-auto">
-        <h3 className="text-lg font-semibold text-neutral-900">{t('invitesTitle')}</h3>
+        <div className="flex items-center justify-between gap-3">
+          <h3 className="text-lg font-semibold text-neutral-900">{t('invitesTitle')}</h3>
+          <button type="button" onClick={() => setDismissed(true)} className="text-sm text-neutral-500 hover:text-neutral-900">{t('close')}</button>
+        </div>
         {err && <p className="text-sm font-medium text-neutral-900">{err}</p>}
         <ul className="space-y-3">
           {invites.map((inv) => (

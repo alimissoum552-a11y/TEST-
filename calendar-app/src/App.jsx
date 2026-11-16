@@ -166,7 +166,8 @@ function EventDetail({ event, onClose, onDelete, onSave }) {
 }
 
 // Prev / next / today bar shared by the month, week and day views.
-function Navigator({ label, onPrev, onNext, onToday }) {
+// The period is already in the page title, so the bar only holds the controls.
+function Navigator({ onPrev, onNext, onToday }) {
   const { t } = useI18n()
   const rtl = typeof document !== 'undefined' && document.documentElement.dir === 'rtl'
   const btn = 'h-9 w-9 rounded-full text-neutral-700 hover:bg-neutral-100 text-lg leading-none'
@@ -176,7 +177,6 @@ function Navigator({ label, onPrev, onNext, onToday }) {
         <button type="button" onClick={onPrev} aria-label={t('prev')} className={btn}>{rtl ? '›' : '‹'}</button>
         <button type="button" onClick={onNext} aria-label={t('next')} className={btn}>{rtl ? '‹' : '›'}</button>
       </div>
-      <h2 className="min-w-0 truncate text-sm md:text-base font-medium text-neutral-800">{label}</h2>
       <button type="button" onClick={onToday} className="shrink-0 px-3 py-1.5 rounded-full text-sm bg-neutral-100 hover:bg-neutral-200 text-neutral-900">{t('today')}</button>
     </div>
   )
@@ -525,7 +525,7 @@ export default function App({ user }) {
 
         <main className="flex-1 overflow-y-auto px-5 md:px-10 py-4 md:py-6">
           {tab !== 'events' && (
-            <Navigator label={navLabel} onPrev={() => step(-1)} onNext={() => step(1)} onToday={() => setSelected(startOfDay(new Date()))} />
+            <Navigator onPrev={() => step(-1)} onNext={() => step(1)} onToday={() => setSelected(startOfDay(new Date()))} />
           )}
           {tab === 'month' && <MonthView events={events} selected={selected} onSelect={setSelected} onOpen={setOpenEvent} calendarName={calendarNameOf} />}
           {tab === 'week' && <WeekList events={events} selected={selected} onOpen={setOpenEvent} calendarName={calendarNameOf} />}
