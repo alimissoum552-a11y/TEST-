@@ -103,6 +103,8 @@ Deno.serve(async (req) => {
   })
   const { data: { user } } = await supa.auth.getUser(token)
   if (!user) return json({ error: 'invalid_token' }, 401, { 'WWW-Authenticate': `${challenge}, error="invalid_token"` })
+  // Only tokens issued through the OAuth server (they carry a client_id). The app's own sign-in tokens do not.
+  if (!oauthClientId(token)) return json({ error: 'invalid_token' }, 401, { 'WWW-Authenticate': `${challenge}, error="invalid_token"` })
 
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405)
 
@@ -242,6 +244,20 @@ function clampInt(v: unknown, fallback: number, min: number, max: number): numbe
 const toIso = (i: Interval) => ({ start: new Date(i.start).toISOString(), end: new Date(i.end).toISOString() })
 
 // ---- JSON-RPC helpers ----
+
+// Reads the client_id claim of a JWT. The signature was already checked by getUser(); this only reads the payload.
+function oauthClientId(token: string): string | null {
+  try {
+    const payload = JSON.parse(new TextDecoder().decode(base64url(token.split('.')[1])))
+    return typeof payload.client_id === 'string' && payload.client_id ? payload.client_id : null
+  } catch {
+    return null
+  }
+}
+function base64url(s: string): Uint8Array {
+  const b64 = s.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(s.length / 4) * 4, '=')
+  return Uint8Array.from(atob(b64), (c) => c.charCodeAt(0))
+}
 
 function rpcResult(id: unknown, result: unknown) {
   return json({ jsonrpc: '2.0', id, result })

@@ -328,3 +328,15 @@ export async function getChatNotes(calendarId) {
   if (error) throw error
   return data
 }
+
+// ---- Connected apps (OAuth grants) ----
+export async function listMyGrants() {
+  const { data, error } = await supabase.auth.oauth.listGrants()
+  if (error) throw error
+  return data || []
+}
+
+export async function revokeMyGrant(clientId) {
+  const { error } = await supabase.auth.oauth.revokeGrant({ clientId })
+  if (error) throw error
+}

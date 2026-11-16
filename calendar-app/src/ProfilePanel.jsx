@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useI18n } from './i18n/index.jsx'
 import Avatar from './Avatar.jsx'
-import { getMyProfile, uploadAvatar, removeAvatar } from './lib/api.js'
+import { getMyProfile, uploadAvatar, removeAvatar, listMyGrants, revokeMyGrant } from './lib/api.js'
 
 // Lets the user see their avatar, change it to a photo, or remove it.
 export default function ProfilePanel({ user, onClose, onChanged }) {
@@ -10,10 +10,20 @@ export default function ProfilePanel({ user, onClose, onChanged }) {
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState(null)
   const fileRef = useRef(null)
+  const [grants, setGrants] = useState(null)
 
   useEffect(() => {
     getMyProfile(user.id).then(setProfile).catch((ex) => setMsg({ err: true, text: ex.message }))
   }, [user.id])
+
+  useEffect(() => {
+    listMyGrants().then(setGrants).catch(() => setGrants([]))
+  }, [user.id])
+
+  async function revoke(g) {
+    try { await revokeMyGrant(g.client.id); setGrants((l) => l.filter((x) => x.client.id !== g.client.id)) }
+    catch (ex) { setMsg({ err: true, text: ex.message }) }
+  }
 
   async function onFile(e) {
     const file = e.target.files?.[0]
@@ -69,6 +79,19 @@ export default function ProfilePanel({ user, onClose, onChanged }) {
             </button>
           )}
         </div>
+
+        <section className="space-y-2">
+          <h4 className="text-xs font-medium uppercase tracking-wide text-neutral-500">{t('connectedApps')}</h4>
+          {grants && grants.length === 0 && <p className="text-sm text-neutral-500">{t('noConnectedApps')}</p>}
+          <ul className="divide-y divide-neutral-100">
+            {(grants || []).map((g) => (
+              <li key={g.client.id} className="flex items-center justify-between gap-3 py-2">
+                <span className="min-w-0 truncate text-sm text-neutral-900">{g.client.name || t('consentUnknownApp')}</span>
+                <button type="button" onClick={() => revoke(g)} className="shrink-0 text-xs text-neutral-700 underline underline-offset-2">{t('revokeAccess')}</button>
+              </li>
+            ))}
+          </ul>
+        </section>
 
         {msg && <p className={`text-sm ${msg.err ? 'font-medium text-neutral-900' : 'text-neutral-600'}`}>{msg.text}</p>}
         <button onClick={onClose} className="w-full py-2 rounded-xl bg-neutral-100 text-sm">{t('close')}</button>

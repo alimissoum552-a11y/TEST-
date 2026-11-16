@@ -51,6 +51,7 @@ happened once with `chat_ai_notes` (fixed in migration 011).
 | `send-reminders` | pg_cron, every minute | `x-cron-secret` header | Reminder e-mails for due events |
 | `assistant` | App, assistant panel | User JWT | Personal read-only assistant |
 | `chat-ai` | App, when a member mentions the AI | User JWT | AI reply and notes in the team chat |
+| `mcp` | Claude connector (MCP client) | OAuth access token, checked by the function | Read-only calendar tools. Deploy with `--no-verify-jwt` so the function returns the OAuth challenge itself. |
 
 Deploy one function (the CLI asks for confirmation in agent mode; `--yes` confirms that one deploy):
 
@@ -85,6 +86,17 @@ curl -s -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
 ```
 
 ---
+
+### OAuth server (Claude connector)
+
+Enabled on the project through the Management API (`PATCH /v1/projects/<ref>/config/auth`):
+`oauth_server_enabled: true`, `oauth_server_allow_dynamic_registration: true`,
+`oauth_server_authorization_path: "/#/oauth/consent"`. Discovery:
+`https://<ref>.supabase.co/.well-known/oauth-authorization-server/auth/v1`. The MCP protected-resource metadata is at
+`https://<ref>.supabase.co/functions/v1/mcp/metadata`. Check both after any auth change.
+
+Test clients created by dynamic registration are removed in the Supabase dashboard. Do not delete rows of the `auth`
+schema by SQL.
 
 ## 3. Scheduled job: reminders
 

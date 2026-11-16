@@ -49,6 +49,8 @@ See `docs/OPERATIONS.md` for deploy and secrets, and `docs/AI.md` for the AI rul
       and the proposal-and-confirm flow are not built. The chat AI and the assistant do not depend on S7 and S8
       (entitlements, metering); they are capped per day only. This was a deliberate choice; see `docs/AI.md`, section 8.
 - [~] **S3. Reminders**: sent once by e-mail. Not yet in the user's time zone: the mail shows UTC.
+- [~] **Claude connector (read-only MCP)**: OAuth server, consent page, four read-only tools, revocation in the profile.
+      Built and tested with direct requests. Still to do: the end-to-end test inside claude.ai by the owner.
 
 ### Corrections to the previous version of this file
 

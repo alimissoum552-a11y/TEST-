@@ -43,6 +43,8 @@ a project document.
   "is typing", @mentions. Readers read; writers write.
 - **AI assistant** (menu **AI**): answers questions about your calendars and suggests
   free times. Read-only. Requires accepting the AI policy first.
+- **Claude connector**: connect Collyo to Claude with your own account. You approve it on a consent screen, and you
+  can revoke it in your profile. Read-only: calendars, own events with titles, busy times of shared calendars.
 - **AI in the team chat**: switched on only by the calendar owner. Replies when a
   member mentions @AI (or @IA, @KI). Keeps shared notes of decisions and tasks.
 - **Languages**: English, French, Spanish, German, Arabic (right to left), Portuguese.
@@ -121,7 +123,8 @@ Every table has row-level security enabled. Roles on a calendar: `owner`,
 `administrator`, `contributor`, `reader`. The permission table, checked against the
 policies, is in [calendar-app/docs/AI.md](calendar-app/docs/AI.md), section 2.
 
-Edge Functions: `send-invite`, `send-reminders`, `assistant`, `chat-ai`.
+Edge Functions: `send-invite`, `send-reminders`, `assistant`, `chat-ai`, `mcp` (Claude connector). The OAuth server
+settings and the connector are described in [calendar-app/docs/OPERATIONS.md](calendar-app/docs/OPERATIONS.md).
 
 ## Deployment
 
