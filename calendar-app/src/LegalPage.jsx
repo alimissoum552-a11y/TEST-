@@ -21,7 +21,7 @@ export default function LegalPage({ kind, onBack }) {
             <p className="text-sm leading-relaxed text-neutral-700">{s.p}</p>
           </section>
         ))}
-        <p className="text-xs text-neutral-400">{t('draftNotice')}</p>
+        <p className="text-xs text-neutral-400">© {OPERATOR.name}</p>
       </article>
     </div>
   )

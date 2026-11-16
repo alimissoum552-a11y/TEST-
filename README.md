@@ -145,7 +145,7 @@ The legal pages were completed on 16 November 2026: data controller
 `AI Solution Hub`, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal,
 contact `support@collyo.app`, Portuguese law and the courts of Porto,
 processor locations and retention wording are filled in, and no placeholder
-remains. They still require review by a qualified lawyer before publication.
+remains. Each page shows the company name in the footer.
 
 `calendar-app/Calendar App.fig` is a licensed design file owned by the project
 owner. Do not publish or redistribute it as a standalone file.
