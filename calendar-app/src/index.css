@@ -13,3 +13,29 @@
 }
 .bell-ring { transform-origin: 50% 10%; animation: bell-ring 0.9s ease-in-out 2; }
 @media (prefers-reduced-motion: reduce) { .bell-ring { animation: none; } }
+
+/* AI identity: while the assistant writes, a light sweeps around the sparkle
+   and the disc pulses softly. Motion is disabled for reduced-motion users. */
+@keyframes ai-sweep-spin { to { transform: rotate(360deg); } }
+@keyframes ai-soft-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+.ai-rays {
+  background: repeating-conic-gradient(from 0deg,
+    rgba(23, 23, 23, 0.38) 0deg 4deg,
+    transparent 4deg 30deg);
+  -webkit-mask-image: radial-gradient(circle, transparent 42%, #000 58%, #000 82%, transparent 96%);
+  mask-image: radial-gradient(circle, transparent 42%, #000 58%, #000 82%, transparent 96%);
+}
+.ai-sweep {
+  background: conic-gradient(from 0deg,
+    rgba(23, 23, 23, 0.85) 0deg 26deg,
+    rgba(23, 23, 23, 0.15) 40deg,
+    transparent 70deg 360deg);
+  -webkit-mask-image: radial-gradient(circle, transparent 40%, #000 56%, #000 84%, transparent 98%);
+  mask-image: radial-gradient(circle, transparent 40%, #000 56%, #000 84%, transparent 98%);
+  animation: ai-sweep-spin 1.8s linear infinite;
+}
+.ai-pulse { animation: ai-soft-pulse 1.5s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .ai-sweep { animation: none; opacity: 0.3; }
+  .ai-pulse { animation: none; }
+}

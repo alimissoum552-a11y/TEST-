@@ -13,6 +13,7 @@ const RTL = new Set(['ar'])
 
 const DICT = {
   en: {
+    chatAiName: "AI assistant",
     calendars: "Calendars",
     readOnly: "Read only",
     cancelInvite: "Cancel",
@@ -88,7 +89,6 @@ const DICT = {
     chatAiThinking: "AI is replying…",
     chatAiNotes: "Shared notes",
     chatAiNoNotes: "No notes yet.",
-    chatAiName: "AI",
     chatAiFailed: "AI could not reply. Please try again.",
     chatAiDisabled: "AI is off in this chat.",
     consentTitle: "Allow access to your calendar?",
@@ -150,6 +150,7 @@ const DICT = {
     monthName: 'September', year: '2026', save: 'Save', description: 'Description',
   },
   fr: {
+    chatAiName: "Assistant IA",
     calendars: "Calendriers",
     readOnly: "Lecture seule",
     cancelInvite: "Annuler",
@@ -225,7 +226,6 @@ const DICT = {
     chatAiThinking: "L’IA répond…",
     chatAiNotes: "Notes partagées",
     chatAiNoNotes: "Pas encore de notes.",
-    chatAiName: "IA",
     chatAiFailed: "L’IA n’a pas pu répondre. Réessayez.",
     chatAiDisabled: "L’IA est désactivée dans cette discussion.",
     consentTitle: "Autoriser l’accès à votre calendrier ?",
@@ -287,6 +287,7 @@ const DICT = {
     monthName: 'Septembre', year: '2026', save: 'Enregistrer', description: 'Description',
   },
   es: {
+    chatAiName: "Asistente IA",
     calendars: "Calendarios",
     readOnly: "Solo lectura",
     cancelInvite: "Anular",
@@ -362,7 +363,6 @@ const DICT = {
     chatAiThinking: "La IA está respondiendo…",
     chatAiNotes: "Notas compartidas",
     chatAiNoNotes: "Aún no hay notas.",
-    chatAiName: "IA",
     chatAiFailed: "La IA no pudo responder. Inténtalo de nuevo.",
     chatAiDisabled: "La IA está desactivada en esta conversación.",
     consentTitle: "¿Permitir el acceso a tu calendario?",
@@ -424,6 +424,7 @@ const DICT = {
     monthName: 'Septiembre', year: '2026', save: 'Guardar', description: 'Descripción',
   },
   de: {
+    chatAiName: "KI-Assistent",
     calendars: "Kalender",
     readOnly: "Nur Lesen",
     cancelInvite: "Abbrechen",
@@ -499,7 +500,6 @@ const DICT = {
     chatAiThinking: "KI antwortet…",
     chatAiNotes: "Gemeinsame Notizen",
     chatAiNoNotes: "Noch keine Notizen.",
-    chatAiName: "KI",
     chatAiFailed: "Die KI konnte nicht antworten. Bitte erneut versuchen.",
     chatAiDisabled: "Die KI ist in diesem Chat deaktiviert.",
     consentTitle: "Zugriff auf deinen Kalender erlauben?",
@@ -561,6 +561,7 @@ const DICT = {
     monthName: 'September', year: '2026', save: 'Speichern', description: 'Beschreibung',
   },
   ar: {
+    chatAiName: "مساعد الذكاء الاصطناعي",
     calendars: "التقاويم",
     readOnly: "للقراءة فقط",
     cancelInvite: "إلغاء",
@@ -636,7 +637,6 @@ const DICT = {
     chatAiThinking: "الذكاء الاصطناعي يرد…",
     chatAiNotes: "ملاحظات مشتركة",
     chatAiNoNotes: "لا توجد ملاحظات بعد.",
-    chatAiName: "AI",
     chatAiFailed: "تعذر على الذكاء الاصطناعي الرد. حاول مرة أخرى.",
     chatAiDisabled: "الذكاء الاصطناعي متوقف في هذه المحادثة.",
     consentTitle: "السماح بالوصول إلى تقويمك؟",
@@ -698,6 +698,7 @@ const DICT = {
     monthName: 'سبتمبر', year: '2026', save: 'حفظ', description: 'الوصف',
   },
   pt: {
+    chatAiName: "Assistente de IA",
     calendars: "Calendários",
     readOnly: "Somente leitura",
     cancelInvite: "Cancelar",
@@ -786,7 +787,6 @@ const DICT = {
     chatAiThinking: "A IA está a responder…",
     chatAiNotes: "Notas partilhadas",
     chatAiNoNotes: "Ainda sem notas.",
-    chatAiName: "IA",
     chatAiFailed: "A IA não conseguiu responder. Tente novamente.",
     chatAiDisabled: "A IA está desativada nesta conversa.",
     consentTitle: "Permitir o acesso ao seu calendário?",

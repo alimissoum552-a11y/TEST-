@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useI18n } from './i18n/index.jsx'
 import Avatar from './Avatar.jsx'
+import AiAvatar from './AiAvatar.jsx'
+import SparkleIcon from './SparkleIcon.jsx'
 import { supabase } from './lib/supabase.js'
 import {
   listMembers, listMessages, sendMessage, deleteMessage, getNamesByIds,
@@ -14,18 +16,6 @@ const TYPING_SEND_MS = 2000
 const TYPING_HIDE_MS = 3000
 const MENTION = /@(ai|ia|ki)\b/i
 const AI_ERRORS = { ai_disabled: 'chatAiDisabled', daily_limit: 'assistantLimit', assistant_not_configured: 'assistantNotConfigured' }
-
-// Sparkle icon, same drawing as the menu icon. Filled and pulsing when the AI is on; outline when off.
-function Sparkle({ on }) {
-  return (
-    <svg viewBox="0 0 24 24" fill={on ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.7"
-      strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5" aria-hidden="true">
-      <path d="M9.5 4.5c.4 3 2.1 4.8 5.1 5.2-3 .4-4.7 2.2-5.1 5.2-.4-3-2.1-4.8-5.1-5.2 3-.4 4.7-2.2 5.1-5.2z" />
-      <path d="M18 3.5c.2 1.4.9 2.1 2.3 2.3-1.4.2-2.1.9-2.3 2.3-.2-1.4-.9-2.1-2.3-2.3 1.4-.2 2.1-.9 2.3-2.3z" />
-      <path d="M17.5 14.5c.15 1 .6 1.45 1.6 1.6-1 .15-1.45.6-1.6 1.6-.15-1-.6-1.45-1.6-1.6 1-.15 1.45-.6 1.6-1.6z" />
-    </svg>
-  )
-}
 
 export default function ChatPanel({ calendarId, user, myHandle, canWrite, isOwner, onClose }) {
   const { t, locale } = useI18n()
@@ -205,7 +195,7 @@ export default function ChatPanel({ calendarId, user, myHandle, canWrite, isOwne
             <button type="button" onClick={toggleAi} aria-pressed={aiOn}
               aria-label={aiOn ? t('chatAiOn') : t('chatAiOff')} title={aiOn ? t('chatAiOn') : t('chatAiOff')}
               className={`rounded-full p-1 transition-colors ${aiOn ? 'text-neutral-900 motion-safe:animate-pulse drop-shadow-[0_0_6px_rgba(23,23,23,0.55)]' : 'text-neutral-400 hover:text-neutral-800'}`}>
-              <Sparkle on={aiOn} />
+              <SparkleIcon className="h-5 w-5" filled={aiOn} />
             </button>
           )}
           <button type="button" onClick={onClose} className="text-sm text-neutral-500 hover:text-neutral-900">{t('close')}</button>
@@ -245,7 +235,7 @@ export default function ChatPanel({ calendarId, user, myHandle, canWrite, isOwne
           return (
             <div key={m.id} className="flex gap-3">
               {m.is_ai
-                ? <span aria-hidden="true" className="h-8 w-8 shrink-0 inline-flex items-center justify-center rounded-full border border-neutral-900 text-neutral-900"><Sparkle on={false} /></span>
+                ? <AiAvatar label={t('chatAiName')} />
                 : <Avatar name={label} email={label} url={null} />}
               <div className="min-w-0 flex-1">
                 <p className="text-xs text-neutral-500">
@@ -262,7 +252,12 @@ export default function ChatPanel({ calendarId, user, myHandle, canWrite, isOwne
             </div>
           )
         })}
-        {aiThinking && <p className="text-xs text-neutral-500 motion-safe:animate-pulse">{t('chatAiThinking')}</p>}
+        {aiThinking && (
+          <div className="flex items-center gap-3">
+            <AiAvatar active label={t('chatAiName')} />
+            <p className="text-xs text-neutral-500">{t('chatAiThinking')}</p>
+          </div>
+        )}
         <div ref={endRef} />
       </div>
 

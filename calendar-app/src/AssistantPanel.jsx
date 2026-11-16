@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import AiAvatar from './AiAvatar.jsx'
 import { useI18n } from './i18n/index.jsx'
 import { askAssistant, getAiAcceptedAt, acceptAssistantPolicy } from './lib/api.js'
 
@@ -70,16 +71,24 @@ export default function AssistantPanel({ user, onClose }) {
             <div className="flex-1 min-h-[12rem] overflow-y-auto space-y-3 pr-1">
               {messages.length === 0 && <p className="text-sm text-neutral-400">{t('assistantEmpty')}</p>}
               {messages.map((m, i) => (
-                <div key={i} className={m.role === 'user' ? 'ms-auto max-w-[85%]' : 'me-auto max-w-[90%]'}>
-                  <p className={`rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap ${m.role === 'user' ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-900'}`}>
-                    {m.content}
-                  </p>
-                  {m.role === 'assistant' && m.consulted?.length > 0 && (
-                    <p className="mt-1 text-xs text-neutral-500">{t('assistantConsulted')} {m.consulted.join(', ')}</p>
-                  )}
+                <div key={i} className={m.role === 'user' ? 'ms-auto max-w-[85%]' : 'flex items-start gap-2 me-auto max-w-[92%]'}>
+                  {m.role === 'assistant' && <AiAvatar size="sm" label={t('assistant')} />}
+                  <div className="min-w-0">
+                    <p className={`rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap ${m.role === 'user' ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-900'}`}>
+                      {m.content}
+                    </p>
+                    {m.role === 'assistant' && m.consulted?.length > 0 && (
+                      <p className="mt-1 text-xs text-neutral-500">{t('assistantConsulted')} {m.consulted.join(', ')}</p>
+                    )}
+                  </div>
                 </div>
               ))}
-              {busy && <p className="text-sm text-neutral-400">…</p>}
+              {busy && (
+                <div className="flex items-center gap-2">
+                  <AiAvatar active size="sm" label={t('assistant')} />
+                  <p className="text-sm text-neutral-400">…</p>
+                </div>
+              )}
               <div ref={endRef} />
             </div>
             {err && <p className="text-sm font-medium text-neutral-900">{err}</p>}
