@@ -6,6 +6,7 @@ six languages.
 
 **Live:** https://collyo.app (`www` redirects to the apex)
 **Domain:** `collyo.app` — Vercel hosting, Resend e-mail, Cloudflare DNS
+**Operator:** AI Solution Hub — Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal
 **Documentation updated:** 16 November 2026
 
 ## Stack
@@ -140,11 +141,11 @@ See [docs/ROADMAP.md](calendar-app/docs/ROADMAP.md) for the ordered steps and
 
 ## Legal notice
 
-The legal pages were completed on 16 November 2026: operator `Collyo`,
-contact `support@collyo.app`, processor locations and retention wording are
-filled in, and no placeholder remains. They still require review by a
-qualified lawyer before publication, and the registered company name and
-postal address must be added to the privacy policy once available.
+The legal pages were completed on 16 November 2026: data controller
+`AI Solution Hub`, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal,
+contact `support@collyo.app`, Portuguese law and the courts of Porto,
+processor locations and retention wording are filled in, and no placeholder
+remains. They still require review by a qualified lawyer before publication.
 
 `calendar-app/Calendar App.fig` is a licensed design file owned by the project
 owner. Do not publish or redistribute it as a standalone file.
