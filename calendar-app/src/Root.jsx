@@ -5,6 +5,7 @@ import { supabase, supabaseConfigured } from './lib/supabase.js'
 import LegalPage from './LegalPage.jsx'
 import { useLegalRoute, goBackFromLegal, parseRoute } from './router.js'
 import JoinPage from './JoinPage.jsx'
+import OAuthConsentPage from './OAuthConsentPage.jsx'
 
 // A pending invitation is kept in this browser until it is answered or dismissed.
 // That way it survives sign-out, sign-in, and the e-mail confirmation step of a new account.
@@ -25,7 +26,7 @@ export default function Root() {
     return () => window.removeEventListener('hashchange', f)
   }, [])
 
-  const routeInvite = parseRoute(hash).invite
+  const { invite: routeInvite, consent } = parseRoute(hash)
   const [pending, setPending] = useState(() => routeInvite || readPendingInvite())
   const [joinedCalendarId, setJoinedCalendarId] = useState(null)
   const [session, setSession] = useState(undefined) // undefined = loading
@@ -53,6 +54,7 @@ export default function Root() {
   if (session === undefined) return <div className="min-h-screen bg-neutral-200" />
   if (!supabaseConfigured) return <App user={null} />
   if (!session) return <AuthScreen />
+  if (consent) return <OAuthConsentPage key={consent} authorizationId={consent} />
   if (pending) {
     return (
       <JoinPage key={pending} inviteId={pending} user={session.user}
