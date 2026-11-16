@@ -18,6 +18,7 @@ responsive UI in six languages.
 | [calendar-app/docs/PRODUCT.md](calendar-app/docs/PRODUCT.md) | Product | What the app is for, what is delivered, what is not |
 | [calendar-app/docs/AI.md](calendar-app/docs/AI.md) | Product, legal, engineering | AI features, who can do what, data flows, limits, open gaps |
 | [calendar-app/docs/OPERATIONS.md](calendar-app/docs/OPERATIONS.md) | Engineering | Migrations, functions, secrets, cron job, deploys |
+| [calendar-app/docs/CONNECTOR.md](calendar-app/docs/CONNECTOR.md) | Users | How to add Collyo to Claude as a custom connector, approve it, revoke it |
 | [calendar-app/docs/ROADMAP.md](calendar-app/docs/ROADMAP.md) | Everyone | Ordered steps S1 to S30 with their status |
 | [calendar-app/AGENTS.md](calendar-app/AGENTS.md), [CLAUDE.md](calendar-app/CLAUDE.md) | AI coding agents | Notes for the design file (Figma) |
 
