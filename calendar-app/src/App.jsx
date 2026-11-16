@@ -7,6 +7,7 @@ import InvitesPanel from './InvitesPanel.jsx'
 import AssistantPanel from './AssistantPanel.jsx'
 import ChatPanel from './ChatPanel.jsx'
 import ConnectorGuide from './ConnectorGuide.jsx'
+import NotificationBell from './NotificationBell.jsx'
 import Avatar from './Avatar.jsx'
 import { getMyProfile } from './lib/api.js'
 import { supabase } from './lib/supabase.js'
@@ -506,6 +507,9 @@ export default function App({ user, initialCalendarId = null }) {
 
   async function signOut() { await supabase.auth.signOut() }
 
+  // A notification opens the chat of its calendar.
+  const openChatFor = (calendarId) => { setActiveId(calendarId); setChat(true) }
+
   return (
     <div className="min-h-screen bg-neutral-200 flex items-stretch md:items-center justify-center md:p-6">
       <div className="relative w-full md:max-w-3xl lg:max-w-5xl md:h-[min(90vh,820px)] min-h-screen md:min-h-0 bg-white md:rounded-[32px] md:shadow-xl overflow-hidden flex flex-col">
@@ -517,6 +521,7 @@ export default function App({ user, initialCalendarId = null }) {
             </h1>
           </div>
           <div className="flex items-center gap-3 shrink-0">
+            {user && <NotificationBell userId={user.id} onOpen={openChatFor} />}
             {user && (
               <button type="button" onClick={() => setProfileOpen(true)} aria-label={t('profile')} className="rounded-full p-0.5 hover:opacity-80">
                 <Avatar name={me?.display_name} email={me?.email || user.email} url={me?.avatar_url} />
@@ -628,8 +633,8 @@ export default function App({ user, initialCalendarId = null }) {
         )}
 
         {user && <InvitesPanel onAnswered={() => setReloadKey((k) => k + 1)} />}
-        {profileOpen && user && <ProfilePanel user={user} onClose={() => setProfileOpen(false)} onChanged={(url) => setMe((m) => ({ ...(m || {}), avatar_url: url }))} />}
-        {chat && user && activeCalendar && <ChatPanel key={activeCalendar.id} calendarId={activeCalendar.id} user={user} canWrite={canWrite} isOwner={activeCalendar.my_role === 'owner'} onClose={() => setChat(false)} />}
+        {profileOpen && user && <ProfilePanel user={user} onClose={() => setProfileOpen(false)} onChanged={(url) => setMe((m) => ({ ...(m || {}), avatar_url: url }))} onHandleChanged={(h) => setMe((m) => ({ ...(m || {}), handle: h }))} />}
+        {chat && user && activeCalendar && <ChatPanel key={activeCalendar.id} calendarId={activeCalendar.id} user={user} myHandle={me?.handle} canWrite={canWrite} isOwner={activeCalendar.my_role === 'owner'} onClose={() => setChat(false)} />}
         {connector && user && <ConnectorGuide onClose={() => setConnector(false)} />}
         {assistant && user && <AssistantPanel user={user} onClose={() => setAssistant(false)} />}
         {team && activeCalendar && <TeamPanel calendarId={activeCalendar.id} ownerId={activeCalendar.owner_id} onClose={() => setTeam(false)} />}

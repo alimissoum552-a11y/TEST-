@@ -7,7 +7,7 @@ responsive UI in six languages.
 
 **Live:** https://collyo.app (`www` redirects to the apex)
 **Domain:** `collyo.app`: Vercel hosting, Resend e-mail, Cloudflare DNS
-**Operator:** AI Solution Hub, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal
+**Operator:** AI Solution Hub®, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal
 **Documentation updated:** 16 November 2026
 
 ## Documentation
@@ -167,7 +167,7 @@ DMARC record `v=DMARC1; p=none;`.
 ## Legal notice
 
 The legal pages were completed on 16 November 2026: data controller
-`AI Solution Hub`, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal, contact
+`AI Solution Hub®`, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal, contact
 `support@collyo.app`, Portuguese law and the courts of Porto. They are drafts and
 must be reviewed by a qualified lawyer before the paid launch.
 

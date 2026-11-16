@@ -1,24 +1,37 @@
 import { useEffect, useRef, useState } from 'react'
 import { useI18n } from './i18n/index.jsx'
 import Avatar from './Avatar.jsx'
-import { getMyProfile, uploadAvatar, removeAvatar, listMyGrants, revokeMyGrant } from './lib/api.js'
+import { getMyProfile, uploadAvatar, removeAvatar, listMyGrants, revokeMyGrant, setMyHandle } from './lib/api.js'
 
 // Lets the user see their avatar, change it to a photo, or remove it.
-export default function ProfilePanel({ user, onClose, onChanged }) {
+export default function ProfilePanel({ user, onClose, onChanged, onHandleChanged }) {
   const { t } = useI18n()
   const [profile, setProfile] = useState(null)
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState(null)
   const fileRef = useRef(null)
   const [grants, setGrants] = useState(null)
+  const [handleInput, setHandleInput] = useState('')
+  const [hBusy, setHBusy] = useState(false)
+  const [hMsg, setHMsg] = useState(null)
 
   useEffect(() => {
-    getMyProfile(user.id).then(setProfile).catch((ex) => setMsg({ err: true, text: ex.message }))
+    getMyProfile(user.id).then((p) => { setProfile(p); setHandleInput(p.handle || '') }).catch((ex) => setMsg({ err: true, text: ex.message }))
   }, [user.id])
 
   useEffect(() => {
     listMyGrants().then(setGrants).catch(() => setGrants([]))
   }, [user.id])
+
+  async function saveHandle() {
+    setHBusy(true); setHMsg(null)
+    try {
+      const r = await setMyHandle(user.id, handleInput)
+      if (r.error) { setHMsg({ err: true, text: t(r.error) }); return }
+      setHandleInput(r.handle); setHMsg({ text: t('handleSaved') }); onHandleChanged?.(r.handle)
+    } catch (ex) { setHMsg({ err: true, text: ex.message }) }
+    finally { setHBusy(false) }
+  }
 
   async function revoke(g) {
     try { await revokeMyGrant(g.client.id); setGrants((l) => l.filter((x) => x.client.id !== g.client.id)) }
@@ -79,6 +92,19 @@ export default function ProfilePanel({ user, onClose, onChanged }) {
             </button>
           )}
         </div>
+
+        <section className="space-y-2">
+          <label htmlFor="handle-input" className="text-xs font-medium uppercase tracking-wide text-neutral-500">{t('handleLabel')}</label>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-neutral-500" aria-hidden="true">@</span>
+            <input id="handle-input" value={handleInput} maxLength={20} onChange={(e) => setHandleInput(e.target.value)}
+              className="flex-1 min-w-0 rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:border-neutral-900" />
+            <button type="button" onClick={saveHandle} disabled={hBusy}
+              className="shrink-0 px-3 py-2 rounded-xl bg-neutral-900 text-white text-sm disabled:opacity-50">{t('save')}</button>
+          </div>
+          <p className="text-xs text-neutral-500">{t('handleHint')}</p>
+          {hMsg && <p className={`text-xs ${hMsg.err ? 'font-medium text-neutral-900' : 'text-neutral-600'}`}>{hMsg.text}</p>}
+        </section>
 
         <section className="space-y-2">
           <h4 className="text-xs font-medium uppercase tracking-wide text-neutral-500">{t('connectedApps')}</h4>

@@ -47,7 +47,7 @@ export function subscribeToEvents(calendarId, onChange) {
 export async function listMembers(calendarId) {
   const { data, error } = await supabase
     .from('calendar_members')
-    .select('user_id, role, profiles(display_name, email)')
+    .select('user_id, role, profiles(display_name, email, handle)')
     .eq('calendar_id', calendarId)
   if (error) throw error
   return data
@@ -143,7 +143,7 @@ export async function removeAvatar(userId) {
 
 export async function getMyProfile(userId) {
   const { data, error } = await supabase
-    .from('profiles').select('display_name, email, avatar_url').eq('id', userId).single()
+    .from('profiles').select('display_name, email, avatar_url, handle').eq('id', userId).single()
   if (error) throw error
   return data
 }
@@ -288,7 +288,7 @@ export async function deleteMessage(messageId) {
 export async function getNamesByIds(ids) {
   if (!ids.length) return []
   const { data, error } = await supabase
-    .from('profiles').select('id, display_name, email').in('id', ids)
+    .from('profiles').select('id, display_name, email, handle').in('id', ids)
   if (error) throw error
   return data || []
 }
@@ -338,5 +338,51 @@ export async function listMyGrants() {
 
 export async function revokeMyGrant(clientId) {
   const { error } = await supabase.auth.oauth.revokeGrant({ clientId })
+  if (error) throw error
+}
+
+// ---- Handles and mentions ----
+// Sets the signed-in user's handle. Returns { ok } or { error: 'handleTaken' | 'handleInvalid' }.
+export async function setMyHandle(userId, handle) {
+  const clean = String(handle || '').trim().toLowerCase().replace(/^@/, '')
+  if (!/^[a-z0-9_]{3,20}$/.test(clean) || ['ai', 'ia', 'ki'].includes(clean)) return { error: 'handleInvalid' }
+  const { error } = await supabase.from('profiles').update({ handle: clean }).eq('id', userId)
+  if (error) {
+    if (error.code === '23505') return { error: 'handleTaken' }
+    if (error.code === '23514') return { error: 'handleInvalid' }
+    throw error
+  }
+  return { ok: true, handle: clean }
+}
+
+// The signed-in user's notifications, newest first.
+export async function listNotifications() {
+  const { data, error } = await supabase
+    .from('notifications').select('id, calendar_id, actor_id, created_at, read_at')
+    .order('created_at', { ascending: false }).limit(30)
+  if (error) throw error
+  return data || []
+}
+
+export async function markAllNotificationsRead() {
+  const { error } = await supabase
+    .from('notifications').update({ read_at: new Date().toISOString() }).is('read_at', null)
+  if (error) throw error
+}
+
+// Calls onInsert for every new notification addressed to this user (Realtime, RLS-filtered). Returns an unsubscribe.
+export function subscribeNotifications(userId, onInsert) {
+  const channel = supabase
+    .channel(`notifications:${userId}`)
+    .on('postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${userId}` },
+      (payload) => onInsert(payload.new))
+    .subscribe()
+  return () => supabase.removeChannel(channel)
+}
+
+export async function markNotificationRead(id) {
+  const { error } = await supabase
+    .from('notifications').update({ read_at: new Date().toISOString() }).eq('id', id).is('read_at', null)
   if (error) throw error
 }

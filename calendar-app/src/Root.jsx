@@ -6,6 +6,7 @@ import LegalPage from './LegalPage.jsx'
 import { useLegalRoute, goBackFromLegal, parseRoute } from './router.js'
 import JoinPage from './JoinPage.jsx'
 import OAuthConsentPage from './OAuthConsentPage.jsx'
+import Landing from './Landing.jsx'
 
 // A pending invitation is kept in this browser until it is answered or dismissed.
 // That way it survives sign-out, sign-in, and the e-mail confirmation step of a new account.
@@ -26,7 +27,7 @@ export default function Root() {
     return () => window.removeEventListener('hashchange', f)
   }, [])
 
-  const { invite: routeInvite, consent } = parseRoute(hash)
+  const { invite: routeInvite, consent, auth } = parseRoute(hash)
   const [pending, setPending] = useState(() => routeInvite || readPendingInvite())
   const [joinedCalendarId, setJoinedCalendarId] = useState(null)
   const [session, setSession] = useState(undefined) // undefined = loading
@@ -53,7 +54,8 @@ export default function Root() {
   if (legal) return <LegalPage kind={legal} onBack={goBackFromLegal} />
   if (session === undefined) return <div className="min-h-screen bg-neutral-200" />
   if (!supabaseConfigured) return <App user={null} />
-  if (!session) return <AuthScreen />
+  // Visitors who are not signed in see the landing page at the root; sign-in and sign-up routes open the form.
+  if (!session) return (routeInvite || consent || auth) ? <AuthScreen /> : <Landing />
   if (consent) return <OAuthConsentPage key={consent} authorizationId={consent} />
   if (pending) {
     return (

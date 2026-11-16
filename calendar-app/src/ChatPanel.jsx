@@ -3,7 +3,7 @@ import { useI18n } from './i18n/index.jsx'
 import Avatar from './Avatar.jsx'
 import { supabase } from './lib/supabase.js'
 import {
-  listMessages, sendMessage, deleteMessage, getNamesByIds,
+  listMembers, listMessages, sendMessage, deleteMessage, getNamesByIds,
   getChatAi, setChatAi, askChatAi, getChatNotes,
 } from './lib/api.js'
 
@@ -27,11 +27,13 @@ function Sparkle({ on }) {
   )
 }
 
-export default function ChatPanel({ calendarId, user, canWrite, isOwner, onClose }) {
+export default function ChatPanel({ calendarId, user, myHandle, canWrite, isOwner, onClose }) {
   const { t, locale } = useI18n()
   const myLabel = user.user_metadata?.display_name || user.email || ''
   const [messages, setMessages] = useState([])
   const [names, setNames] = useState({})
+  const [handles, setHandles] = useState({}) // user_id -> handle
+  const [candidates, setCandidates] = useState([]) // members who can be mentioned
   const [online, setOnline] = useState([])
   const [typing, setTyping] = useState({}) // user_id -> label
   const [text, setText] = useState('')
@@ -62,9 +64,23 @@ export default function ChatPanel({ calendarId, user, canWrite, isOwner, onClose
     const missing = [...new Set(messages.filter((m) => !m.is_ai).map((m) => m.user_id))].filter((id) => !names[id])
     if (!missing.length) return
     getNamesByIds(missing)
-      .then((rows) => setNames((prev) => ({ ...prev, ...Object.fromEntries(rows.map((r) => [r.id, r.display_name || r.email])) })))
+      .then((rows) => {
+        setNames((prev) => ({ ...prev, ...Object.fromEntries(rows.map((r) => [r.id, r.display_name || r.email])) }))
+        setHandles((prev) => ({ ...prev, ...Object.fromEntries(rows.map((r) => [r.id, r.handle])) }))
+      })
       .catch(() => {})
   }, [messages, names])
+
+  // Members who can be mentioned with @handle (autocomplete).
+  useEffect(() => {
+    let cancelled = false
+    listMembers(calendarId).then((rows) => {
+      if (cancelled) return
+      setCandidates((rows || []).filter((r) => r.profiles?.handle).map((r) => ({ id: r.user_id, handle: r.profiles.handle })))
+      setHandles((prev) => ({ ...prev, ...Object.fromEntries((rows || []).filter((r) => r.profiles?.handle).map((r) => [r.user_id, r.profiles.handle])) }))
+    }).catch(() => {})
+    return () => { cancelled = true }
+  }, [calendarId])
 
   // 3. Realtime: messages, presence, typing, the AI switch and the shared notes
   useEffect(() => {
@@ -159,7 +175,7 @@ export default function ChatPanel({ calendarId, user, canWrite, isOwner, onClose
 
   // @name is highlighted when it names the signed-in user.
   function render(content) {
-    const me = myLabel.toLowerCase()
+    const me = (myHandle || '').toLowerCase()
     return content.split(/(@[^\s@]{1,60})/g).map((part, i) => (
       part.startsWith('@') && me && part.slice(1).toLowerCase() === me
         ? <strong key={i} className="font-semibold underline underline-offset-2">{part}</strong>
@@ -168,6 +184,11 @@ export default function ChatPanel({ calendarId, user, canWrite, isOwner, onClose
   }
 
   const typingLabels = Object.values(typing).filter(Boolean)
+  // While typing @xyz, suggest members whose handle starts with xyz.
+  const partial = text.match(/@(\w*)$/)
+  const suggestions = partial
+    ? candidates.filter((c) => c.id !== user.id && c.handle.startsWith(partial[1].toLowerCase())).slice(0, 5)
+    : []
   const input = 'flex-1 min-w-0 rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:border-neutral-900'
 
   return (
@@ -229,6 +250,7 @@ export default function ChatPanel({ calendarId, user, canWrite, isOwner, onClose
               <div className="min-w-0 flex-1">
                 <p className="text-xs text-neutral-500">
                   <span className="font-medium text-neutral-800">{mine ? t('you') : label}</span>
+                  {!mine && handles[m.user_id] && <span className="text-neutral-400"> @{handles[m.user_id]}</span>}
                   {' · '}{new Date(m.created_at).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })}
                   {mine && (
                     <button type="button" onClick={() => remove(m)} aria-label={t('delete')}
@@ -247,6 +269,16 @@ export default function ChatPanel({ calendarId, user, canWrite, isOwner, onClose
       <footer className="px-5 pb-5 pt-2 border-t border-neutral-100 space-y-2">
         {typingLabels.length > 0 && (
           <p className="text-xs text-neutral-500">{typingLabels.join(', ')} {t('chatTyping')}</p>
+        )}
+        {suggestions.length > 0 && (
+          <ul className="flex flex-wrap gap-2" aria-label={t('mentionSuggest')}>
+            {suggestions.map((c) => (
+              <li key={c.id}>
+                <button type="button" onClick={() => setText(text.replace(/@\w*$/, `@${c.handle} `))}
+                  className="px-3 py-1 rounded-full bg-neutral-100 hover:bg-neutral-200 text-xs text-neutral-900">@{c.handle}</button>
+              </li>
+            ))}
+          </ul>
         )}
         {err && <p className="text-sm font-medium text-neutral-900">{err}</p>}
         {canWrite ? (

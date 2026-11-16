@@ -2,7 +2,7 @@
 // Operator identity and contact used by the legal pages.
 
 export const OPERATOR = {
-  name: 'AI Solution Hub',
+  name: 'AI Solution Hub®',
   address: 'Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal',
   email: 'support@collyo.app',
   updated: '16 November 2026',
@@ -26,7 +26,7 @@ export const PAGES = {
       { h: "11. Contact", p: "Questions: support@collyo.app." },
     ],
     privacy: [
-      { h: "1. Who we are", p: "Data controller: AI Solution Hub, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal. Contact: support@collyo.app." },
+      { h: "1. Who we are", p: "Data controller: AI Solution Hub®, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal. Contact: support@collyo.app." },
       { h: "2. Data we collect", p: "Account data: e-mail address and password (stored as a hash by our authentication provider). Profile data: display name and optional profile photo. Calendar data: calendars, events (title, description, location, start and end times, reminder), and the history of changes made to events. Sharing data: members, roles and invitations. Technical data: language preference stored in your browser." },
       { h: "3. Why we process it", p: "To provide the service you requested (creating and sharing calendars), to send invitation e-mails you trigger, to keep an activity history so changes can be reviewed and restored, and to keep the service secure. Legal basis under the GDPR: performance of a contract (Art. 6(1)(b)); legitimate interests in security (Art. 6(1)(f)); consent where you upload a photo (Art. 6(1)(a))." },
       { h: "4. Who can see your data", p: "Your own data is private by default. Calendar content is visible to the members of that calendar according to their role. Other members can see your display name and photo on a calendar you share. The history of a shared event is visible to the members of that calendar." },
@@ -64,7 +64,7 @@ export const PAGES = {
       { h: "11. Contact", p: "Questions : support@collyo.app." },
     ],
     privacy: [
-      { h: "1. Qui nous sommes", p: "Responsable du traitement : AI Solution Hub, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal. Contact : support@collyo.app." },
+      { h: "1. Qui nous sommes", p: "Responsable du traitement : AI Solution Hub®, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal. Contact : support@collyo.app." },
       { h: "2. Données collectées", p: "Données de compte : adresse e-mail et mot de passe (stocké sous forme de hachage par notre fournisseur d’authentification). Données de profil : nom affiché et photo de profil facultative. Données de calendrier : calendriers, événements (titre, description, lieu, heures de début et de fin, rappel) et historique des modifications. Données de partage : membres, rôles et invitations. Données techniques : préférence de langue stockée dans votre navigateur." },
       { h: "3. Finalités et bases légales", p: "Fournir le service demandé (création et partage de calendriers), envoyer les e-mails d’invitation que vous déclenchez, conserver un historique d’activité pour consulter et restaurer les modifications, et assurer la sécurité du service. Base juridique au titre du RGPD : exécution du contrat (art. 6.1.b) ; intérêts légitimes en matière de sécurité (art. 6.1.f) ; consentement pour l’envoi d’une photo (art. 6.1.a)." },
       { h: "4. Qui peut voir vos données", p: "Vos données sont privées par défaut. Le contenu d’un calendrier est visible par ses membres selon leur rôle. Les autres membres peuvent voir votre nom et votre photo sur un calendrier partagé. L’historique d’un événement partagé est visible par les membres de ce calendrier." },
@@ -102,7 +102,7 @@ export const PAGES = {
       { h: "11. Contacto", p: "Preguntas: support@collyo.app." },
     ],
     privacy: [
-      { h: "1. Quiénes somos", p: "Responsable del tratamiento: AI Solution Hub, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal. Contacto: support@collyo.app." },
+      { h: "1. Quiénes somos", p: "Responsable del tratamiento: AI Solution Hub®, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal. Contacto: support@collyo.app." },
       { h: "2. Datos que recopilamos", p: "Datos de cuenta: correo y contraseña (almacenada como hash por nuestro proveedor de autenticación). Datos de perfil: nombre visible y foto de perfil opcional. Datos de calendario: calendarios, eventos (título, descripción, lugar, horas de inicio y fin, recordatorio) e historial de cambios. Datos de compartición: miembros, roles e invitaciones. Datos técnicos: preferencia de idioma guardada en tu navegador." },
       { h: "3. Finalidades y base jurídica", p: "Prestar el servicio solicitado (crear y compartir calendarios), enviar los correos de invitación que activas, mantener un historial de actividad para revisar y restaurar cambios, y garantizar la seguridad del servicio. Base jurídica según el RGPD: ejecución del contrato (art. 6.1.b); intereses legítimos en seguridad (art. 6.1.f); consentimiento al subir una foto (art. 6.1.a)." },
       { h: "4. Quién puede ver tus datos", p: "Tus datos son privados por defecto. El contenido de un calendario es visible para sus miembros según su rol. Los demás miembros pueden ver tu nombre y tu foto en un calendario compartido. El historial de un evento compartido es visible para los miembros de ese calendario." },
@@ -140,7 +140,7 @@ export const PAGES = {
       { h: "11. Kontakt", p: "Fragen: support@collyo.app." },
     ],
     privacy: [
-      { h: "1. Wer wir sind", p: "Verantwortlicher: AI Solution Hub, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal. Kontakt: support@collyo.app." },
+      { h: "1. Wer wir sind", p: "Verantwortlicher: AI Solution Hub®, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal. Kontakt: support@collyo.app." },
       { h: "2. Welche Daten wir erheben", p: "Kontodaten: E-Mail-Adresse und Passwort (von unserem Authentifizierungsanbieter als Hash gespeichert). Profildaten: Anzeigename und optionales Profilfoto. Kalenderdaten: Kalender, Termine (Titel, Beschreibung, Ort, Start- und Endzeit, Erinnerung) und der Verlauf der Änderungen an Terminen. Freigabedaten: Mitglieder, Rollen und Einladungen. Technische Daten: im Browser gespeicherte Spracheinstellung." },
       { h: "3. Warum wir sie verarbeiten", p: "Um den von dir gewünschten Dienst bereitzustellen (Erstellen und Teilen von Kalendern), um von dir ausgelöste Einladungs-E-Mails zu versenden, um einen Aktivitätsverlauf zu führen, damit Änderungen geprüft und wiederhergestellt werden können, und um den Dienst sicher zu halten. Rechtsgrundlage nach der DSGVO: Vertragserfüllung (Art. 6 Abs. 1 lit. b); berechtigte Interessen an Sicherheit (Art. 6 Abs. 1 lit. f); Einwilligung beim Hochladen eines Fotos (Art. 6 Abs. 1 lit. a)." },
       { h: "4. Wer deine Daten sehen kann", p: "Deine Daten sind standardmäßig privat. Der Inhalt eines Kalenders ist für seine Mitglieder je nach Rolle sichtbar. Andere Mitglieder sehen deinen Anzeigenamen und dein Foto in einem geteilten Kalender. Der Verlauf eines geteilten Termins ist für die Mitglieder dieses Kalenders sichtbar." },
@@ -178,7 +178,7 @@ export const PAGES = {
       { h: "11. التواصل", p: "للاستفسارات: support@collyo.app." },
     ],
     privacy: [
-      { h: "1. من نحن", p: "المسؤول عن معالجة البيانات: AI Solution Hub، Rua Oscar da Silva 83, 2L, 4200-399 Porto، البرتغال. للتواصل: support@collyo.app." },
+      { h: "1. من نحن", p: "المسؤول عن معالجة البيانات: AI Solution Hub®، Rua Oscar da Silva 83, 2L, 4200-399 Porto، البرتغال. للتواصل: support@collyo.app." },
       { h: "2. البيانات التي نجمعها", p: "بيانات الحساب: البريد الإلكتروني وكلمة المرور (مخزنة كقيمة تجزئة لدى مزود المصادقة). بيانات الملف الشخصي: الاسم المعروض وصورة الملف الشخصي الاختيارية. بيانات التقويم: التقاويم، والأحداث (العنوان، الوصف، المكان، وقتا البداية والنهاية، التذكير)، وسجل التغييرات على الأحداث. بيانات المشاركة: الأعضاء والأدوار والدعوات. البيانات التقنية: تفضيل اللغة المخزن في متصفحك." },
       { h: "3. أسباب المعالجة", p: "لتقديم الخدمة التي طلبتها (إنشاء التقاويم ومشاركتها)، وإرسال رسائل الدعوة التي تبدأها، والاحتفاظ بسجل نشاط لمراجعة التغييرات واستعادتها، وللحفاظ على أمان الخدمة. الأساس القانوني بموجب اللائحة الأوروبية (GDPR): تنفيذ العقد (المادة 6(1)(ب))؛ المصالح المشروعة في الأمان (المادة 6(1)(و))؛ الموافقة عند رفع صورة (المادة 6(1)(أ))." },
       { h: "4. من يمكنه رؤية بياناتك", p: "بياناتك خاصة افتراضياً. يكون محتوى التقويم مرئياً لأعضائه بحسب دورهم. يمكن للأعضاء الآخرين رؤية اسمك وصورتك في تقويم تشاركه. سجل الحدث المشترك مرئي لأعضاء ذلك التقويم." },
@@ -216,7 +216,7 @@ export const PAGES = {
       { h: "11. Contato", p: "Dúvidas: support@collyo.app." },
     ],
     privacy: [
-      { h: "1. Quem somos", p: "Controlador dos dados: AI Solution Hub, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal. Contato: support@collyo.app." },
+      { h: "1. Quem somos", p: "Controlador dos dados: AI Solution Hub®, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal. Contato: support@collyo.app." },
       { h: "2. Dados que coletamos", p: "Dados da conta: e-mail e senha (armazenada como hash pelo nosso provedor de autenticação). Dados do perfil: nome de exibição e foto de perfil opcional. Dados do calendário: calendários, eventos (título, descrição, local, horários de início e fim, lembrete) e histórico de alterações dos eventos. Dados de compartilhamento: membros, funções e convites. Dados técnicos: preferência de idioma armazenada no seu navegador." },
       { h: "3. Por que tratamos os dados", p: "Para fornecer o serviço solicitado (criar e compartilhar calendários), enviar os e-mails de convite que você dispara, manter um histórico de atividades para revisar e restaurar alterações, e manter o serviço seguro. Bases legais (GDPR): execução de contrato; legítimo interesse em segurança; consentimento ao enviar uma foto." },
       { h: "4. Quem pode ver seus dados", p: "Seus dados são privados por padrão. O conteúdo de um calendário é visível aos seus membros conforme a função de cada um. Os demais membros podem ver seu nome e sua foto em um calendário compartilhado. O histórico de um evento compartilhado é visível aos membros desse calendário." },
