@@ -403,7 +403,7 @@ function NewEventForm({ calendarId, userId, day, onCreated, onCancel }) {
   )
 }
 
-export default function App({ user }) {
+export default function App({ user, initialCalendarId = null }) {
   const { t, locale, lang } = useI18n()
   const [tab, setTab] = useState('month')
   const [selected, setSelected] = useState(() => startOfDay(new Date()))
@@ -425,7 +425,7 @@ export default function App({ user }) {
   }, [user])
 
   const [calendars, setCalendars] = useState([])
-  const [activeId, setActiveId] = useState(null)
+  const [activeId, setActiveId] = useState(initialCalendarId)
 
   const [reloadKey, setReloadKey] = useState(0)
   useEffect(() => {

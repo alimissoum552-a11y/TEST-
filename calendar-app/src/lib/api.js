@@ -208,3 +208,26 @@ export async function cancelInvite(inviteId) {
   const { error } = await supabase.from('calendar_invites').delete().eq('id', inviteId)
   if (error) throw error
 }
+
+// ---- Invitation links ----
+// The invitee can read an invitation addressed to their e-mail (RLS). Returns null when it is not visible to this account.
+export async function getInviteById(inviteId) {
+  const { data, error } = await supabase
+    .from('calendar_invites')
+    .select('id, calendar_id, invitee_email, role, status')
+    .eq('id', inviteId)
+    .maybeSingle()
+  if (error) throw error
+  return data ? { ...data, invitee_email: (data.invitee_email || '').toLowerCase() } : null
+}
+
+export async function isMemberOf(calendarId, userId) {
+  const { data, error } = await supabase
+    .from('calendar_members')
+    .select('user_id')
+    .eq('calendar_id', calendarId)
+    .eq('user_id', userId)
+    .maybeSingle()
+  if (error) throw error
+  return Boolean(data)
+}
