@@ -634,7 +634,7 @@ export default function App({ user, initialCalendarId = null }) {
 
         {user && <InvitesPanel onAnswered={() => setReloadKey((k) => k + 1)} />}
         {profileOpen && user && <ProfilePanel user={user} onClose={() => setProfileOpen(false)} onChanged={(url) => setMe((m) => ({ ...(m || {}), avatar_url: url }))} onHandleChanged={(h) => setMe((m) => ({ ...(m || {}), handle: h }))} />}
-        {chat && user && activeCalendar && <ChatPanel key={activeCalendar.id} calendarId={activeCalendar.id} user={user} myHandle={me?.handle} canWrite={canWrite} isOwner={activeCalendar.my_role === 'owner'} onClose={() => setChat(false)} />}
+        {chat && user && activeCalendar && <ChatPanel key={activeCalendar.id} calendarId={activeCalendar.id} user={user} myHandle={me?.handle} canWrite={canWrite} isOwner={activeCalendar.my_role === 'owner'} onClose={() => setChat(false)} onApplied={() => setReloadKey((k) => k + 1)} />}
         {connector && user && <ConnectorGuide onClose={() => setConnector(false)} />}
         {assistant && user && <AssistantPanel user={user} onClose={() => setAssistant(false)} onApplied={() => setReloadKey((k) => k + 1)} />}
         {team && activeCalendar && <TeamPanel calendarId={activeCalendar.id} ownerId={activeCalendar.owner_id} onClose={() => setTeam(false)} />}

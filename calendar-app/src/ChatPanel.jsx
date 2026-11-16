@@ -17,7 +17,7 @@ const TYPING_HIDE_MS = 3000
 const MENTION = /@(ai|ia|ki)\b/i
 const AI_ERRORS = { ai_disabled: 'chatAiDisabled', daily_limit: 'assistantLimit', assistant_not_configured: 'assistantNotConfigured' }
 
-export default function ChatPanel({ calendarId, user, myHandle, canWrite, isOwner, onClose }) {
+export default function ChatPanel({ calendarId, user, myHandle, canWrite, isOwner, onClose, onApplied }) {
   const { t, locale } = useI18n()
   const myLabel = user.user_metadata?.display_name || user.email || ''
   const [messages, setMessages] = useState([])
@@ -143,7 +143,10 @@ export default function ChatPanel({ calendarId, user, myHandle, canWrite, isOwne
   // The AI's reply arrives as a chat message through Realtime.
   async function requestAi() {
     setAiThinking(true)
-    try { await askChatAi(calendarId) } catch (ex) { setErr(t(AI_ERRORS[ex.message] || 'chatAiFailed')) } finally { setAiThinking(false) }
+    try {
+      const res = await askChatAi(calendarId)
+      if (res?.applied?.length) onApplied?.()
+    } catch (ex) { setErr(t(AI_ERRORS[ex.message] || 'chatAiFailed')) } finally { setAiThinking(false) }
   }
 
   async function toggleAi() {
