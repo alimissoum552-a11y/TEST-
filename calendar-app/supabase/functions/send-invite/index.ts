@@ -1,5 +1,5 @@
 // Sends a calendar invitation email through Resend.
-// Deployed as a Supabase Edge Function. Secrets: RESEND_API_KEY, INVITE_FROM, APP_URL.
+// Deployed as a Supabase Edge Function. Secrets: RESEND_API_KEY, INVITE_FROM, INVITE_REPLY_TO, APP_URL.
 import { createClient } from 'npm:@supabase/supabase-js@2'
 
 const cors = {
@@ -31,6 +31,8 @@ Deno.serve(async (req) => {
 
     const appUrl = Deno.env.get('APP_URL') ?? 'https://calendar-app-rho-ten.vercel.app'
     const from = Deno.env.get('INVITE_FROM') ?? 'Calendar <onboarding@resend.dev>'
+    // Replies to an invitation go to support, not to the no-reply sender.
+    const replyTo = Deno.env.get('INVITE_REPLY_TO') ?? undefined
 
     // The link opens the app on the invitee's account and joins the team automatically.
     // Only the account whose e-mail matches the invite can accept it.
@@ -45,6 +47,7 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         from,
         to: [email],
+        ...(replyTo ? { reply_to: replyTo } : {}),
         subject: `${inviter} invited you to join "${cal.name}"`,
         html: `<div style="font-family:system-ui,sans-serif;color:#171717;line-height:1.5">
   <p>${escapeHtml(inviter)} invited you to join the calendar <strong>${escapeHtml(cal.name)}</strong> as <strong>${escapeHtml(role)}</strong>.</p>
