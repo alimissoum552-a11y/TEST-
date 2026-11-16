@@ -177,7 +177,7 @@ function HeroVisual() {
 
 // Panels scroll horizontally with snap points (finger swipe, trackpad, keyboard).
 // On scroll, each panel is rotated and faded according to its distance from the centre: the page-turn look.
-function Carousel({ panels, label }) {
+function Carousel({ panels, label, startIndex = 0 }) {
   const trackRef = useRef(null)
   const indexRef = useRef(0)
   const [index, setIndex] = useState(0)
@@ -209,10 +209,13 @@ function Carousel({ panels, label }) {
     let raf = 0
     const onScroll = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(paint) }
     // Centre the first panel on load (the browser starts at the scroll origin, not at a snap point).
-    const first = track.children[0]
+    const first = track.children[startIndex] ?? track.children[0]
     if (first) {
+      // Snapping is paused while placing the track, so the browser cannot pull it to a neighbouring panel.
       const tr = track.getBoundingClientRect(), fr = first.getBoundingClientRect()
-      track.scrollBy({ left: (fr.left + fr.width / 2) - (tr.left + tr.width / 2), behavior: 'auto' })
+      track.style.scrollSnapType = 'none'
+      track.scrollLeft += (fr.left + fr.width / 2) - (tr.left + tr.width / 2)
+      requestAnimationFrame(() => { track.style.scrollSnapType = '' })
     }
     paint()
     track.addEventListener('scroll', onScroll, { passive: true })
@@ -238,7 +241,7 @@ function Carousel({ panels, label }) {
   return (
     <div>
       <div ref={trackRef} tabIndex={0} onKeyDown={onKey} role="region" aria-roledescription="carousel" aria-label={label(index + 1, panels.length)}
-        className="flex gap-5 overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [--panel:86vw] md:[--panel:36rem] lg:[--panel:44rem] px-[calc((100%_-_var(--panel))_/_2)] py-4 -my-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 rounded-3xl">
+        className="flex gap-5 overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [--panel:72vw] md:[--panel:36rem] lg:[--panel:44rem] px-[calc((100%_-_var(--panel))_/_2)] py-4 -my-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 rounded-3xl">
         {panels.map((p, i) => (
           <article key={p.id} aria-roledescription="slide" aria-label={`${i + 1} / ${panels.length}`} aria-hidden={i !== index}
             className="snap-center snap-always shrink-0 w-[var(--panel)] rounded-3xl bg-white p-6 md:p-8 shadow-xl ring-1 ring-neutral-200 will-change-transform">
@@ -260,9 +263,9 @@ export default function Landing() {
   const [step, setStep] = useState(null)
 
   const panels = [
-    { id: 'ai', title: L.ai[0], text: L.ai[1], sparkle: true, render: () => <AiDemo L={L} /> },
     { id: 'calendar', title: L.calendar[0], text: L.calendar[1], render: () => <CalendarDemo /> },
     { id: 'team', title: L.team[0], text: L.team[1], render: (active) => <ChatDemo L={L} active={active} /> },
+    { id: 'ai', title: L.ai[0], text: L.ai[1], sparkle: true, render: () => <AiDemo L={L} /> },
     { id: 'reminders', title: L.reminders[0], text: L.reminders[1], render: () => <RemindDemo L={L} /> },
     { id: 'share', title: L.share[0], text: L.share[1], render: () => <ShareDemo L={L} /> },
     { id: 'claude', title: L.claude[0], text: L.claude[1], render: () => <ClaudeDemo L={L} /> },
@@ -292,7 +295,7 @@ export default function Landing() {
       </section>
 
       <section className="pb-10">
-        <Carousel panels={panels} label={(i, n) => `${L.cardsTitle} ${i} / ${n}`} />
+        <Carousel panels={panels} startIndex={panels.findIndex((p) => p.id === 'ai')} label={(i, n) => `${L.cardsTitle} ${i} / ${n}`} />
       </section>
 
       <section className="px-6 pb-16">
