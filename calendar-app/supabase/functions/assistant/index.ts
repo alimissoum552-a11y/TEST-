@@ -71,6 +71,57 @@ const TOOLS = [
   },
 ]
 
+
+// Write tools. Each one is only offered to the model when the user enabled the
+// matching permission in the AI panel, and each write runs with the caller's JWT,
+// so row-level security still decides what is actually possible.
+const WRITE_TOOLS: Record<string, any> = {
+  create_event: {
+    name: 'create_event',
+    description: 'Create an event. Only use it when the user clearly asks for a new event.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        calendar_id: { type: 'string' },
+        title: { type: 'string' },
+        starts_at: { type: 'string', description: 'ISO 8601 with time zone, e.g. 2026-11-18T09:00:00Z' },
+        ends_at: { type: 'string' },
+        description: { type: 'string' },
+        location: { type: 'string' },
+      },
+      required: ['calendar_id', 'title', 'starts_at', 'ends_at'],
+      additionalProperties: false,
+    },
+  },
+  update_event: {
+    name: 'update_event',
+    description: 'Change an existing event (move it, rename it, edit details). Only when the user asks.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        event_id: { type: 'string' },
+        title: { type: 'string' },
+        starts_at: { type: 'string' },
+        ends_at: { type: 'string' },
+        description: { type: 'string' },
+        location: { type: 'string' },
+      },
+      required: ['event_id'],
+      additionalProperties: false,
+    },
+  },
+  delete_event: {
+    name: 'delete_event',
+    description: 'Delete an event. Only when the user explicitly asks to remove it.',
+    input_schema: {
+      type: 'object',
+      properties: { event_id: { type: 'string' } },
+      required: ['event_id'],
+      additionalProperties: false,
+    },
+  },
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors })
   try {
@@ -93,6 +144,12 @@ Deno.serve(async (req) => {
     const { data: profile } = await supa.from('profiles').select('ai_accepted_at').eq('id', user.id).maybeSingle()
     if (!profile?.ai_accepted_at) return json({ error: 'consent_required' }, 403)
 
+    // What the user allowed the assistant to do. Everything is off unless opted in.
+    const { data: permRow } = await supa.from('ai_permissions')
+      .select('can_create, can_update, can_delete').eq('user_id', user.id).maybeSingle()
+    const allowed = { create: !!permRow?.can_create, update: !!permRow?.can_update, delete: !!permRow?.can_delete }
+    const tools = [...TOOLS, ...Object.entries(allowed).filter(([, ok]) => ok).map(([k]) => WRITE_TOOLS[k + '_event'])]
+
     const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
     const since = new Date(Date.now() - 24 * 3600_000).toISOString()
     const { count } = await admin.from('ai_usage').select('id', { count: 'exact', head: true })
@@ -103,9 +160,10 @@ Deno.serve(async (req) => {
     const cals = await accessibleCalendars(supa, user.id)
     const byId = new Map(cals.map((c) => [c.id, c]))
     const consulted = new Set<string>()
+    const applied: { action: string; id: string; title: string }[] = []
     let toolCalls = 0
 
-    const system = systemPrompt({ now: new Date(), timeZone, locale })
+    const system = systemPrompt({ now: new Date(), timeZone, locale, allowed })
     const convo: any[] = messages.map((m) => ({ role: m.role, content: m.content }))
     let inputTokens = 0
     let outputTokens = 0
@@ -114,7 +172,7 @@ Deno.serve(async (req) => {
       const res = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-        body: JSON.stringify({ model: MODEL, max_tokens: 1024, system, tools: TOOLS, messages: convo }),
+        body: JSON.stringify({ model: MODEL, max_tokens: 1024, system, tools, messages: convo }),
       })
       if (!res.ok) return json({ error: 'model_unavailable' }, 502)
       const r = await res.json()
@@ -126,7 +184,7 @@ Deno.serve(async (req) => {
         const results = []
         for (const block of r.content.filter((b: any) => b.type === 'tool_use')) {
           toolCalls++
-          const out = await runTool(block.name, block.input ?? {}, { supa, byId, consulted, timeZone })
+          const out = await runTool(block.name, block.input ?? {}, { supa, byId, consulted, timeZone, allowed, applied })
           results.push({ type: 'tool_result', tool_use_id: block.id, content: JSON.stringify(out) })
         }
         convo.push({ role: 'user', content: results })
@@ -137,7 +195,7 @@ Deno.serve(async (req) => {
         user_id: user.id, model: MODEL, input_tokens: inputTokens, output_tokens: outputTokens, tool_calls: toolCalls,
       })
       const reply = r.content.filter((b: any) => b.type === 'text').map((b: any) => b.text).join('\n').trim()
-      return json({ reply, consulted: [...consulted] })
+      return json({ reply, consulted: [...consulted], applied })
     }
     return json({ error: 'too_many_steps' }, 500)
   } catch (e) {
@@ -150,7 +208,14 @@ Deno.serve(async (req) => {
 async function runTool(
   name: string,
   input: any,
-  ctx: { supa: SupabaseClient; byId: Map<string, Cal>; consulted: Set<string>; timeZone: string },
+  ctx: {
+    supa: SupabaseClient
+    byId: Map<string, Cal>
+    consulted: Set<string>
+    timeZone: string
+    allowed: { create: boolean; update: boolean; delete: boolean }
+    applied: { action: string; id: string; title: string }[]
+  },
 ): Promise<unknown> {
   try {
     if (name === 'list_calendars') {
@@ -161,7 +226,7 @@ async function runTool(
       if (c.role !== 'owner') return { error: 'Titles are only available for your own calendars. Use get_busy_times.' }
       const { from, to } = window(input.from, input.to)
       const { data, error } = await ctx.supa.from('events')
-        .select('title, starts_at, ends_at, location').eq('calendar_id', c.id)
+        .select('id, title, starts_at, ends_at, location').eq('calendar_id', c.id)
         .gte('starts_at', from.toISOString()).lt('starts_at', to.toISOString())
         .order('starts_at').limit(200)
       if (error) throw error
@@ -188,6 +253,52 @@ async function runTool(
         endHour: clampInt(input.work_end_hour, 18, 1, 24),
       })
       return { duration_minutes: input.duration_minutes, slots: slots.map(toIso) }
+    }
+    if (name === 'create_event') {
+      if (!ctx.allowed.create) return { error: 'permission_disabled', permission: 'create' }
+      const c = calendarFor(ctx, input.calendar_id)
+      const range = eventRange(input.starts_at, input.ends_at)
+      if ('error' in range) return range
+      const { data, error } = await ctx.supa.from('events').insert({
+        calendar_id: c.id,
+        owner_id: (await ctx.supa.auth.getUser()).data.user?.id,
+        title: cleanText(input.title, 200),
+        description: cleanText(input.description, 2000) || null,
+        location: cleanText(input.location, 200) || null,
+        starts_at: range.start, ends_at: range.end,
+      }).select('id, title').single()
+      if (error) return { error: error.message }
+      ctx.applied.push({ action: 'create', id: data.id, title: data.title })
+      return { created: { id: data.id, title: data.title, calendar: c.name } }
+    }
+    if (name === 'update_event') {
+      if (!ctx.allowed.update) return { error: 'permission_disabled', permission: 'update' }
+      const patch: Record<string, unknown> = {}
+      if (input.title !== undefined) patch.title = cleanText(input.title, 200)
+      if (input.description !== undefined) patch.description = cleanText(input.description, 2000) || null
+      if (input.location !== undefined) patch.location = cleanText(input.location, 200) || null
+      if (input.starts_at !== undefined || input.ends_at !== undefined) {
+        const range = eventRange(input.starts_at, input.ends_at, true)
+        if ('error' in range) return range
+        if (range.start) patch.starts_at = range.start
+        if (range.end) patch.ends_at = range.end
+      }
+      if (!Object.keys(patch).length) return { error: 'nothing to update' }
+      const { data, error } = await ctx.supa.from('events').update(patch)
+        .eq('id', String(input.event_id)).select('id, title').maybeSingle()
+      if (error) return { error: error.message }
+      if (!data) return { error: 'event not accessible' }
+      ctx.applied.push({ action: 'update', id: data.id, title: data.title })
+      return { updated: { id: data.id, title: data.title } }
+    }
+    if (name === 'delete_event') {
+      if (!ctx.allowed.delete) return { error: 'permission_disabled', permission: 'delete' }
+      const { data, error } = await ctx.supa.from('events').delete()
+        .eq('id', String(input.event_id)).select('id, title').maybeSingle()
+      if (error) return { error: error.message }
+      if (!data) return { error: 'event not accessible' }
+      ctx.applied.push({ action: 'delete', id: data.id, title: data.title })
+      return { deleted: { id: data.id, title: data.title } }
     }
     return { error: `unknown tool ${name}` }
   } catch (e) {
@@ -263,18 +374,42 @@ const toIso = (i: { start: number; end: number } | Interval) => ({
   end: new Date(i.end).toISOString(),
 })
 
-function systemPrompt(p: { now: Date; timeZone: string; locale: string }): string {
+function systemPrompt(p: { now: Date; timeZone: string; locale: string; allowed: { create: boolean; update: boolean; delete: boolean } }): string {
+  const powers = [
+    p.allowed.create && 'create events',
+    p.allowed.update && 'move or edit events',
+    p.allowed.delete && 'delete events',
+  ].filter(Boolean) as string[]
+  const rights = powers.length
+    ? `The user allowed you to ${powers.join(', ')}. Do it only when the user clearly asks for that change, and report exactly what you changed.`
+    : 'You cannot create, move or delete events: the user has not enabled any write permission. Propose the change in text and tell the user they can enable it in the AI settings (gear icon).'
   return [
     'You are the scheduling assistant of a calendar application.',
     `Current time: ${p.now.toISOString()} (UTC). The user's time zone is ${p.timeZone}. Reply in the user's language (locale: ${p.locale}).`,
     'Rules:',
-    '- You can only read. You never create, move or delete events. Suggest, and say the user must create the event.',
+    `- ${rights}`,
+    '- Never claim to have changed something you did not change with a tool.',
     '- Use the tools for any fact about the calendars. Never invent events, titles or times.',
     '- For scheduling, call find_free_slots; for shared calendars you only see busy times, never titles.',
     '- Explain briefly why a slot works (which calendars were checked, working hours used).',
     '- If the tools return no slot, say so and suggest a wider window or a shorter duration.',
     '- Keep answers short and concrete. Times are shown in the user time zone.',
   ].join('\n')
+}
+
+function cleanText(v: unknown, max: number): string {
+  return typeof v === 'string' ? v.trim().slice(0, max) : ''
+}
+
+// Validates an event range. On update, both bounds may be omitted.
+function eventRange(a: unknown, b: unknown, partial = false): { start?: string; end?: string; error?: string } {
+  const start = a === undefined ? undefined : new Date(String(a))
+  const end = b === undefined ? undefined : new Date(String(b))
+  if (start && isNaN(start.getTime())) return { error: 'invalid starts_at' }
+  if (end && isNaN(end.getTime())) return { error: 'invalid ends_at' }
+  if (start && end && end <= start) return { error: 'ends_at must be after starts_at' }
+  if (!partial && (!start || !end)) return { error: 'starts_at and ends_at are required' }
+  return { start: start?.toISOString(), end: end?.toISOString() }
 }
 
 function json(body: unknown, status = 200) {

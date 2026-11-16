@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import AiAvatar from './AiAvatar.jsx'
 import { useI18n } from './i18n/index.jsx'
-import { askAssistant, getAiAcceptedAt, acceptAssistantPolicy } from './lib/api.js'
+import { askAssistant, getAiAcceptedAt, acceptAssistantPolicy, getAiPermissions, setAiPermissions } from './lib/api.js'
 
 // Conversation with the scheduling assistant. Read-only: it suggests times, the user creates events.
 // Answers are shown as plain text (never as HTML).
@@ -10,14 +10,27 @@ const ERROR_KEYS = {
   assistant_not_configured: 'assistantNotConfigured',
 }
 
-export default function AssistantPanel({ user, onClose }) {
+export default function AssistantPanel({ user, onClose, onApplied }) {
   const { t, locale } = useI18n()
   const [accepted, setAccepted] = useState(undefined) // undefined = loading
   const [messages, setMessages] = useState([])
   const [text, setText] = useState('')
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState(null)
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const [perms, setPerms] = useState({ can_create: false, can_update: false, can_delete: false })
   const endRef = useRef(null)
+
+  useEffect(() => {
+    getAiPermissions(user.id).then(setPerms).catch(() => {})
+  }, [user.id])
+
+  async function togglePerm(key) {
+    const next = { ...perms, [key]: !perms[key] }
+    setPerms(next)
+    try { await setAiPermissions(user.id, { [key]: next[key] }) }
+    catch (ex) { setPerms(perms); setErr(ex.message) }
+  }
 
   useEffect(() => {
     getAiAcceptedAt(user.id).then((at) => setAccepted(Boolean(at))).catch(() => setAccepted(false))
@@ -38,7 +51,8 @@ export default function AssistantPanel({ user, onClose }) {
     try {
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
       const res = await askAssistant(next.map(({ role, content: c }) => ({ role, content: c })), timezone, locale)
-      setMessages([...next, { role: 'assistant', content: res.reply, consulted: res.consulted || [] }])
+      setMessages([...next, { role: 'assistant', content: res.reply, consulted: res.consulted || [], applied: res.applied || [] }])
+      if (res.applied?.length) onApplied?.()
     } catch (ex) {
       if (ex.message === 'consent_required') setAccepted(false)
       setErr(t(ERROR_KEYS[ex.message] || 'assistantError'))
@@ -53,8 +67,35 @@ export default function AssistantPanel({ user, onClose }) {
         onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between gap-3">
           <h3 className="text-lg font-semibold text-neutral-900">{t('assistant')}</h3>
-          <button type="button" onClick={onClose} className="text-sm text-neutral-500 hover:text-neutral-900">{t('close')}</button>
+          <div className="flex items-center gap-2">
+            <button type="button" onClick={() => setSettingsOpen((o) => !o)} aria-label={t('aiSettings')} aria-expanded={settingsOpen}
+              className={`p-1.5 transition-colors ${settingsOpen ? 'text-neutral-900' : 'text-neutral-500 hover:text-neutral-900'}`}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5" aria-hidden="true">
+                <circle cx="12" cy="12" r="3.2" />
+                <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" />
+              </svg>
+            </button>
+            <button type="button" onClick={onClose} className="text-sm text-neutral-500 hover:text-neutral-900">{t('close')}</button>
+          </div>
         </div>
+
+        {settingsOpen && (
+          <div className="rounded-2xl border border-neutral-200 p-4 space-y-3">
+            <p className="text-sm font-medium text-neutral-900">{t('aiSettings')}</p>
+            {[
+              ['can_create', 'aiPermCreate'],
+              ['can_update', 'aiPermUpdate'],
+              ['can_delete', 'aiPermDelete'],
+            ].map(([key, label]) => (
+              <label key={key} className="flex items-start gap-3 text-sm text-neutral-800">
+                <input type="checkbox" checked={!!perms[key]} onChange={() => togglePerm(key)}
+                  className="mt-0.5 h-4 w-4 shrink-0 accent-neutral-900" />
+                <span>{t(label)}</span>
+              </label>
+            ))}
+            <p className="text-xs text-neutral-500">{t('aiPermNote')}</p>
+          </div>
+        )}
 
         {accepted === undefined && <p className="text-sm text-neutral-400">…</p>}
 
@@ -79,6 +120,9 @@ export default function AssistantPanel({ user, onClose }) {
                     </p>
                     {m.role === 'assistant' && m.consulted?.length > 0 && (
                       <p className="mt-1 text-xs text-neutral-500">{t('assistantConsulted')} {m.consulted.join(', ')}</p>
+                    )}
+                    {m.role === 'assistant' && m.applied?.length > 0 && (
+                      <p className="mt-1 text-xs text-neutral-600">{t('aiApplied')}: {m.applied.map((a) => `${a.action} — ${a.title}`).join(', ')}</p>
                     )}
                   </div>
                 </div>

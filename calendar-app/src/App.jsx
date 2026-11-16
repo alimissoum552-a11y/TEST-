@@ -636,7 +636,7 @@ export default function App({ user, initialCalendarId = null }) {
         {profileOpen && user && <ProfilePanel user={user} onClose={() => setProfileOpen(false)} onChanged={(url) => setMe((m) => ({ ...(m || {}), avatar_url: url }))} onHandleChanged={(h) => setMe((m) => ({ ...(m || {}), handle: h }))} />}
         {chat && user && activeCalendar && <ChatPanel key={activeCalendar.id} calendarId={activeCalendar.id} user={user} myHandle={me?.handle} canWrite={canWrite} isOwner={activeCalendar.my_role === 'owner'} onClose={() => setChat(false)} />}
         {connector && user && <ConnectorGuide onClose={() => setConnector(false)} />}
-        {assistant && user && <AssistantPanel user={user} onClose={() => setAssistant(false)} />}
+        {assistant && user && <AssistantPanel user={user} onClose={() => setAssistant(false)} onApplied={() => setReloadKey((k) => k + 1)} />}
         {team && activeCalendar && <TeamPanel calendarId={activeCalendar.id} ownerId={activeCalendar.owner_id} onClose={() => setTeam(false)} />}
         {sharing && activeCalendar && <SharePanel calendarId={activeCalendar.id} canManage={['owner','administrator'].includes(activeCalendar.my_role)} onClose={() => setSharing(false)} />}
         {openEvent && <EventDetail event={openEvent} onClose={() => setOpenEvent(null)} onDelete={handleDelete} onSave={handleSave} />}

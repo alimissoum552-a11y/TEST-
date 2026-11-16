@@ -386,3 +386,17 @@ export async function markNotificationRead(id) {
     .from('notifications').update({ read_at: new Date().toISOString() }).eq('id', id).is('read_at', null)
   if (error) throw error
 }
+
+// ---- AI permissions (per user, opt-in; everything is off by default) ----
+export async function getAiPermissions(userId) {
+  const { data, error } = await supabase
+    .from('ai_permissions').select('can_create, can_update, can_delete').eq('user_id', userId).maybeSingle()
+  if (error) throw error
+  return data || { can_create: false, can_update: false, can_delete: false }
+}
+
+export async function setAiPermissions(userId, patch) {
+  const { error } = await supabase.from('ai_permissions')
+    .upsert({ user_id: userId, updated_at: new Date().toISOString(), ...patch })
+  if (error) throw error
+}
