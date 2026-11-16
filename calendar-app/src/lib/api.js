@@ -162,7 +162,19 @@ export async function listAccessibleCalendars(userId) {
     const { data, error } = await supabase
       .from('calendars').select('id, name, owner_id, is_default').in('id', sharedIds)
     if (error) throw error
-    shared = data.map((c) => ({ ...c, my_role: memberships.find((m) => m.calendar_id === c.id)?.role }))
+    // Owner names make shared calendars distinguishable when they share a default name.
+    const ownerIds = [...new Set(data.map((c) => c.owner_id))]
+    let names = {}
+    if (ownerIds.length) {
+      const { data: profs } = await supabase
+        .from('profiles').select('id, display_name, email').in('id', ownerIds)
+      names = Object.fromEntries((profs || []).map((p) => [p.id, p.display_name || p.email]))
+    }
+    shared = data.map((c) => ({
+      ...c,
+      my_role: memberships.find((m) => m.calendar_id === c.id)?.role,
+      owner_name: names[c.owner_id] || null,
+    }))
   }
   return [
     ...own.map((c) => ({ ...c, my_role: 'owner' })),

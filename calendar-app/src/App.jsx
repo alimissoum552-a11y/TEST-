@@ -353,6 +353,7 @@ export default function App({ user }) {
   }, [user])
 
   const [calendars, setCalendars] = useState([])
+  const [activeId, setActiveId] = useState(null)
 
   const [reloadKey, setReloadKey] = useState(0)
   useEffect(() => {
@@ -365,12 +366,16 @@ export default function App({ user }) {
         if (!cancelled) {
           setCalendar(def)
           setCalendars(all)
+          setActiveId((prev) => prev || def?.id || all[0]?.id || null)
           setEvents(rows.map((r) => toUI(r, locale)))
         }
       } catch (ex) { if (!cancelled) setLoadError(ex.message) }
     })()
     return () => { cancelled = true }
   }, [user, locale, reloadKey])
+
+  const activeCalendar = calendars.find((c) => c.id === activeId) || calendar || calendars[0] || null
+  const canWrite = activeCalendar ? activeCalendar.my_role !== 'reader' : false
 
   const dayEvents = events.filter((e) => e.date === selected)
   const calendarNameOf = (id) => {
@@ -418,7 +423,7 @@ export default function App({ user }) {
       <div className="relative w-full md:max-w-3xl lg:max-w-5xl md:h-[min(90vh,820px)] min-h-screen md:min-h-0 bg-white md:rounded-[32px] md:shadow-xl overflow-hidden flex flex-col">
         <header className="px-4 md:px-10 pt-5 md:pt-8 pb-3 flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-xs md:text-sm text-neutral-500">{t('monthName')} {t('year')}</p>
+            <p className="text-xs md:text-sm text-neutral-500 truncate">{t('monthName')} {t('year')}{activeCalendar && activeCalendar.my_role !== 'owner' ? ` · ${activeCalendar.name}${activeCalendar.owner_name ? ` (${activeCalendar.owner_name})` : ''}` : ''}</p>
             <h1 className="text-2xl md:text-3xl font-semibold text-neutral-900 truncate">
               {tab === 'day' ? `${selected} ${t('monthName').toLowerCase()}` : t('calendar')}
             </h1>
@@ -465,7 +470,7 @@ export default function App({ user }) {
           <div className="absolute inset-0 z-10 flex items-end sm:items-center justify-center bg-black/40" onClick={() => setAdding(false)}>
             <div className="w-full sm:max-w-md bg-white rounded-t-3xl sm:rounded-3xl p-6 md:p-8 shadow-xl" onClick={(ev) => ev.stopPropagation()}>
               <h3 className="text-lg font-semibold text-neutral-900 mb-4">{t('newEventTitle')}</h3>
-              <NewEventForm calendarId={calendar?.id} userId={user?.id} day={selected}
+              <NewEventForm calendarId={activeCalendar?.id} userId={user?.id} day={selected}
                 onCreated={(row) => { setEvents((l) => [...l, toUI(row, locale)].sort((a, b) => a.starts_at.localeCompare(b.starts_at))); setAdding(false) }}
                 onCancel={() => setAdding(false)} />
             </div>
@@ -493,10 +498,24 @@ export default function App({ user }) {
                 ))}
               </section>
 
+              {calendars.length > 1 && (
+                <section className="space-y-1">
+                  <h3 className="text-xs font-medium uppercase tracking-wide text-neutral-500 mb-2">{t('calendars')}</h3>
+                  {calendars.map((c) => (
+                    <button key={c.id} onClick={() => { setActiveId(c.id); setMenuOpen(false) }}
+                      aria-pressed={activeCalendar?.id === c.id}
+                      className={`w-full flex items-center justify-between gap-3 px-2 py-2 rounded-lg text-sm text-start ${activeCalendar?.id === c.id ? 'font-semibold text-neutral-900' : 'text-neutral-600 hover:text-neutral-900'}`}>
+                      <span className="truncate">{c.name || c.id}{c.my_role !== 'owner' && c.owner_name ? ` · ${c.owner_name}` : ''}</span>
+                      <span className="shrink-0 text-xs text-neutral-400">{t(c.my_role)}</span>
+                    </button>
+                  ))}
+                </section>
+              )}
+
               {user && (
                 <section className="space-y-1">
                   <h3 className="text-xs font-medium uppercase tracking-wide text-neutral-500 mb-2">{t('actions')}</h3>
-                  <button onClick={() => { setAdding(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="add" /> <span>{t('newEvent')}</span></button>
+                  {canWrite && <button onClick={() => { setAdding(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="add" /> <span>{t('newEvent')}</span></button>}
                   {calendar && <button onClick={() => { setTeam(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="team" /> <span>{t('team')}</span></button>}
                   {calendar && <button onClick={() => { setSharing(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="share" /> <span>{t('sharing')}</span></button>}
                   <button onClick={() => { setProfileOpen(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="profile" /> <span>{t('profile')}</span></button>
@@ -520,8 +539,8 @@ export default function App({ user }) {
 
         {user && <InvitesPanel onAnswered={() => setReloadKey((k) => k + 1)} />}
         {profileOpen && user && <ProfilePanel user={user} onClose={() => setProfileOpen(false)} onChanged={(url) => setMe((m) => ({ ...(m || {}), avatar_url: url }))} />}
-        {team && calendar && <TeamPanel calendarId={calendar.id} ownerId={calendar.owner_id} onClose={() => setTeam(false)} />}
-        {sharing && calendar && <SharePanel calendarId={calendar.id} currentUserId={user.id} onClose={() => setSharing(false)} />}
+        {team && activeCalendar && <TeamPanel calendarId={activeCalendar.id} ownerId={activeCalendar.owner_id} onClose={() => setTeam(false)} />}
+        {sharing && activeCalendar && <SharePanel calendarId={activeCalendar.id} canManage={['owner','administrator'].includes(activeCalendar.my_role)} onClose={() => setSharing(false)} />}
         {openEvent && <EventDetail event={openEvent} onClose={() => setOpenEvent(null)} onDelete={handleDelete} onSave={handleSave} />}
       </div>
     </div>

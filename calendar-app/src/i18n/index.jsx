@@ -13,6 +13,8 @@ const RTL = new Set(['ar'])
 
 const DICT = {
   en: {
+    calendars: "Calendars",
+    readOnly: "Read only",
     cancelInvite: "Cancel",
     inviteCancelled: "Invitation cancelled.",
     pending: "Pending",
@@ -80,6 +82,8 @@ const DICT = {
     monthName: 'September', year: '2026', save: 'Save', description: 'Description',
   },
   fr: {
+    calendars: "Calendriers",
+    readOnly: "Lecture seule",
     cancelInvite: "Annuler",
     inviteCancelled: "Invitation annulée.",
     pending: "En attente",
@@ -147,6 +151,8 @@ const DICT = {
     monthName: 'Septembre', year: '2026', save: 'Enregistrer', description: 'Description',
   },
   es: {
+    calendars: "Calendarios",
+    readOnly: "Solo lectura",
     cancelInvite: "Anular",
     inviteCancelled: "Invitación cancelada.",
     pending: "Pendiente",
@@ -214,6 +220,8 @@ const DICT = {
     monthName: 'Septiembre', year: '2026', save: 'Guardar', description: 'Descripción',
   },
   de: {
+    calendars: "Kalender",
+    readOnly: "Nur Lesen",
     cancelInvite: "Abbrechen",
     inviteCancelled: "Einladung abgebrochen.",
     pending: "Ausstehend",
@@ -281,6 +289,8 @@ const DICT = {
     monthName: 'September', year: '2026', save: 'Speichern', description: 'Beschreibung',
   },
   ar: {
+    calendars: "التقاويم",
+    readOnly: "للقراءة فقط",
     cancelInvite: "إلغاء",
     inviteCancelled: "تم إلغاء الدعوة.",
     pending: "معلّقة",
@@ -348,6 +358,8 @@ const DICT = {
     monthName: 'سبتمبر', year: '2026', save: 'حفظ', description: 'الوصف',
   },
   pt: {
+    calendars: "Calendários",
+    readOnly: "Somente leitura",
     cancelInvite: "Cancelar",
     inviteCancelled: "Convite cancelado.",
     pending: "Pendente",

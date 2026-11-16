@@ -4,7 +4,7 @@ import { listMembers, listCalendarInvites, inviteMember, setMemberRole, removeMe
 
 const ROLES = ['administrator', 'contributor', 'reader']
 
-export default function SharePanel({ calendarId, currentUserId, onClose }) {
+export default function SharePanel({ calendarId, canManage = false, onClose }) {
   const { t } = useI18n()
   const [members, setMembers] = useState([])
   const [email, setEmail] = useState('')
@@ -64,6 +64,7 @@ export default function SharePanel({ calendarId, currentUserId, onClose }) {
         onClick={(e) => e.stopPropagation()}>
         <h3 className="text-lg font-semibold text-neutral-900">{t('share')}</h3>
 
+        {canManage ? (
         <form onSubmit={invite} className="flex flex-col gap-2">
           <input type="email" required className={input} placeholder={t('email')} value={email} onChange={(e) => setEmail(e.target.value)} />
           <div className="flex gap-2">
@@ -73,6 +74,9 @@ export default function SharePanel({ calendarId, currentUserId, onClose }) {
             <button disabled={busy} className="px-4 py-2 rounded-xl bg-neutral-900 text-white text-sm disabled:opacity-50">{t('invite')}</button>
           </div>
         </form>
+        ) : (
+          <p className="text-sm text-neutral-500">{t('readOnly')}</p>
+        )}
 
         {msg && <p className={`text-sm ${msg.err ? 'font-medium text-neutral-900' : 'text-neutral-600'}`}>{msg.text}</p>}
 
@@ -83,11 +87,17 @@ export default function SharePanel({ calendarId, currentUserId, onClose }) {
                 {m.profiles?.display_name || m.profiles?.email}
               </span>
               <span className="flex items-center gap-2">
-                <select className="rounded-lg border border-neutral-200 px-2 py-1 text-xs" value={m.role}
-                  onChange={(e) => changeRole(m.user_id, e.target.value)}>
-                  {ROLES.map((r) => <option key={r} value={r}>{t(r)}</option>)}
-                </select>
-                <button onClick={() => remove(m.user_id)} className="text-xs text-neutral-500 hover:text-neutral-900">{t('remove')}</button>
+                {canManage ? (
+                  <>
+                    <select className="rounded-lg border border-neutral-200 px-2 py-1 text-xs" value={m.role}
+                      onChange={(e) => changeRole(m.user_id, e.target.value)}>
+                      {ROLES.map((r) => <option key={r} value={r}>{t(r)}</option>)}
+                    </select>
+                    <button onClick={() => remove(m.user_id)} className="text-xs text-neutral-500 hover:text-neutral-900">{t('remove')}</button>
+                  </>
+                ) : (
+                  <span className="text-xs text-neutral-500">{t(m.role)}</span>
+                )}
               </span>
             </li>
           ))}
@@ -97,8 +107,8 @@ export default function SharePanel({ calendarId, currentUserId, onClose }) {
               <span className="min-w-0 truncate text-neutral-500">{i.invitee_email}</span>
               <span className="flex shrink-0 items-center gap-2">
                 <span className="rounded-full border border-neutral-200 px-2 py-0.5 text-xs text-neutral-500">{t('pending')}</span>
-                <button onClick={() => cancel(i.id)} aria-label={`${t('cancelInvite')} ${i.invitee_email}`}
-                  className="text-xs text-neutral-500 hover:text-neutral-900">{t('cancelInvite')}</button>
+                {canManage && <button onClick={() => cancel(i.id)} aria-label={`${t('cancelInvite')} ${i.invitee_email}`}
+                  className="text-xs text-neutral-500 hover:text-neutral-900">{t('cancelInvite')}</button>}
               </span>
             </li>
           ))}
