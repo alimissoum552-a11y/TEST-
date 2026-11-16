@@ -10,8 +10,10 @@ Status: `[x]` shipped, `[~]` in progress, `[ ]` planned, `[!]` blocked.
 ## Current state (verified against the code and the database)
 
 Database tables: `profiles`, `calendars`, `events`, `calendar_members`,
-`calendar_invites`, `event_history`. Storage bucket: `avatars`.
-Edge functions: `send-invite` (Resend).
+`calendar_invites`, `event_history`, `messages`, `chat_ai_notes`, `ai_usage`.
+Storage bucket: `avatars`. Migrations 001 to 011 are applied in production.
+Edge functions: `send-invite`, `send-reminders` (cron), `assistant`, `chat-ai`.
+See `docs/OPERATIONS.md` for deploy and secrets, and `docs/AI.md` for the AI rules.
 
 ### Shipped
 
@@ -20,17 +22,33 @@ Edge functions: `send-invite` (Resend).
 - [x] Supabase project with RLS on every table
 - [x] Email / password auth; profile and default calendar created by trigger
 - [x] i18n: EN, FR, ES, DE, AR (RTL), PT; dates via locale
-- [x] Legal pages: Terms, Privacy, Cookie Policy, in 6 languages
-- [x] Events: create, edit, delete; title, location, description, start/end, reminder value
+- [x] Legal pages: Terms, Privacy, Cookie Policy, in 6 languages; AI and chat clauses added
+- [x] Events: create, edit, delete; title, location, description, start/end, reminder (chosen at creation and edit)
+- [x] Month view with navigation (previous, next, today), week list (Monday to Sunday), day view over 24 hours
 - [x] Realtime updates of the event list
+- [x] Reminder e-mails sent by a scheduled job (once per event, reset when the time changes)
 - [x] Sharing with roles: owner, administrator, contributor, reader
 - [x] Invitations: pending state, accept, decline, cancel, join link, e-mail
-- [x] Team panel with roles; owner row
+- [x] Invitation links: pending invitation kept in the browser; account mismatch offers sign-out; joined calendar selected
+- [x] Team panel with roles; owner row; notice that availability is shared with the AI
 - [x] Event history written by trigger; restore a previous version
 - [x] User avatars: initial fallback, photo upload to per-user storage
+- [x] Calendar selector: own calendars and those joined, with role and owner
 - [x] Custom domain `collyo.app` verified in Resend; sender `invites@collyo.app`,
       reply-to `support@collyo.app`, routing `invites@` to the owner inbox
-- [x] Deployment on Vercel
+- [x] Deployment on Vercel (by CLI; automatic deploys blocked, see OPERATIONS)
+- [x] AI assistant panel: personal, read-only, consent, shared availability only, daily cap
+- [x] Deterministic free-slot search with unit tests (time zones, daylight saving)
+- [x] Team chat per calendar: history, Realtime, online members, "is typing", @mentions, readers read-only
+- [x] Team chat AI, switched on by the owner only: replies to @AI / @IA / @KI, keeps shared notes
+- [x] Usage log per request (`ai_usage`) for pricing
+
+### Partly shipped (differs from the plan below)
+
+- [~] **AI assistant (S13 to S17)**: a read-only assistant and a chat AI are live. Tasks, focus blocks, the solver
+      and the proposal-and-confirm flow are not built. The chat AI and the assistant do not depend on S7 and S8
+      (entitlements, metering); they are capped per day only. This was a deliberate choice; see `docs/AI.md`, section 8.
+- [~] **S3. Reminders**: sent once by e-mail. Not yet in the user's time zone: the mail shows UTC.
 
 ### Corrections to the previous version of this file
 
@@ -54,9 +72,9 @@ from the backlog below.
       *Done when*: a weekly event returns the expected occurrences for 8 weeks,
       and editing "this occurrence" vs "all" is defined and documented.
 
-- [ ] **S3. Reminders and notifications.**
-      `reminder_minutes` is stored but nothing is sent. Add a scheduled job
-      (pg_cron + Edge Function) that sends due reminders by e-mail.
+- [~] **S3. Reminders and notifications.** Reminder e-mails are sent by a
+      scheduled job (pg_cron + Edge Function `send-reminders`), once per event.
+      Still open: the user's time zone in the mail, and push notifications.
       *Done when*: a reminder fires within 1 minute of its target time, once
       only (idempotent), in the user's timezone.
 
@@ -125,8 +143,9 @@ The pricing grid cannot be enforced before this phase is closed.
 
 ## Phase 3: AI assistant (S13 - S19)
 
-Depends on S7 and S8. The LLM understands intent; it does **not** compute
-the schedule.
+Originally planned to depend on S7 and S8. The assistant and the chat AI were
+shipped before them, with a daily cap; prices are to be set from `ai_usage` later.
+The LLM understands intent; it does **not** compute the schedule.
 
 - [ ] **S13. Tasks and focus blocks.**
       Tables `tasks` (duration, deadline, priority) and `focus_blocks`

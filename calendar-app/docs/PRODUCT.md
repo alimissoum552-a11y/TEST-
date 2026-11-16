@@ -44,7 +44,23 @@ It combines three ideas:
   task status) is recorded, and a previous version can be restored.
 - **Two-way sync** with Google, Outlook and Apple as a central layer, without duplicates.
 
-## Out of scope for the MVP
+## Delivered on top of the calendar
 
-AI planning, project decomposition, universal inbox, team orchestrator,
-external calendar sync. These are listed in `docs/ROADMAP.md`.
+- **Team chat per calendar**, with online members, "is typing" and @mentions.
+  Readers can read; writers can write; each author can delete their own messages.
+- **AI assistant** (personal): answers questions about the user's calendars and
+  suggests free times. Read-only; it reads titles only for the user's own
+  calendars, and only busy times for shared ones.
+- **AI in the team chat**, switched on only by the owner. When a member mentions
+  the AI, it replies and keeps shared notes of decisions, tasks and plans.
+- **Consent and transparency**: the assistant policy is accepted before first use;
+  members are told when the chat AI is on and that availability is shared.
+
+How these work, who can do what, and the limits are in `docs/AI.md`.
+
+## Not yet delivered
+
+Automatic planning (tasks, focus blocks, scheduling engine), project
+decomposition, universal inbox, team orchestrator, external calendar sync,
+plans and billing, the Claude subscription connector. These are listed in
+`docs/ROADMAP.md`.

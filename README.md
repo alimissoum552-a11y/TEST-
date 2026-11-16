@@ -1,51 +1,92 @@
 # Calendar App
 
 A collaborative web calendar: personal and shared calendars, roles, invitations,
-real-time updates, change history with restore, and a monochrome responsive UI in
-six languages.
+real-time updates, change history with restore, reminder e-mails, a team chat per
+calendar with an optional AI, an AI assistant for planning, and a monochrome
+responsive UI in six languages.
 
 **Live:** https://collyo.app (`www` redirects to the apex)
-**Domain:** `collyo.app` — Vercel hosting, Resend e-mail, Cloudflare DNS
-**Operator:** AI Solution Hub — Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal
+**Domain:** `collyo.app`: Vercel hosting, Resend e-mail, Cloudflare DNS
+**Operator:** AI Solution Hub, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal
 **Documentation updated:** 16 November 2026
+
+## Documentation
+
+| Document | For | Content |
+|---|---|---|
+| [README.md](README.md) | Everyone | This page: overview, layout, status |
+| [calendar-app/docs/PRODUCT.md](calendar-app/docs/PRODUCT.md) | Product | What the app is for, what is delivered, what is not |
+| [calendar-app/docs/AI.md](calendar-app/docs/AI.md) | Product, legal, engineering | AI features, who can do what, data flows, limits, open gaps |
+| [calendar-app/docs/OPERATIONS.md](calendar-app/docs/OPERATIONS.md) | Engineering | Migrations, functions, secrets, cron job, deploys |
+| [calendar-app/docs/ROADMAP.md](calendar-app/docs/ROADMAP.md) | Everyone | Ordered steps S1 to S30 with their status |
+| [calendar-app/AGENTS.md](calendar-app/AGENTS.md), [CLAUDE.md](calendar-app/CLAUDE.md) | AI coding agents | Notes for the design file (Figma) |
+
+`calendar-app/README.md` is the buyer guide of the Figma design package. It is not
+a project document.
+
+## Features
+
+- **Calendars**: your own calendar and the calendars shared with you, in a selector that
+  shows the owner and your role. Creating or renaming calendars in the interface is not
+  available yet.
+- **Events**: create, edit, delete; title, location, description, start and end,
+  reminder (0 to 60 minutes, chosen when creating or editing). History of every
+  change, with restore.
+- **Views**: month (navigable, six weeks always shown), week (seven days, Monday first),
+  day (24 hours).
+- **Sharing**: roles owner, administrator, contributor, reader. Invitations by
+  e-mail, with a join link, accept, decline and cancel. The invitee's account must
+  match the invited address. A pending invitation survives sign-out and sign-in.
+- **Reminders**: an e-mail to the event's creator, sent once when the reminder time is reached
+  (checked every minute).
+- **Team chat**: one chat per calendar, with history, live messages, online members,
+  "is typing", @mentions. Readers read; writers write.
+- **AI assistant** (menu **AI**): answers questions about your calendars and suggests
+  free times. Read-only. Requires accepting the AI policy first.
+- **AI in the team chat**: switched on only by the calendar owner. Replies when a
+  member mentions @AI (or @IA, @KI). Keeps shared notes of decisions and tasks.
+- **Languages**: English, French, Spanish, German, Arabic (right to left), Portuguese.
+- **Legal**: Terms, Privacy Policy and Cookie Policy in six languages, with the AI and chat clauses.
 
 ## Stack
 
-- **Front end:** React 18, Vite 5, Tailwind CSS 3 — no UI library, inline SVG icons
-- **Back end:** Supabase (Postgres 17, Auth, Storage, Realtime) in `eu-west-1`
-- **E-mail:** Resend, sent from a Supabase Edge Function so the key stays server-side
-- **Hosting:** Vercel (project `calendar-app`)
-- **i18n:** custom dictionaries — EN (default), FR, ES, DE, AR (RTL), PT
+- **Front end**: React 18, Vite 5, Tailwind CSS 3. No UI library; inline SVG icons.
+- **Back end**: Supabase (Postgres, Auth, Storage, Realtime, Edge Functions, pg_cron) in `eu-west-1`.
+- **AI**: Anthropic API (model `claude-sonnet-5-5`), called only from Edge Functions.
+- **E-mail**: Resend, sent from Edge Functions so the key stays on the server.
+- **Hosting**: Vercel, project `calendar-app`, deployed with the CLI (see OPERATIONS).
 
 ## Repository layout
 
 ```
+README.md                      This file
 calendar-app/
-  src/                 React app
-    App.jsx            Calendar shell: views, menu, event panels
-    SharePanel.jsx     Members, roles, invites, cancel
-    TeamPanel.jsx      Read-only team list with roles
-    InvitesPanel.jsx   Accept / decline pending invitations
-    JoinPage.jsx       #/join?invite=<id> — joins the team on the invitee's account
-    ProfilePanel.jsx   Avatar upload
-    LegalPage.jsx      Terms / Privacy / Cookies
-    legal.js           Legal content, six languages
-    router.js          Hash router (legal pages, join link, sign-in / sign-up)
-    i18n/index.jsx     Dictionaries, language picker, RTL handling
-    lib/supabase.js    Client (reads VITE_SUPABASE_*)
-    lib/api.js         All data access
+  src/                         React app
+    App.jsx                    Shell: views, menu, event panels, selector
+    ChatPanel.jsx              Team chat, owner's AI switch, AI notes
+    AssistantPanel.jsx         AI assistant (personal, read-only)
+    SharePanel.jsx             Members, roles, invitations
+    TeamPanel.jsx              Team list with roles and the AI notice
+    InvitesPanel.jsx           Pending invitations shown to the user
+    JoinPage.jsx               #/join?invite=<id>: joins on the matching account
+    Root.jsx                   Session, pending invitation, routing
+    ProfilePanel.jsx, Avatar.jsx
+    LegalPage.jsx, legal.js    Legal content, six languages
+    router.js                  Hash routes
+    i18n/index.jsx             Dictionaries (six languages), RTL
+    lib/api.js                 All data access (database, functions)
+    lib/calendar.js            Date helpers (month grid, weeks, labels)
+    lib/calendar.test.js       Unit tests for the date helpers
   supabase/
-    schema.sql              Base schema: profiles, calendars, events, RLS, triggers
-    migrations_001_*.sql    Sharing roles, history, realtime
-    migrations_002_*.sql    Share lookup, restore function
-    migrations_003_*.sql    Profiles readable by co-members
-    migrations_004_*.sql    Avatars bucket and storage policies
-    migrations_005_*.sql    Invitations, accept / decline
-    migrations_006_*.sql    Fix: read caller e-mail without touching auth.users
-    functions/send-invite/  Edge Function: invitation e-mail via Resend
-  docs/
-    PRODUCT.md         Product description and positioning
-    ROADMAP.md         Ordered development steps S1-S30
+    schema.sql                 Base schema
+    migrations_001 ... 011     Numbered migrations, applied in order
+    reminders_cron.sql         Scheduled job for reminder e-mails (run once)
+    functions/
+      send-invite/             Invitation e-mail (Resend)
+      send-reminders/          Reminder e-mails, called every minute
+      assistant/               AI assistant; scheduling helpers and their tests
+      chat-ai/                 AI replies and notes in the team chat
+  docs/                        Product, AI, operations, roadmap
 ```
 
 ## Local development
@@ -55,7 +96,7 @@ cd calendar-app
 npm install
 ```
 
-Create `calendar-app/.env.local`:
+Create `calendar-app/.env.local` with the public values of the Supabase project:
 
 ```
 VITE_SUPABASE_URL=https://<project-ref>.supabase.co
@@ -64,88 +105,67 @@ VITE_SUPABASE_ANON_KEY=<publishable key>
 
 ```bash
 npm run dev      # http://localhost:5173
+npm test         # unit tests
 npm run build    # production build in dist/
-npm run preview  # serve the build
 ```
 
-Without the two variables the app runs in a local, unauthenticated mode: this is
-intentional so the UI can be developed offline.
+Without the two variables the app runs in a local, unauthenticated mode, so the UI
+can be developed offline.
 
-## Database
+## Database and functions
 
-Apply the SQL files **in order** on a fresh project:
+Apply the migrations in order (`calendar-app/supabase/`), and the scheduled job once.
+Full list, secrets and checks: [calendar-app/docs/OPERATIONS.md](calendar-app/docs/OPERATIONS.md).
 
-1. `supabase/schema.sql`
-2. `supabase/migrations_001_sharing.sql`
-3. `supabase/migrations_002_share_api.sql`
-4. `supabase/migrations_003_team_profiles.sql`
-5. `supabase/migrations_004_avatars.sql`
-6. `supabase/migrations_005_invites.sql`
-7. `supabase/migrations_006_fix_auth_email.sql`
+Every table has row-level security enabled. Roles on a calendar: `owner`,
+`administrator`, `contributor`, `reader`. The permission table, checked against the
+policies, is in [calendar-app/docs/AI.md](calendar-app/docs/AI.md), section 2.
 
-Tables: `profiles`, `calendars`, `events`, `calendar_members`,
-`calendar_invites`, `event_history`. Storage bucket: `avatars` (public read,
-per-user write).
+Edge Functions: `send-invite`, `send-reminders`, `assistant`, `chat-ai`.
 
-Every table has row-level security enabled. Roles on a calendar:
-`owner`, `administrator`, `contributor`, `reader`.
+## Deployment
 
-## Edge Function
+Vercel project `calendar-app`, root directory `calendar-app`, framework Vite.
+Automatic deployments on push are blocked by a team setting, so production is
+deployed with the CLI, from a commit authored by an account of the team. The steps
+are in [calendar-app/docs/OPERATIONS.md](calendar-app/docs/OPERATIONS.md), section 4.
 
-`send-invite` sends the invitation e-mail and must have these secrets:
+## Status
 
-| Secret | Value |
-|---|---|
-| `RESEND_API_KEY` | Resend API key |
-| `INVITE_FROM` | `Calendar <invites@collyo.app>` |
-| `INVITE_REPLY_TO` | `support@collyo.app` |
-| `APP_URL` | Public app URL, used to build the join link |
+Delivered: everything in the Features section, plus the realtime updates, the
+invitation flow, the history and restore, avatars, the six languages, the legal
+pages, the sending domain, and the custom domain `collyo.app`.
 
-The function requires a signed-in user and only sends for calendars the caller
-can manage; RLS decides that, not the function.
+Not delivered yet: all-day events and recurring events in the interface, optimistic
+concurrency, automated permission tests in the repository, tasks and focus blocks,
+the scheduling engine, plans and billing, external calendar sync, the Claude
+subscription connector. The ordered plan is in
+[calendar-app/docs/ROADMAP.md](calendar-app/docs/ROADMAP.md).
 
-### E-mail addresses on collyo.app
+Known gaps and open decisions (for example readers triggering the chat AI, and the
+retention of usage records) are listed in [calendar-app/docs/AI.md](calendar-app/docs/AI.md), section 8.
 
-Active as of 16 November 2026. All addresses live in Cloudflare Email Routing
-and Resend; none of them uses a forwarding destination documented here.
+## E-mail addresses on collyo.app
+
+Active as of 16 November 2026. All addresses are handled by Cloudflare Email Routing
+and Resend.
 
 | Address | Purpose |
 |---|---|
 | `invites@collyo.app` | Sender of invitation e-mails (`INVITE_FROM`) |
 | `support@collyo.app` | Reply-to of invitations (`INVITE_REPLY_TO`), general contact in the legal pages |
 | `team@collyo.app` | Team contact |
-| `noreply@collyo.app` | Outgoing notifications that should not receive replies |
+| `noreply@collyo.app` | Outgoing notifications that should not receive replies (reminders) |
 
 Domain status: verified in Resend (DKIM, SPF, MX, CNAME all verified), with a
 DMARC record `v=DMARC1; p=none;`.
 
-## Deployment
-
-Vercel project `calendar-app`, root directory `calendar-app`, framework Vite.
-Environment variables: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`.
-
-Deployments are currently pushed with the Vercel API. Connecting the project to
-GitHub would make every push deploy automatically.
-
-## Status
-
-Delivered: events CRUD, realtime, sharing with roles, invitations with
-accept/decline/cancel, team panel, change history and restore, avatars, six
-languages, legal pages, custom sending domain, custom app domain `collyo.app`.
-
-Not delivered: AI assistant, tasks, focus blocks, scheduling engine, external
-calendar sync, billing and plan enforcement, analytics, notifications.
-
-See [docs/ROADMAP.md](calendar-app/docs/ROADMAP.md) for the ordered steps and
-[docs/PRODUCT.md](calendar-app/docs/PRODUCT.md) for the product description.
-
 ## Legal notice
 
 The legal pages were completed on 16 November 2026: data controller
-`AI Solution Hub`, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal,
-contact `support@collyo.app`, Portuguese law and the courts of Porto,
-processor locations and retention wording are filled in, and no placeholder
-remains. Each page shows the company name in the footer.
+`AI Solution Hub`, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal, contact
+`support@collyo.app`, Portuguese law and the courts of Porto. They are drafts and
+must be reviewed by a qualified lawyer before the paid launch.
 
 `calendar-app/Calendar App.fig` is a licensed design file owned by the project
 owner. Do not publish or redistribute it as a standalone file.
