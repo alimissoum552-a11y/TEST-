@@ -45,6 +45,19 @@ Deno.serve(async (req) => {
     // Visible to the caller means owner or member (RLS).
     const { data: cal } = await supa.from('calendars').select('id, name, owner_id, chat_ai_enabled').eq('id', calId).maybeSingle()
     if (!cal) return json({ error: 'not_allowed' }, 403)
+
+    // The AI writes notes and posts a reply, so the caller must have write rights:
+    // owner, administrator or contributor. A reader cannot trigger those writes.
+    let role: string | null = cal.owner_id === user.id ? 'owner' : null
+    if (!role) {
+      const { data: member } = await supa.from('calendar_members').select('role')
+        .eq('calendar_id', calId).eq('user_id', user.id).maybeSingle()
+      role = member?.role ?? null
+    }
+    if (!role || !['owner', 'administrator', 'contributor'].includes(role)) {
+      return json({ error: 'not_allowed' }, 403)
+    }
+
     if (!cal.chat_ai_enabled) return json({ error: 'ai_disabled' }, 409)
 
     const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
@@ -64,9 +77,9 @@ Deno.serve(async (req) => {
 
     const ids = [...new Set(recent.filter((m) => !m.is_ai).map((m) => m.user_id))]
     const { data: profiles } = ids.length
-      ? await supa.from('profiles').select('id, display_name, email').in('id', ids)
+      ? await supa.from('profiles').select('id, display_name').in('id', ids)
       : { data: [] as any[] }
-    const names = new Map((profiles ?? []).map((p: any) => [p.id, p.display_name || p.email || 'member']))
+    const names = new Map((profiles ?? []).map((p: any) => [p.id, p.display_name || 'member']))
 
     const { data: notesRow } = await supa.from('chat_ai_notes').select('content').eq('calendar_id', calId).maybeSingle()
     const notes = notesRow?.content ?? ''
