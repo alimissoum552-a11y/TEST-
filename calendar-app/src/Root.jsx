@@ -26,6 +26,8 @@ export default function Root() {
   const legal = useLegalRoute()
   const [hash, setHash] = useState(window.location.hash)
   const [recovery, setRecovery] = useState(() => /[#&?]type=recovery/.test(window.location.hash))
+  // Supabase puts error_code=otp_expired in the address when a link is expired or already used.
+  const [linkExpired] = useState(() => /[#&?]error_code=/.test(window.location.hash))
   useEffect(() => {
     const f = () => {
       setHash(window.location.hash)
@@ -96,6 +98,7 @@ export default function Root() {
   if (session === undefined) return <div className="min-h-screen bg-neutral-200" />
   if (!supabaseConfigured) return <App user={null} />
   // Visitors who are not signed in see the landing page at the root; sign-in and sign-up routes open the form.
+  if (!session && linkExpired) return <AuthScreen initialError="resetLinkExpired" />
   if (!session) return (routeInvite || consent || auth) ? <AuthScreen initialError={authError} /> : <Landing />
   if (consent) return <OAuthConsentPage key={consent} authorizationId={consent} />
   if (pending) {
