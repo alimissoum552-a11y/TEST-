@@ -3,7 +3,7 @@ import { useI18n, LanguageSelect } from './i18n/index.jsx'
 import SharePanel from './SharePanel.jsx'
 import TeamPanel from './TeamPanel.jsx'
 import ProfilePanel from './ProfilePanel.jsx'
-import LockPanel from './LockPanel.jsx'
+import PasskeyPanel from './PasskeyPanel.jsx'
 import InvitesPanel from './InvitesPanel.jsx'
 import AssistantPanel from './AssistantPanel.jsx'
 import ChatPanel from './ChatPanel.jsx'
@@ -27,6 +27,7 @@ const ICON_PATHS = {
   chat: <><path d="M4 5.5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-8l-4.5 3.5V16.5H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1z" /></>,
   ai: <><path d="M9.5 4.5c.4 3 2.1 4.8 5.1 5.2-3 .4-4.7 2.2-5.1 5.2-.4-3-2.1-4.8-5.1-5.2 3-.4 4.7-2.2 5.1-5.2z" /><path d="M18 3.5c.2 1.4.9 2.1 2.3 2.3-1.4.2-2.1.9-2.3 2.3-.2-1.4-.9-2.1-2.3-2.3 1.4-.2 2.1-.9 2.3-2.3z" /><path d="M17.5 14.5c.15 1 .6 1.45 1.6 1.6-1 .15-1.45.6-1.6 1.6-.15-1-.6-1.45-1.6-1.6 1-.15 1.45-.6 1.6-1.6z" /></>,
   lock: <><rect x="4.5" y="10.5" width="15" height="10" rx="2.5" /><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" /></>,
+  passkey: <><rect x="4.5" y="10.5" width="15" height="10" rx="2.5" /><path d="M8 10.5V8a4 4 0 0 1 7.5-2" /><circle cx="12" cy="15.5" r="1.2" /></>,
   lockOpen: <><rect x="4.5" y="10.5" width="15" height="10" rx="2.5" /><path d="M8 10.5V8a4 4 0 0 1 7.5-2" /></>,
   guide: <><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5v-15z" /><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H19v3H6.5A2.5 2.5 0 0 1 4 20.5z" /></>,
   profile: <><circle cx="12" cy="8.5" r="3.5" /><path d="M5 20c1.2-3.4 3.8-5 7-5s5.8 1.6 7 5" /></>,
@@ -414,7 +415,7 @@ function NewEventForm({ calendarId, userId, day, onCreated, onCancel }) {
   )
 }
 
-export default function App({ user, initialCalendarId = null, lockOn = false, onLockChanged, onLockNow }) {
+export default function App({ user, initialCalendarId = null }) {
   const { t, locale, lang } = useI18n()
   const [tab, setTab] = useState('month')
   const [selected, setSelected] = useState(() => startOfDay(new Date()))
@@ -428,7 +429,7 @@ export default function App({ user, initialCalendarId = null, lockOn = false, on
   const [connector, setConnector] = useState(false)
   const [me, setMe] = useState(null)
   const [profileOpen, setProfileOpen] = useState(false)
-  const [lockOpen, setLockOpen] = useState(false)
+  const [passkeyOpen, setPasskeyOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [calendar, setCalendar] = useState(null)
   const [events, setEvents] = useState([])
@@ -619,15 +620,9 @@ export default function App({ user, initialCalendarId = null, lockOn = false, on
                   {calendar && <button onClick={() => { setTeam(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="team" /> <span>{t('team')}</span></button>}
                   {calendar && <button onClick={() => { setSharing(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="share" /> <span>{t('sharing')}</span></button>}
                   <button onClick={() => { setMenuOpen(false); window.location.hash = '/ai-guide' }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="guide" /> <span>{t('aiGuide')}</span></button>
-                  <button onClick={() => setLockOpen((o) => !o)} aria-expanded={lockOpen} aria-label={t('lockMenuTitle')}
-                    className={`w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm ${lockOpen ? 'text-neutral-900 font-medium' : 'text-neutral-700 hover:text-neutral-900'}`}>
-                    <Icon name={lockOn ? 'lock' : 'lockOpen'} /> <span>{t('lockMenuTitle')}</span>
+                  <button onClick={() => { setPasskeyOpen(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900">
+                    <Icon name="passkey" /> <span>{t('passkeyTitle')}</span>
                   </button>
-                  {lockOpen && (
-                    <LockPanel inline enabled={lockOn} user={user} onClose={() => setLockOpen(false)}
-                      onChanged={(v) => { onLockChanged?.(v); setLockOpen(false) }}
-                      onLockNow={() => { setLockOpen(false); onLockNow?.() }} />
-                  )}
                   <button onClick={() => { setProfileOpen(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="profile" /> <span>{t('profile')}</span></button>
                   <button onClick={signOut} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="logout" /> <span>{t('signOut')}</span></button>
                 </section>
@@ -648,6 +643,7 @@ export default function App({ user, initialCalendarId = null, lockOn = false, on
         )}
 
         {user && <InvitesPanel onAnswered={() => setReloadKey((k) => k + 1)} />}
+        {passkeyOpen && user && <PasskeyPanel user={user} onClose={() => setPasskeyOpen(false)} />}
         {profileOpen && user && <ProfilePanel user={user} onClose={() => setProfileOpen(false)} onChanged={(url) => setMe((m) => ({ ...(m || {}), avatar_url: url }))} onHandleChanged={(h) => setMe((m) => ({ ...(m || {}), handle: h }))} />}
         {chat && user && activeCalendar && <ChatPanel key={activeCalendar.id} calendarId={activeCalendar.id} user={user} myHandle={me?.handle} canWrite={canWrite} isOwner={activeCalendar.my_role === 'owner'} onClose={() => setChat(false)} onApplied={() => setReloadKey((k) => k + 1)} />}
         {connector && user && <ConnectorGuide onClose={() => setConnector(false)} />}

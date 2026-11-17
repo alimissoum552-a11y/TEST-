@@ -8,8 +8,6 @@ import JoinPage from './JoinPage.jsx'
 import AiGuidePage from './AiGuidePage.jsx'
 import OAuthConsentPage from './OAuthConsentPage.jsx'
 import Landing from './Landing.jsx'
-import LockScreen from './LockScreen.jsx'
-import { isLockEnabled, migrateOldLock } from './lock.js'
 
 // A pending invitation is kept in this browser until it is answered or dismissed.
 // That way it survives sign-out, sign-in, and the e-mail confirmation step of a new account.
@@ -34,26 +32,6 @@ export default function Root() {
   const [pending, setPending] = useState(() => routeInvite || readPendingInvite())
   const [joinedCalendarId, setJoinedCalendarId] = useState(null)
   const [session, setSession] = useState(undefined) // undefined = loading
-  useEffect(() => { migrateOldLock() }, [])
-  const [lockOn, setLockOn] = useState(() => isLockEnabled())
-  const [locked, setLocked] = useState(() => isLockEnabled())
-
-  // Auto-lock after 10 minutes without interaction, only when the passcode is on.
-  useEffect(() => {
-    if (!session || !lockOn || locked) return
-    let timer
-    const reset = () => {
-      clearTimeout(timer)
-      timer = setTimeout(() => setLocked(true), 10 * 60_000)
-    }
-    reset()
-    const events = ['pointerdown', 'keydown', 'wheel', 'touchstart']
-    events.forEach((e) => window.addEventListener(e, reset, { passive: true }))
-    return () => {
-      clearTimeout(timer)
-      events.forEach((e) => window.removeEventListener(e, reset))
-    }
-  }, [session, lockOn, locked])
 
   useEffect(() => {
     if (routeInvite) { savePendingInvite(routeInvite); setPending(routeInvite) }
@@ -87,9 +65,5 @@ export default function Root() {
         onJoined={setJoinedCalendarId} onDone={finishInvite} />
     )
   }
-  if (lockOn && locked) return <LockScreen onUnlock={() => setLocked(false)} />
-  return (
-    <App user={session.user} initialCalendarId={joinedCalendarId}
-      lockOn={lockOn} onLockChanged={(v) => { setLockOn(v); setLocked(false) }} onLockNow={() => setLocked(true)} />
-  )
+  return <App user={session.user} initialCalendarId={joinedCalendarId} />
 }

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from './lib/supabase.js'
 import { useI18n, LanguageSelect, LanguageButton } from './i18n/index.jsx'
 import { goLegal, parseRoute } from './router.js'
+import { signInWithPasskey, deviceSupportsPasskey } from './passkeys.js'
 
 export default function AuthScreen() {
   const { t } = useI18n()
@@ -13,6 +14,8 @@ export default function AuthScreen() {
     setModeState(m)
     window.location.hash = `/${m}`
   }
+  useEffect(() => { deviceSupportsPasskey().then(setCanPasskey).catch(() => setCanPasskey(false)) }, [])
+
   useEffect(() => {
     const onHash = () => {
       const a = parseRoute(window.location.hash).auth
@@ -26,7 +29,20 @@ export default function AuthScreen() {
   const [name, setName] = useState('')
   const [busy, setBusy] = useState(false)
   const [accepted, setAccepted] = useState(false)
+  const [passkeyBusy, setPasskeyBusy] = useState(false)
+  const [canPasskey, setCanPasskey] = useState(false)
   const [message, setMessage] = useState(null)
+
+  async function usePasskey() {
+    setMessage(null)
+    if (!email.trim()) { setMessage({ type: 'error', text: t('passkeyNeedEmail') }); return }
+    setPasskeyBusy(true)
+    try { await signInWithPasskey(email.trim().toLowerCase()) }
+    catch (ex) {
+      const code = ex?.message || ''
+      setMessage({ type: 'error', text: code === 'no_passkey' ? t('passkeyNoPasskey') : (ex?.name === 'NotAllowedError' ? t('passkeyCancelled') : t('passkeyFailed')) })
+    } finally { setPasskeyBusy(false) }
+  }
 
   async function submit(e) {
     e.preventDefault()
@@ -74,6 +90,12 @@ export default function AuthScreen() {
         <button disabled={busy} className="w-full py-2.5 rounded-xl bg-neutral-900 text-white text-sm hover:bg-neutral-700 disabled:opacity-50">
           {busy ? '…' : mode === 'signin' ? 'Se connecter' : 'Créer le compte'}
         </button>
+        {mode === 'signin' && canPasskey && (
+          <button type="button" onClick={usePasskey} disabled={passkeyBusy}
+            className="w-full py-2.5 rounded-xl bg-neutral-100 text-neutral-900 text-sm disabled:opacity-50">
+            {passkeyBusy ? '…' : t('passkeySignIn')}
+          </button>
+        )}
         <button type="button" onClick={() => { setMode(mode === 'signin' ? 'signup' : 'signin'); setMessage(null) }}
           className="w-full text-sm text-neutral-500 hover:text-neutral-800">
           {mode === 'signin' ? t('noAccount') : t('haveAccount')}
