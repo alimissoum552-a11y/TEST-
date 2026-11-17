@@ -3,6 +3,7 @@ import { useI18n, LanguageSelect } from './i18n/index.jsx'
 import SharePanel from './SharePanel.jsx'
 import TeamPanel from './TeamPanel.jsx'
 import ProfilePanel from './ProfilePanel.jsx'
+import LockPanel from './LockPanel.jsx'
 import InvitesPanel from './InvitesPanel.jsx'
 import AssistantPanel from './AssistantPanel.jsx'
 import ChatPanel from './ChatPanel.jsx'
@@ -425,6 +426,7 @@ export default function App({ user, initialCalendarId = null }) {
   const [connector, setConnector] = useState(false)
   const [me, setMe] = useState(null)
   const [profileOpen, setProfileOpen] = useState(false)
+  const [lockOpen, setLockOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [calendar, setCalendar] = useState(null)
   const [events, setEvents] = useState([])
@@ -523,6 +525,23 @@ export default function App({ user, initialCalendarId = null }) {
           </div>
           <div className="flex items-center gap-3 shrink-0">
             {user && <NotificationBell userId={user.id} onOpen={openChatFor} />}
+            {user && (
+              <div className="relative">
+                <button type="button" onClick={() => setLockOpen((o) => !o)} aria-label={t('lockMenuTitle')} aria-expanded={lockOpen}
+                  title={t('lockMenuTitle')} className={`p-1.5 transition-colors ${lockOpen ? 'text-neutral-900' : lockOn ? 'text-neutral-900 hover:text-neutral-700' : 'text-neutral-400 hover:text-neutral-900'}`}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5" aria-hidden="true">
+                    {lockOn
+                      ? <><rect x="4.5" y="10.5" width="15" height="10" rx="2.5" /><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" /></>
+                      : <><rect x="4.5" y="10.5" width="15" height="10" rx="2.5" /><path d="M8 10.5V8a4 4 0 0 1 7.5-2" /></>}
+                  </svg>
+                </button>
+                {lockOpen && (
+                  <LockPanel enabled={lockOn} onClose={() => setLockOpen(false)}
+                    onChanged={(v) => { onLockChanged?.(v); setLockOpen(false) }}
+                    onLockNow={() => { setLockOpen(false); onLockNow?.() }} />
+                )}
+              </div>
+            )}
             {user && (
               <button type="button" onClick={() => setProfileOpen(true)} aria-label={t('profile')} className="rounded-full p-0.5 hover:opacity-80">
                 <Avatar name={me?.display_name} email={me?.email || user.email} url={me?.avatar_url} />
