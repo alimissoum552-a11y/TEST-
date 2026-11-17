@@ -257,6 +257,53 @@ function Carousel({ panels, label, startIndex = 0 }) {
   )
 }
 
+// Well-being example: a personal view (energy and a break suggestion) and a team view (load alert, no names).
+// Fixed sample data, shown as an example only.
+function WellbeingDemo({ L }) {
+  const [view, setView] = useState('me')
+  const energy = [70, 55, 85, 40, 60, 30, 75]
+  const members = [2.5, 3.5, 1.5, 4, 2, 3.2]
+  const tabs = [['me', L.wbPersonal], ['team', L.wbTeam]]
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex gap-2" role="group">
+          {tabs.map(([k, label]) => (
+            <button key={k} type="button" onClick={() => setView(k)} aria-pressed={view === k}
+              className={`px-3 py-1.5 rounded-full text-xs transition-colors ${view === k ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'}`}>
+              {label}
+            </button>
+          ))}
+        </div>
+        <span className="text-[10px] uppercase tracking-wide text-neutral-500">{L.wbExample}</span>
+      </div>
+
+      {view === 'me' ? (
+        <>
+          <p className="text-xs text-neutral-600">{L.wbBars}</p>
+          <div className="grid grid-cols-7 gap-1 h-16 items-end" aria-hidden="true">
+            {energy.map((e, i) => (
+              <div key={i} className={`rounded-md h-full ${i === 1 ? 'bg-neutral-900' : 'bg-neutral-200'}`} style={{ height: `${e}%`, alignSelf: 'end' }} />
+            ))}
+          </div>
+          <p className="text-xs text-neutral-700 min-h-[2.5rem]">{L.wbPersonalTip}</p>
+        </>
+      ) : (
+        <>
+          <p className="text-xs text-neutral-600">{L.wbTeamLabel}</p>
+          <div className="grid grid-cols-6 gap-1 h-16 items-end" aria-hidden="true">
+            {members.map((h, i) => (
+              <div key={i} className={`rounded-md ${h > 3 ? 'bg-neutral-900' : 'bg-neutral-200'}`} style={{ height: `${Math.min(100, (h / 4) * 100)}%` }} />
+            ))}
+          </div>
+          <p className="text-xs text-neutral-700 min-h-[2.5rem]">{L.wbTeamTip}</p>
+          <p className="text-[11px] text-neutral-500">{L.wbTeamNote}</p>
+        </>
+      )}
+    </div>
+  )
+}
+
 export default function Landing() {
   const { lang, t } = useI18n()
   const L = LANDING[lang] || LANDING.en
@@ -267,6 +314,7 @@ export default function Landing() {
     { id: 'calendar', title: L.calendar[0], text: L.calendar[1], render: () => <CalendarDemo /> },
     { id: 'team', title: L.team[0], text: L.team[1], render: (active) => <ChatDemo L={L} active={active} /> },
     { id: 'ai', title: L.ai[0], text: L.ai[1], sparkle: true, render: () => <AiDemo L={L} /> },
+    { id: 'wellbeing', title: L.wellbeing[0], text: L.wellbeing[1], render: () => <WellbeingDemo L={L} /> },
     { id: 'reminders', title: L.reminders[0], text: L.reminders[1], render: () => <RemindDemo L={L} /> },
     { id: 'share', title: L.share[0], text: L.share[1], render: () => <ShareDemo L={L} /> },
     { id: 'connector', title: L.connector[0], text: L.connector[1], render: () => <ConnectorDemo L={L} /> },
