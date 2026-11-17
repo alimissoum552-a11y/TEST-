@@ -37,6 +37,8 @@ project. Each file is written to be safe to re-run (`if not exists`, `drop polic
 | `migrations_018_family_rls_fix.sql` | Fix: infinite recursion between the row policies of `managed_profiles` and `profile_guardians` |
 | `migrations_019_name_match.sql` | `name_key()` (names compared in any order, without accents), clearer signing errors |
 | `migrations_020_minor_access.sql` | `profiles.account_type`, role `minor`, minor restrictions, `team_member_names()`, access and consent columns, `minor_consents`, `minor_login_attempts`, AI rule without operator approval |
+| `migrations_023_guardian_invites.sql` | `find_user_id_by_email()` (service role only), `profile_guardian_invites`, linking of an invited adult when the address is confirmed |
+| `migrations_022_sex_two_values.sql` | The sex of a managed profile is female, male or empty |
 | `migrations_021_minor_no_calendars.sql` | Fix found by the end-to-end test: a minor could create a calendar. Restrictive policies on `calendars`, invitations, members, usage and AI notes |
 
 Apply one migration (example with the Supabase Management API or the SQL editor). Then check the objects it creates.
@@ -67,7 +69,7 @@ happened once with `chat_ai_notes` (fixed in migration 011).
 | `wellbeing-team` | pg_cron, every hour | `x-cron-secret` header | Team well-being analysis: meeting load per day, message review, private distress alerts, group message at most every 12 hours, analysis journal. Deployed with `--no-verify-jwt`. |
 | `identity` | App (start) and Stripe (webhook) | User session for the start; Stripe signature for the webhook | Identity verification of the creators of family, sports team and class calendars. Deployed with `--no-verify-jwt`. |
 | `minor-access` | App (adult owner) and the minor login page | User session for create, regenerate, disable; none for login (limited attempts) | Access identifier of a minor and login. Deployed with `--no-verify-jwt`. |
-| `minor-consent` | App (adult owner) and the consent page | User session for the request; a one-time token for info and approve | Guardian consent by e-mail for a child who may be under 13. Deployed with `--no-verify-jwt`. |
+| `minor-consent` | App (adult owner) and the consent page | User session for the request; a one-time token for info and approve | Guardian consent by e-mail for a child who may be under 13, and invitation of an adult responsible by e-mail (with or without an account). Deployed with `--no-verify-jwt`. |
 | `team-admin` | App (calendar owner) | User session, owner of the calendar | Removes a minor profile together with the technical account of the minor, and deletes a calendar (minor accounts first, then the event history). The personal calendar cannot be deleted. |
 
 Deploy one function (the CLI asks for confirmation in agent mode; `--yes` confirms that one deploy):
@@ -174,6 +176,7 @@ change. Otherwise the job gets 403 until both match.
 | `wellbeing-log-retention` | `30 3 * * *` | `supabase/wellbeing_cron.sql` | Deletes analysis journal rows older than 90 days |
 | `family-purge-pending` | `40 3 * * *` | `supabase/family_cron.sql` | Deletes minor profiles still pending after 30 days |
 | `minor-attempts-purge` | `50 3 * * *` | `supabase/family_cron.sql` | Deletes minor login attempts older than one day |
+| `guardian-invites-purge` | `55 3 * * *` | `supabase/family_cron.sql` | Deletes invitations of adults responsible unused after 30 days |
 
 Check them: `select jobname, schedule, active from cron.job order by jobname;`
 

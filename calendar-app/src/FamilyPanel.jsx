@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useI18n } from './i18n/index.jsx'
 import {
   getIdentityStatus, refreshIdentityStatus, listManagedProfiles, addManagedProfile, signManagedProfile,
-  addGuardianByEmail, requestMinorConsent, createMinorAccess, regenerateMinorAccess, disableMinorAccess, removeManagedProfile,
+  inviteGuardian, requestMinorConsent, createMinorAccess, regenerateMinorAccess, disableMinorAccess, removeManagedProfile,
 } from './lib/api.js'
 import { isGroupKind, validBirthYear, needsResponsibleAdult, consentRequired } from './lib/family.js'
 
@@ -24,7 +24,7 @@ export default function FamilyPanel({ calendar, userId, isOwner }) {
   const [signingId, setSigningId] = useState(null)
   const [sign, setSign] = useState({ first: '', last: '', agree: false, ai: false, access: true })
   const [guardian, setGuardian] = useState({ profileId: '', email: '' })
-  const [guardianDone, setGuardianDone] = useState(false)
+  const [guardianDone, setGuardianDone] = useState(false) // false | 'added' | 'noMail' | 'invited'
   const [consentEmail, setConsentEmail] = useState({})
   const [issued, setIssued] = useState(null) // { name, id }: shown once
   const [removingId, setRemovingId] = useState(null)
@@ -50,6 +50,7 @@ export default function FamilyPanel({ calendar, userId, isOwner }) {
       consent_required: 'fmErrConsent',
       declaration_missing_access: 'fmErrAccessDecl',
       invalid_email: 'fmErrEmail',
+      is_owner: 'fmErrGuardianOwner',
       email_failed: 'fmErrEmailSend',
     })[message] || 'famErrGeneric'
   }
@@ -297,9 +298,9 @@ export default function FamilyPanel({ calendar, userId, isOwner }) {
           e.preventDefault()
           setBusy(true); setErr(null); setGuardianDone(false)
           try {
-            await addGuardianByEmail(guardian.profileId, guardian.email.trim())
+            const res = await inviteGuardian(guardian.profileId, guardian.email.trim())
             setGuardian({ profileId: guardian.profileId, email: '' })
-            setGuardianDone(true)
+            setGuardianDone(res.linked ? (res.emailed ? 'added' : 'noMail') : 'invited')
           } catch (ex) { setErr(t(errorKey(ex.message))) } finally { setBusy(false) }
         }} className="rounded-xl border border-neutral-200 p-3 space-y-3">
           <p className="text-xs font-semibold text-neutral-900">{t('famGuardianTitle')}</p>
@@ -312,7 +313,7 @@ export default function FamilyPanel({ calendar, userId, isOwner }) {
             onChange={(e) => setGuardian({ ...guardian, email: e.target.value })} />
           <button type="submit" disabled={busy || !guardian.profileId || !guardian.email.trim()}
             className="w-full py-2 rounded-xl bg-neutral-900 text-white text-xs disabled:opacity-50">{t('famGuardianAdd')}</button>
-          {guardianDone && <p className="text-xs text-neutral-700">{t('famGuardianAdded')}</p>}
+          {guardianDone && <p className="text-xs text-neutral-700">{t({ added: 'famGuardianAdded', noMail: 'fmGuardianNoMail', invited: 'fmGuardianInvited' }[guardianDone])}</p>}
         </form>
       )}
 

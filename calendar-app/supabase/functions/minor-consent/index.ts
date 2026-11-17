@@ -1,4 +1,5 @@
-// Guardian consent for a child who may be under 13 (docs/MINOR_APP.md, section 4).
+// Guardian consent for a child who may be under 13 (docs/MINOR_APP.md, section 4), and invitation of an adult responsible.
+// - invite_guardian: the owner adds an adult responsible by e-mail. They get an e-mail, with or without an account.
 // - request: the adult owner enters the guardian's e-mail; an e-mail with an approval link is sent.
 // - info and approve: no session. The guardian opens the link, reads what is collected, and approves.
 // The link carries a random token; only its hash is stored. It is valid 7 days and works once.
@@ -19,6 +20,7 @@ Deno.serve(async (req) => {
     const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
     const body = await req.json().catch(() => ({}))
     if (body?.action === 'request') return await requestConsent(req, admin, body)
+    if (body?.action === 'invite_guardian') return await inviteGuardian(req, admin, body)
     if (body?.action === 'info' || body?.action === 'approve') return await useToken(admin, body)
     return json({ error: 'unknown_action' }, 400)
   } catch (_e) {
@@ -90,6 +92,67 @@ async function requestConsent(req: Request, admin: any, body: any): Promise<Resp
   })
   if (!res.ok) return json({ error: 'email_failed' }, 502)
   return json({ ok: true })
+}
+
+// The owner adds an adult responsible by e-mail.
+// - An account exists: the adult is linked to the profile and added to the team calendar (contributor), and is told by e-mail.
+// - No account yet: an invitation is stored and an e-mail asks them to create an account; they are linked when the address is confirmed.
+async function inviteGuardian(req: Request, admin: any, body: any): Promise<Response> {
+  const supa = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!, {
+    global: { headers: { Authorization: req.headers.get('Authorization') ?? '' } },
+  })
+  const { data: { user } } = await supa.auth.getUser()
+  if (!user) return json({ error: 'unauthorized' }, 401)
+
+  const profileId = typeof body.profile_id === 'string' ? body.profile_id : ''
+  if (!/^[0-9a-f-]{36}$/i.test(profileId)) return json({ error: 'invalid_profile' }, 400)
+  const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : ''
+  if (!validEmail(email) || email.endsWith('@minor.collyo.app')) return json({ error: 'invalid_email' }, 400)
+
+  const { data: prof } = await admin.from('managed_profiles')
+    .select('id, first_name, calendar_id, calendars(owner_id, name)').eq('id', profileId).maybeSingle()
+  if (!prof || prof.calendars?.owner_id !== user.id) return json({ error: 'not_allowed' }, 403)
+
+  const { data: existingId } = await admin.rpc('find_user_id_by_email', { p_email: email })
+  if (existingId === user.id) return json({ error: 'is_owner' }, 409)
+
+  if (existingId) {
+    await admin.from('profile_guardians').upsert(
+      { profile_id: profileId, user_id: existingId, role: 'guardian' }, { onConflict: 'profile_id,user_id', ignoreDuplicates: true })
+    await admin.from('calendar_members').upsert(
+      { calendar_id: prof.calendar_id, user_id: existingId, role: 'contributor' }, { onConflict: 'calendar_id,user_id', ignoreDuplicates: true })
+  } else {
+    await admin.from('profile_guardian_invites').upsert(
+      { profile_id: profileId, email, invited_by: user.id }, { onConflict: 'profile_id,email', ignoreDuplicates: true })
+  }
+
+  const { data: ownerProfile } = await admin.from('profiles').select('display_name, email').eq('id', user.id).maybeSingle()
+  const ownerName = ownerProfile?.display_name || ownerProfile?.email || 'The team owner'
+  const appUrl = Deno.env.get('APP_URL') ?? 'https://collyo.app'
+  const team = prof.calendars?.name ?? ''
+  const link = existingId ? appUrl : `${appUrl}/#/signup`
+  const body1 = existingId
+    ? '<p>You were added to the team. Sign in with this address to see the team calendar and the chat, and to sign the declaration if one is waiting.</p>'
+    : `<p>Create an account with <strong>${escapeHtml(email)}</strong>. Once your address is confirmed you are added to the team automatically.</p>`
+  const html = `<div style="font-family:system-ui,sans-serif;color:#171717;line-height:1.5">
+  <p>${escapeHtml(ownerName)} named you as an adult responsible for <strong>${escapeHtml(prof.first_name)}</strong> in the team <strong>${escapeHtml(team)}</strong> on Collyo.</p>
+  ${body1}
+  <p><a href="${link}" style="display:inline-block;padding:10px 18px;border-radius:12px;background:#171717;color:#fff;text-decoration:none">${existingId ? 'Open Collyo' : 'Create my account'}</a></p>
+  <p style="font-size:13px;color:#525252">If you do not know ${escapeHtml(ownerName)}, do nothing and ignore this message.</p>
+</div>`
+  const sent = await sendMail(email, `${ownerName} named you responsible for ${prof.first_name} in "${team}"`, html)
+  return json({ ok: true, linked: !!existingId, emailed: sent })
+}
+
+async function sendMail(to: string, subject: string, html: string): Promise<boolean> {
+  const from = Deno.env.get('INVITE_FROM') ?? 'Calendar <onboarding@resend.dev>'
+  const replyTo = Deno.env.get('INVITE_REPLY_TO') ?? undefined
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${Deno.env.get('RESEND_API_KEY')}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ from, to: [to], ...(replyTo ? { reply_to: replyTo } : {}), subject, html }),
+  })
+  return res.ok
 }
 
 // info: what the guardian reads. approve: records the approval. Both use the same token checks.

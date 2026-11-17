@@ -21,3 +21,13 @@ select cron.schedule(
   '50 3 * * *',
   $$ delete from public.minor_login_attempts where created_at < now() - interval '1 day' $$
 );
+
+-- Invitations of adults responsible that were never used (no account created) are removed after 30 days.
+select cron.unschedule('guardian-invites-purge')
+  where exists (select 1 from cron.job where jobname = 'guardian-invites-purge');
+
+select cron.schedule(
+  'guardian-invites-purge',
+  '55 3 * * *',
+  $$ delete from public.profile_guardian_invites where created_at < now() - interval '30 days' $$
+);

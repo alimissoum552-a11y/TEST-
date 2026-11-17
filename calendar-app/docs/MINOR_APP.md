@@ -73,6 +73,7 @@ L'e-mail du propriétaire n'est pas un secret : l'**identifiant est le seul secr
 
 - **Option A, même connexion** : le parent utilise l'e-mail du propriétaire et l'identifiant du mineur. *Il apparaît alors comme le mineur dans le chat.* Je la déconseille pour la lecture du chat.
 - **Option B, compte adulte (recommandé)** : le parent crée un compte normal et le propriétaire l'invite par @pseudo (invitation existante). Il voit le calendrier et le chat sous son propre nom.
+- **Adulte responsable ajouté par e-mail** (panneau Famille) : s'il a un compte, il est lié au profil, ajouté au calendrier comme contributeur et **prévenu par e-mail** ; sinon une invitation est enregistrée, un e-mail lui demande de créer un compte, et il est lié **automatiquement quand son adresse est confirmée**. Ce n'est pas le consentement des moins de 13 ans, qui est un autre e-mail (section 4).
 
 ---
 

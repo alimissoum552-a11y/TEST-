@@ -600,3 +600,7 @@ export async function getTeamDirectory(calendarId) {
 // Owner-only, done on the server so the technical accounts of minors are deleted too (team-admin function).
 export const removeManagedProfile = (profileId) => callFunction('team-admin', { action: 'remove_profile', profile_id: profileId })
 export const deleteCalendar = (calendarId) => callFunction('team-admin', { action: 'delete_calendar', calendar_id: calendarId })
+
+// The owner names an adult responsible by e-mail. The server links the account (or stores an invitation) and sends an e-mail.
+export const inviteGuardian = (profileId, email) =>
+  callFunction('minor-consent', { action: 'invite_guardian', profile_id: profileId, email })
