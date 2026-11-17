@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import AiAvatar from './AiAvatar.jsx'
 import { useI18n } from './i18n/index.jsx'
-import { askAssistant, getAiAcceptedAt, acceptAssistantPolicy, getAiPermissions, setAiPermissions } from './lib/api.js'
+import { askAssistant, getAiAcceptedAt, acceptAssistantPolicy, getAiPermissions, setAiPermissions, getWellbeingSettings, saveWellbeingSettings } from './lib/api.js'
 
 // Conversation with the scheduling assistant. Read-only: it suggests times, the user creates events.
 // Answers are shown as plain text (never as HTML).
@@ -10,7 +10,7 @@ const ERROR_KEYS = {
   assistant_not_configured: 'assistantNotConfigured',
 }
 
-export default function AssistantPanel({ user, onClose, onApplied }) {
+export default function AssistantPanel({ user, onClose, onApplied, onOpenWellbeing }) {
   const { t, locale } = useI18n()
   const [accepted, setAccepted] = useState(undefined) // undefined = loading
   const [messages, setMessages] = useState([])
@@ -24,6 +24,20 @@ export default function AssistantPanel({ user, onClose, onApplied }) {
   useEffect(() => {
     getAiPermissions(user.id).then(setPerms).catch(() => {})
   }, [user.id])
+
+  // Well-being mode for the personal assistant. Without a profile yet, the form opens first.
+  const [wbRow, setWbRow] = useState(undefined) // undefined = loading, null = no settings yet
+  const [wbBusy, setWbBusy] = useState(false)
+  const wbOn = !!wbRow?.mode_enabled
+  useEffect(() => {
+    getWellbeingSettings(user.id).then(setWbRow).catch(() => setWbRow(null))
+  }, [user.id])
+  async function toggleWellbeing() {
+    if (!wbRow) { onOpenWellbeing?.(); return }
+    setWbBusy(true)
+    try { setWbRow(await saveWellbeingSettings(user.id, { mode_enabled: !wbRow.mode_enabled })) }
+    catch (ex) { setErr(ex.message) } finally { setWbBusy(false) }
+  }
 
   async function togglePerm(key) {
     const next = { ...perms, [key]: !perms[key] }
@@ -68,6 +82,11 @@ export default function AssistantPanel({ user, onClose, onApplied }) {
         <div className="flex items-center justify-between gap-3">
           <h3 className="text-lg font-semibold text-neutral-900">{t('assistant')}</h3>
           <div className="flex items-center gap-2">
+            <button type="button" onClick={toggleWellbeing} aria-pressed={wbOn} disabled={wbBusy}
+              aria-label={wbOn ? t('wbChatOff') : t('wbChatOn')} title={wbOn ? t('wbChatOff') : t('wbChatOn')}
+              className={`rounded-full px-2.5 py-1 text-xs border transition-colors disabled:opacity-50 ${wbOn ? 'border-neutral-900 bg-neutral-900 text-white' : 'border-neutral-300 text-neutral-600 hover:text-neutral-900'}`}>
+              {t('wbMenu')}
+            </button>
             <button type="button" onClick={() => setSettingsOpen((o) => !o)} aria-label={t('aiSettings')} aria-expanded={settingsOpen}
               className={`p-1.5 transition-colors ${settingsOpen ? 'text-neutral-900' : 'text-neutral-500 hover:text-neutral-900'}`}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5" aria-hidden="true">

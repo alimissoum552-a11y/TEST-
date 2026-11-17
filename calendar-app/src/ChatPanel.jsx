@@ -3,6 +3,7 @@ import { useI18n } from './i18n/index.jsx'
 import Avatar from './Avatar.jsx'
 import AiAvatar from './AiAvatar.jsx'
 import SparkleIcon from './SparkleIcon.jsx'
+import { TeamWellbeingNotice } from './TeamWellbeing.jsx'
 import { supabase } from './lib/supabase.js'
 import {
   listMembers, listMessages, sendMessage, deleteMessage, getNamesByIds,
@@ -204,6 +205,8 @@ export default function ChatPanel({ calendarId, user, myHandle, canWrite, isOwne
           <button type="button" onClick={onClose} className="text-sm text-neutral-500 hover:text-neutral-900">{t('close')}</button>
         </div>
       </header>
+
+      <TeamWellbeingNotice calendarId={calendarId} userId={user.id} />
 
       {aiOn && (
         <div className="px-5 py-3 border-b border-neutral-100 space-y-2 bg-neutral-50">

@@ -400,3 +400,53 @@ export async function setAiPermissions(userId, patch) {
     .upsert({ user_id: userId, updated_at: new Date().toISOString(), ...patch })
   if (error) throw error
 }
+
+// ---- Well-being (personal settings are owner-only; team settings are written by the calendar owner only) ----
+export async function getWellbeingSettings(userId) {
+  const { data, error } = await supabase.from('wellbeing_settings').select('*').eq('user_id', userId).maybeSingle()
+  if (error) throw error
+  return data || null
+}
+
+export async function saveWellbeingSettings(userId, patch) {
+  const { data, error } = await supabase
+    .from('wellbeing_settings').upsert({ user_id: userId, ...patch, updated_at: new Date().toISOString() }, { onConflict: 'user_id' })
+    .select('*').single()
+  if (error) throw error
+  return data
+}
+
+export async function getTeamWellbeing(calendarId) {
+  const { data, error } = await supabase.from('team_wellbeing').select('*').eq('calendar_id', calendarId).maybeSingle()
+  if (error) throw error
+  return data || null
+}
+
+// Owner only: the row policy refuses any other user, so a refused write returns no row.
+export async function saveTeamWellbeing(calendarId, userId, patch) {
+  const { data, error } = await supabase
+    .from('team_wellbeing')
+    .upsert({ calendar_id: calendarId, ...patch, updated_by: userId, updated_at: new Date().toISOString() }, { onConflict: 'calendar_id' })
+    .select('*')
+  if (error) throw error
+  if (!data?.length) throw new Error('not_allowed')
+  return data[0]
+}
+
+// A member can leave their own messages out of the team analysis (row exists = excluded).
+export async function getMyWellbeingOptout(calendarId, userId) {
+  const { data, error } = await supabase.from('team_wellbeing_optout').select('calendar_id')
+    .eq('calendar_id', calendarId).eq('user_id', userId).maybeSingle()
+  if (error) throw error
+  return !!data
+}
+
+export async function setMyWellbeingOptout(calendarId, userId, excluded) {
+  if (excluded) {
+    const { error } = await supabase.from('team_wellbeing_optout').upsert({ calendar_id: calendarId, user_id: userId }, { onConflict: 'calendar_id,user_id' })
+    if (error) throw error
+  } else {
+    const { error } = await supabase.from('team_wellbeing_optout').delete().eq('calendar_id', calendarId).eq('user_id', userId)
+    if (error) throw error
+  }
+}

@@ -7,6 +7,7 @@ import PasskeyPanel from './PasskeyPanel.jsx'
 import InvitesPanel from './InvitesPanel.jsx'
 import AssistantPanel from './AssistantPanel.jsx'
 import ChatPanel from './ChatPanel.jsx'
+import WellbeingPanel from './WellbeingPanel.jsx'
 import ConnectorGuide from './ConnectorGuide.jsx'
 import NotificationBell from './NotificationBell.jsx'
 import Avatar from './Avatar.jsx'
@@ -29,6 +30,7 @@ const ICON_PATHS = {
   lock: <><rect x="4.5" y="10.5" width="15" height="10" rx="2.5" /><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" /></>,
   passkey: <><rect x="4.5" y="10.5" width="15" height="10" rx="2.5" /><path d="M8 10.5V8a4 4 0 0 1 7.5-2" /><circle cx="12" cy="15.5" r="1.2" /></>,
   lockOpen: <><rect x="4.5" y="10.5" width="15" height="10" rx="2.5" /><path d="M8 10.5V8a4 4 0 0 1 7.5-2" /></>,
+  heart: <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" />,
   guide: <><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5v-15z" /><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H19v3H6.5A2.5 2.5 0 0 1 4 20.5z" /></>,
   profile: <><circle cx="12" cy="8.5" r="3.5" /><path d="M5 20c1.2-3.4 3.8-5 7-5s5.8 1.6 7 5" /></>,
   menu: <><path d="M4 7h16M4 12h16M4 17h16" /></>,
@@ -427,6 +429,7 @@ export default function App({ user, initialCalendarId = null }) {
   const [assistant, setAssistant] = useState(false)
   const [chat, setChat] = useState(false)
   const [connector, setConnector] = useState(false)
+  const [wellbeing, setWellbeing] = useState(false)
   const [me, setMe] = useState(null)
   const [profileOpen, setProfileOpen] = useState(false)
   const [passkeyOpen, setPasskeyOpen] = useState(false)
@@ -617,6 +620,7 @@ export default function App({ user, initialCalendarId = null }) {
                   {activeCalendar && <button onClick={() => { setChat(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="chat" /> <span>{t('chat')}</span></button>}
                   {user && <button onClick={() => { setConnector(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="plug" /> <span>{t('connectorMenu')}</span></button>}
                   <button onClick={() => { setAssistant(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="ai" /> <span>{t('assistant')}</span></button>
+                  {user && <button onClick={() => { setWellbeing(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="heart" /> <span>{t('wbMenu')}</span></button>}
                   {calendar && <button onClick={() => { setTeam(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="team" /> <span>{t('team')}</span></button>}
                   {calendar && <button onClick={() => { setSharing(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="share" /> <span>{t('sharing')}</span></button>}
                   <button onClick={() => { setMenuOpen(false); window.location.hash = '/ai-guide' }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="guide" /> <span>{t('aiGuide')}</span></button>
@@ -647,8 +651,9 @@ export default function App({ user, initialCalendarId = null }) {
         {profileOpen && user && <ProfilePanel user={user} onClose={() => setProfileOpen(false)} onChanged={(url) => setMe((m) => ({ ...(m || {}), avatar_url: url }))} onHandleChanged={(h) => setMe((m) => ({ ...(m || {}), handle: h }))} />}
         {chat && user && activeCalendar && <ChatPanel key={activeCalendar.id} calendarId={activeCalendar.id} user={user} myHandle={me?.handle} canWrite={canWrite} isOwner={activeCalendar.my_role === 'owner'} onClose={() => setChat(false)} onApplied={() => setReloadKey((k) => k + 1)} />}
         {connector && user && <ConnectorGuide onClose={() => setConnector(false)} />}
-        {assistant && user && <AssistantPanel user={user} onClose={() => setAssistant(false)} onApplied={() => setReloadKey((k) => k + 1)} />}
-        {team && activeCalendar && <TeamPanel calendarId={activeCalendar.id} ownerId={activeCalendar.owner_id} onClose={() => setTeam(false)} />}
+        {assistant && user && <AssistantPanel user={user} onClose={() => setAssistant(false)} onApplied={() => setReloadKey((k) => k + 1)} onOpenWellbeing={() => { setAssistant(false); setWellbeing(true) }} />}
+        {wellbeing && user && <WellbeingPanel user={user} onClose={() => setWellbeing(false)} />}
+        {team && activeCalendar && <TeamPanel calendarId={activeCalendar.id} ownerId={activeCalendar.owner_id} userId={user?.id} isOwner={activeCalendar.my_role === 'owner'} onClose={() => setTeam(false)} />}
         {sharing && activeCalendar && <SharePanel calendarId={activeCalendar.id} canManage={['owner','administrator'].includes(activeCalendar.my_role)} onClose={() => setSharing(false)} />}
         {openEvent && <EventDetail event={openEvent} onClose={() => setOpenEvent(null)} onDelete={handleDelete} onSave={handleSave} />}
       </div>
