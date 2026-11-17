@@ -63,3 +63,8 @@ export const clearPasskeyVerifications = () => {
     for (const k of Object.keys(sessionStorage)) if (k.startsWith(VERIFIED_PREFIX)) sessionStorage.removeItem(k)
   } catch { /* ignore */ }
 }
+
+export async function removeAllPasskeys(userId) {
+  const { error } = await supabase.from('webauthn_credentials').delete().eq('user_id', userId)
+  if (error) throw error
+}

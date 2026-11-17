@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useI18n, LanguageSelect } from './i18n/index.jsx'
-import { listPasskeys, addPasskey, removePasskey, deviceSupportsPasskey } from './passkeys.js'
+import { listPasskeys, addPasskey, removePasskey, removeAllPasskeys, deviceSupportsPasskey } from './passkeys.js'
 
 // Manage the passkeys of this account: add this device, remove one.
 export default function PasskeyPanel({ user, onClose }) {
@@ -12,6 +12,7 @@ export default function PasskeyPanel({ user, onClose }) {
   const [busy, setBusy] = useState(false)
 
   const load = () => listPasskeys(user.id).then(setItems).catch((e) => setErr(e.message))
+  const hasPasskey = (items || []).length > 0
   useEffect(() => { load(); deviceSupportsPasskey().then(setSupported).catch(() => setSupported(false)) }, [user.id])
 
   async function add() {
@@ -22,6 +23,11 @@ export default function PasskeyPanel({ user, onClose }) {
     } catch (e) {
       setErr(e?.name === 'NotAllowedError' || e?.name === 'AbortError' ? t('passkeyCancelled') : t('passkeyFailed'))
     } finally { setBusy(false) }
+  }
+
+  async function removeAll() {
+    setBusy(true); setErr(null); setMsg(null)
+    try { await removeAllPasskeys(user.id); await load() } catch (e) { setErr(e.message) } finally { setBusy(false) }
   }
 
   async function remove(id) {
@@ -39,10 +45,17 @@ export default function PasskeyPanel({ user, onClose }) {
         {supported === false && <p className="text-sm font-medium text-neutral-900">{t('passkeyUnsupported')}</p>}
 
         {supported !== false && (
-          <button type="button" onClick={add} disabled={busy || supported === null}
-            className="w-full py-2.5 rounded-xl bg-neutral-900 text-white text-sm disabled:opacity-50">
-            {busy ? '…' : t('passkeyAdd')}
-          </button>
+          hasPasskey ? (
+            <button type="button" onClick={removeAll} disabled={busy}
+              className="w-full py-2.5 rounded-xl bg-neutral-900 text-white text-sm disabled:opacity-50">
+              {busy ? '…' : t('passkeyRemove')}
+            </button>
+          ) : (
+            <button type="button" onClick={add} disabled={busy || supported === null}
+              className="w-full py-2.5 rounded-xl bg-neutral-900 text-white text-sm disabled:opacity-50">
+              {busy ? '…' : t('passkeyAdd')}
+            </button>
+          )
         )}
 
         <div className="space-y-2">
