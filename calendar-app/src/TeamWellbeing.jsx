@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react'
 import { useI18n } from './i18n/index.jsx'
 import {
-  getTeamWellbeing, saveTeamWellbeing, getMyWellbeingOptout, setMyWellbeingOptout,
+  getTeamWellbeing, saveTeamWellbeing, getMyWellbeingOptout, setMyWellbeingOptout, getWellbeingAnalysisLog,
 } from './lib/api.js'
 
 const DEFAULTS = { enabled: false, use_agenda: true, use_messages: false, meeting_hours_alert: 3 }
 
 // Owner-only settings for the team well-being mode. Members get the same block read-only.
 export function TeamWellbeingSettings({ calendarId, userId, isOwner }) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
+  const [log, setLog] = useState(null)
   const [form, setForm] = useState(DEFAULTS)
   const [loaded, setLoaded] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -41,6 +42,10 @@ export function TeamWellbeingSettings({ calendarId, userId, isOwner }) {
       setErr(ex.message === 'not_allowed' ? t('teamWbOwnerOnly') : ex.message)
     } finally { setBusy(false) }
   }
+
+  useEffect(() => {
+    if (isOwner) getWellbeingAnalysisLog(calendarId).then(setLog).catch(() => setLog([]))
+  }, [calendarId, isOwner])
 
   if (!loaded) return null
 
@@ -99,6 +104,8 @@ export function TeamWellbeingSettings({ calendarId, userId, isOwner }) {
 
       <button type="submit" disabled={busy || (form.enabled && !sourcesOk)}
         className="w-full px-4 py-2.5 rounded-xl bg-neutral-900 text-white text-sm disabled:opacity-50">{t('teamWbSave')}</button>
+
+      <AnalysisLog log={log} locale={locale} />
     </form>
   )
 }
@@ -142,5 +149,28 @@ export function TeamWellbeingNotice({ calendarId, userId }) {
       )}
       {err && <p className="text-xs font-medium text-neutral-900">{err}</p>}
     </div>
+  )
+}
+
+// Owner journal: when the analysis ran, what it read, and whether a group message was posted. Counts only.
+function AnalysisLog({ log, locale }) {
+  const { t } = useI18n()
+  if (log === null) return null
+  return (
+    <details className="rounded-xl border border-neutral-100 p-3">
+      <summary className="cursor-pointer text-sm font-medium text-neutral-900">{t(wbLogTitle)}</summary>
+      <p className="mt-2 text-xs text-neutral-500">{t(wbLogNote)}</p>
+      {log.length === 0 ? <p className="mt-2 text-xs text-neutral-500">{t(wbLogEmpty)}</p> : (
+        <ul className="mt-2 divide-y divide-neutral-100 text-xs text-neutral-700">
+          {log.map((r, i) => (
+            <li key={i} className="py-2 space-y-0.5">
+              <p className="text-neutral-900">{new Date(r.ran_at).toLocaleString(locale || undefined)}</p>
+              <p>{r.sources} · {r.messages_read} {t(wbLogMessages)} · {r.load_days} {t(wbLogDays)} · {r.crisis_alerts} {t(wbLogPrivate)}</p>
+              <p className="text-neutral-500">{r.posted ? t(wbLogPosted) : t(wbLogSilent)}</p>
+            </li>
+          ))}
+        </ul>
+      )}
+    </details>
   )
 }

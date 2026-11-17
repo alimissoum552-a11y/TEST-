@@ -450,3 +450,25 @@ export async function setMyWellbeingOptout(calendarId, userId, excluded) {
     if (error) throw error
   }
 }
+
+// Private well-being alerts: only the person concerned can read or mark them.
+export async function listMyWellbeingAlerts(userId) {
+  const { data, error } = await supabase.from('wellbeing_alerts').select('id, calendar_id, kind, created_at, read_at')
+    .eq('user_id', userId).order('created_at', { ascending: false }).limit(20)
+  if (error) throw error
+  return data ?? []
+}
+
+export async function markWellbeingAlertRead(id) {
+  const { error } = await supabase.from('wellbeing_alerts').update({ read_at: new Date().toISOString() }).eq('id', id)
+  if (error) throw error
+}
+
+// Owner only (RLS): counts and sources of recent team analyses. Never message text.
+export async function getWellbeingAnalysisLog(calendarId, limit = 10) {
+  const { data, error } = await supabase.from('wellbeing_analysis_log')
+    .select('ran_at, sources, messages_read, load_days, crisis_alerts, posted')
+    .eq('calendar_id', calendarId).order('ran_at', { ascending: false }).limit(limit)
+  if (error) throw error
+  return data ?? []
+}

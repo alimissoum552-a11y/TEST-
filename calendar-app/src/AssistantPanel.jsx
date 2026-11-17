@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import AiAvatar from './AiAvatar.jsx'
+import { CrisisResources } from './WellbeingPanel.jsx'
 import { useI18n } from './i18n/index.jsx'
 import { askAssistant, getAiAcceptedAt, acceptAssistantPolicy, getAiPermissions, setAiPermissions, getWellbeingSettings, saveWellbeingSettings } from './lib/api.js'
 
@@ -65,7 +66,7 @@ export default function AssistantPanel({ user, onClose, onApplied, onOpenWellbei
     try {
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
       const res = await askAssistant(next.map(({ role, content: c }) => ({ role, content: c })), timezone, locale)
-      setMessages([...next, { role: 'assistant', content: res.reply, consulted: res.consulted || [], applied: res.applied || [] }])
+      setMessages([...next, { role: 'assistant', content: res.reply, crisis: !!res.crisis, consulted: res.consulted || [], applied: res.applied || [] }])
       if (res.applied?.length) onApplied?.()
     } catch (ex) {
       if (ex.message === 'consent_required') setAccepted(false)
@@ -139,6 +140,7 @@ export default function AssistantPanel({ user, onClose, onApplied, onOpenWellbei
                     <p className={`rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap ${m.role === 'user' ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-900'}`}>
                       {m.content}
                     </p>
+                    {m.role === 'assistant' && m.crisis && <div className="mt-2"><CrisisResources /></div>}
                     {m.role === 'assistant' && m.consulted?.length > 0 && (
                       <p className="mt-1 text-xs text-neutral-500">{t('assistantConsulted')} {m.consulted.join(', ')}</p>
                     )}

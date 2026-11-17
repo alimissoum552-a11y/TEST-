@@ -1,6 +1,6 @@
 # Mode bien-être : conception
 
-Statut : **conception validée. Interface et réglages implantés (non commités) ; l'analyse IA n'est pas encore branchée** (voir section 11). Ce document fixe les décisions prises avant tout code.
+Statut : **conception validée. Interface et réglages déployés ; analyse IA codée et testée localement, pas encore déployée** (migration 015, fonction `wellbeing-team`, cron). Voir section 12. Ce document fixe les décisions prises avant tout code.
 Il complète `docs/AI.md` (fonctions IA existantes) et doit être relu par un juriste avant mise en ligne.
 
 ---
@@ -131,3 +131,14 @@ Règles communes aux deux contextes, à valider par un professionnel de santé m
 4. Mode équipe : charge à partir de l'agenda, avis visible, réglages propriétaire.
 5. Mode équipe : analyse des messages, retrait individuel, règles de crise.
 6. Bilan hebdomadaire, journal d'analyse, export et suppression.
+
+## 12. Branchement de l'IA (état)
+
+- **Équipe** : `supabase/functions/wellbeing-team` (cron horaire, `supabase/wellbeing_cron.sql`).
+  - Agenda : charge de réunions par jour sur les 7 prochains jours, à partir des événements du calendrier. Hypothèse : tous les événements à heure fixe comptent comme réunions, et les jours sont comptés en UTC.
+  - Messages : fenêtre d'une heure, membres exclus retirés, au moins 3 messages avant tout appel au modèle. Le modèle reçoit des messages numérotés sans nom, et ne renvoie que des indices et des drapeaux.
+  - Signal de crise : une alerte privée (table `wellbeing_alerts`), visible par la seule personne concernée, avec les ressources standard. Rien n'est dit au groupe.
+  - Message de groupe : au plus un toutes les 12 heures, sans nom, avec des faits chiffrés seulement.
+  - Journal : table `wellbeing_analysis_log` (sources, compteurs, jamais le texte des messages), lisible par le propriétaire, conservée 90 jours.
+- **Personnel** : `assistant` reçoit le contexte bien-être, et les outils `log_checkin` et `get_checkins` (seulement si le bilan est autorisé). Si l'agenda n'est pas autorisé pour le bien-être, le modèle ne l'utilise que pour les demandes de planification. Le marqueur `[[CRISIS]]` déclenche l'affichage des ressources.
+- **Limites connues** : pas de journal visible dans l'interface ; la détection de crise repose sur un modèle et n'a pas été validée cliniquement (section 9.3) ; l'analyse ne distingue pas une réunion d'un autre événement.

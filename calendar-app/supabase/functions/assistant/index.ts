@@ -148,7 +148,17 @@ Deno.serve(async (req) => {
     const { data: permRow } = await supa.from('ai_permissions')
       .select('can_create, can_update, can_delete').eq('user_id', user.id).maybeSingle()
     const allowed = { create: !!permRow?.can_create, update: !!permRow?.can_update, delete: !!permRow?.can_delete }
-    const tools = [...TOOLS, ...Object.entries(allowed).filter(([, ok]) => ok).map(([k]) => WRITE_TOOLS[k + '_event'])]
+    // Well-being mode: only when the user switched it on, and only what they allowed (RLS: owner only).
+    const { data: wb } = await supa.from('wellbeing_settings')
+      .select('mode_enabled, age_band, family_status, checkin_enabled, mood_in_checkin, agenda_analysis')
+      .eq('user_id', user.id).maybeSingle()
+    const wellbeing = wb?.mode_enabled ? wb : null
+    const wellbeingTools = wellbeing?.checkin_enabled ? WELLBEING_TOOLS : []
+    const tools = [
+      ...TOOLS,
+      ...Object.entries(allowed).filter(([, ok]) => ok).map(([k]) => WRITE_TOOLS[k + '_event']),
+      ...wellbeingTools,
+    ]
 
     const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
     const since = new Date(Date.now() - 24 * 3600_000).toISOString()
@@ -163,7 +173,8 @@ Deno.serve(async (req) => {
     const applied: { action: string; id: string; title: string }[] = []
     let toolCalls = 0
 
-    const system = systemPrompt({ now: new Date(), timeZone, locale, allowed })
+    const system = [systemPrompt({ now: new Date(), timeZone, locale, allowed }), wellbeing ? wellbeingPrompt(wellbeing) : '']
+      .filter(Boolean).join('\n\n')
     const convo: any[] = messages.map((m) => ({ role: m.role, content: m.content }))
     let inputTokens = 0
     let outputTokens = 0
@@ -184,7 +195,9 @@ Deno.serve(async (req) => {
         const results = []
         for (const block of r.content.filter((b: any) => b.type === 'tool_use')) {
           toolCalls++
-          const out = await runTool(block.name, block.input ?? {}, { supa, byId, consulted, timeZone, allowed, applied })
+          const out = (block.name === 'log_checkin' || block.name === 'get_checkins')
+            ? await wellbeingTool(supa, user.id, block.name, block.input ?? {}, wellbeing)
+            : await runTool(block.name, block.input ?? {}, { supa, byId, consulted, timeZone, allowed, applied })
           results.push({ type: 'tool_result', tool_use_id: block.id, content: JSON.stringify(out) })
         }
         convo.push({ role: 'user', content: results })
@@ -194,14 +207,83 @@ Deno.serve(async (req) => {
       await admin.from('ai_usage').insert({
         user_id: user.id, model: MODEL, input_tokens: inputTokens, output_tokens: outputTokens, tool_calls: toolCalls,
       })
-      const reply = r.content.filter((b: any) => b.type === 'text').map((b: any) => b.text).join('\n').trim()
-      return json({ reply, consulted: [...consulted], applied })
+      const raw = r.content.filter((b: any) => b.type === 'text').map((b: any) => b.text).join('\n').trim()
+      // The model starts its answer with this marker when the user shows serious distress. The app then shows help.
+      const crisis = raw.startsWith(CRISIS_MARKER)
+      const reply = crisis ? raw.slice(CRISIS_MARKER.length).trimStart() : raw
+      return json({ reply, crisis, consulted: [...consulted], applied })
     }
     return json({ error: 'too_many_steps' }, 500)
   } catch (e) {
     return json({ error: 'server_error' }, 500)
   }
 })
+
+// ---- well-being mode (personal) ----
+const CRISIS_MARKER = '[[CRISIS]]'
+
+const WELLBEING_TOOLS = [
+  {
+    name: 'log_checkin',
+    description: "Record today's energy check-in for this user. Only when the user gives a score or agrees to log it.",
+    input_schema: {
+      type: 'object',
+      properties: {
+        energy: { type: 'integer', minimum: 1, maximum: 10, description: 'Energy from 1 (empty) to 10 (full)' },
+        mood: { type: 'integer', minimum: 1, maximum: 5, description: 'Mood from 1 to 5, only if the user agreed to log mood' },
+      },
+      required: ['energy'],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'get_checkins',
+    description: "Read this user's recent energy check-ins, to spot tiring days and routines.",
+    input_schema: {
+      type: 'object',
+      properties: { days: { type: 'integer', minimum: 1, maximum: 30 } },
+      additionalProperties: false,
+    },
+  },
+]
+
+function wellbeingPrompt(wb: any): string {
+  const lines = [
+    'Well-being mode is ON for this user. You act as a well-being consultant: energy, routine, breaks and work-life balance.',
+    'You are not a doctor. Never diagnose, never name a condition, never suggest medication. When a professional would help, say so.',
+    wb.checkin_enabled
+      ? 'Energy check-ins: you may use log_checkin and get_checkins. Mood is recorded only if the user agreed to it.'
+      : 'Do not record or read check-ins: the user has not allowed them.',
+    wb.agenda_analysis
+      ? "You may use the user's schedule (list_my_events, get_busy_times) to advise on busy days and breaks."
+      : "Do not use the user's schedule for well-being advice. Use schedule tools only for scheduling requests they make.",
+    `Crisis rule: if the user shows serious distress, hopelessness, or thoughts of harming themselves or others, stop all coaching. Encourage them to contact local emergency services or a trusted person now, and begin your reply with the exact marker ${CRISIS_MARKER}. Answer in the user's language.`,
+  ]
+  if (wb.age_band || wb.family_status) {
+    lines.push(`Optional profile, only to adapt the pace: age band ${wb.age_band ?? 'not given'}, family situation ${wb.family_status ?? 'not given'}.`)
+  }
+  return lines.join('\n')
+}
+
+async function wellbeingTool(supa: SupabaseClient, userId: string, name: string, input: any, wb: any) {
+  if (!wb?.checkin_enabled) return { error: 'checkins_disabled' }
+  const today = new Date().toISOString().slice(0, 10)
+  if (name === 'log_checkin') {
+    const energy = Number(input.energy)
+    if (!Number.isInteger(energy) || energy < 1 || energy > 10) return { error: 'energy must be 1 to 10' }
+    const mood = wb.mood_in_checkin && Number.isInteger(input.mood) && input.mood >= 1 && input.mood <= 5 ? input.mood : null
+    const { error } = await supa.from('wellbeing_checkins')
+      .upsert({ user_id: userId, day: today, energy, mood }, { onConflict: 'user_id,day' })
+    if (error) return { error: error.message }
+    return { saved: { day: today, energy, mood } }
+  }
+  // get_checkins
+  const days = Math.min(30, Math.max(1, Number.isInteger(input.days) ? input.days : 14))
+  const { data, error } = await supa.from('wellbeing_checkins').select('day, energy, mood')
+    .eq('user_id', userId).order('day', { ascending: false }).limit(days)
+  if (error) return { error: error.message }
+  return { checkins: (data ?? []).map((c: any) => wb.mood_in_checkin ? c : { day: c.day, energy: c.energy }) }
+}
 
 // ---- tools ----
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useI18n } from './i18n/index.jsx'
-import { getWellbeingSettings, saveWellbeingSettings } from './lib/api.js'
+import { getWellbeingSettings, saveWellbeingSettings, listMyWellbeingAlerts, markWellbeingAlertRead } from './lib/api.js'
 
 const DEFAULTS = {
   mode_enabled: false,
@@ -41,6 +41,11 @@ export default function WellbeingPanel({ user, onClose, onSaved }) {
   const [busy, setBusy] = useState(false)
   const [saved, setSaved] = useState(false)
   const [err, setErr] = useState(null)
+  const [alerts, setAlerts] = useState([])
+
+  useEffect(() => {
+    listMyWellbeingAlerts(user.id).then(setAlerts).catch(() => {})
+  }, [user.id])
 
   useEffect(() => {
     getWellbeingSettings(user.id)
@@ -85,6 +90,20 @@ export default function WellbeingPanel({ user, onClose, onSaved }) {
           <button type="button" onClick={onClose} className="text-sm text-neutral-500 hover:text-neutral-900">{t('close')}</button>
         </div>
         <p className="text-xs text-neutral-600">{t('wbIntro')}</p>
+
+        {alerts.some((a) => !a.read_at) && (
+          <section className="rounded-2xl border border-neutral-900 p-4 space-y-3" aria-label={t('wbAlertsTitle')}>
+            <p className="text-sm font-semibold text-neutral-900">{t('wbAlertsTitle')}</p>
+            {alerts.filter((a) => !a.read_at).map((a) => (
+              <div key={a.id} className="space-y-2">
+                <p className="text-xs text-neutral-700">{t('wbAlertCrisis')}</p>
+                <CrisisResources />
+                <button type="button" onClick={async () => { await markWellbeingAlertRead(a.id).catch(() => {}); setAlerts((list) => list.map((x) => x.id === a.id ? { ...x, read_at: new Date().toISOString() } : x)) }}
+                  className="text-xs text-neutral-900 underline underline-offset-2">{t('wbAlertDismiss')}</button>
+              </div>
+            ))}
+          </section>
+        )}
 
         {loading ? <p className="text-sm text-neutral-400">…</p> : (
           <>
