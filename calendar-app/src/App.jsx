@@ -635,7 +635,7 @@ export default function App({ user, initialCalendarId = null }) {
                     className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900">
                     <Icon name="language" /> <span>{lang.toUpperCase()}</span>
                   </button>
-                  {langOpen && <LanguageSelect onPick={() => setLangOpen(false)} placement="down" />}
+                  {langOpen && <LanguageSelect onPick={() => setLangOpen(false)} placement="inline" />}
                 </div>
               </section>
             </aside>

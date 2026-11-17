@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
 
 export const LANGUAGES = [
   { code: 'en', label: 'English' },
@@ -1127,10 +1127,17 @@ export function useI18n() {
 
 export function LanguageSelect({ onPick, placement = 'down' }) {
   const { lang, setLang, t } = useI18n()
-  const pos = placement === 'up' ? 'bottom-full mb-2 left-1/2 -translate-x-1/2' : 'end-0 top-full mt-2'
+  const ref = useRef(null)
+  // In the side menu, bring the list into view so it is not hidden below the screen.
+  useEffect(() => { if (placement === 'inline') ref.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }) }, [placement])
+  // 'inline' opens the list in the normal page flow (used inside the side menu, which scrolls, so a floating list
+  // would be pushed off the bottom of the screen). 'down' floats under the button, aligned to its end.
+  const box = placement === 'inline'
+    ? 'relative w-full mt-2 overflow-hidden rounded-2xl bg-neutral-50 p-1'
+    : `absolute z-20 w-44 ${placement === 'up' ? 'bottom-full mb-2 left-1/2 -translate-x-1/2' : 'end-0 top-full mt-2'} overflow-hidden rounded-2xl bg-white p-1 shadow-xl ring-1 ring-neutral-200`
   return (
-    <ul role="listbox" aria-label={t('language')}
-      className={`absolute z-20 w-44 ${pos} overflow-hidden rounded-2xl bg-white p-1 shadow-xl ring-1 ring-neutral-200`}>
+    <ul ref={ref} role="listbox" aria-label={t('language')}
+      className={box}>
       {LANGUAGES.map((l) => (
         <li key={l.code}>
           <button type="button" role="option" aria-selected={lang === l.code}

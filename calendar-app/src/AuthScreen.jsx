@@ -128,7 +128,7 @@ export default function AuthScreen({ initialError = null }) {
         </button>
         <div className="relative flex justify-center pt-2">
           <LanguageButton open={langOpen} onToggle={() => setLangOpen((o) => !o)} />
-          {langOpen && <LanguageSelect onPick={() => setLangOpen(false)} placement="up" />}
+          {langOpen && <LanguageSelect onPick={() => setLangOpen(false)} placement="down" />}
         </div>
       </form>
       </div>
