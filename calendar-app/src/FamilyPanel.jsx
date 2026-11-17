@@ -14,7 +14,8 @@ const field = 'w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm foc
 // Minors are added here by the owner and stay pending until an adult responsible signs the declaration.
 export default function FamilyPanel({ calendar, userId, isOwner }) {
   const { t } = useI18n()
-  const [kind, setKind] = useState(calendar.kind || 'work')
+  const [kind, setKind] = useState(calendar.kind || 'work') // saved type
+  const [choice, setChoice] = useState(calendar.kind || 'work') // what the owner picked, even if not saved yet
   const [identity, setIdentity] = useState(null)
   const [profiles, setProfiles] = useState([])
   const [busy, setBusy] = useState(false)
@@ -30,6 +31,12 @@ export default function FamilyPanel({ calendar, userId, isOwner }) {
     if (isOwner) getIdentityStatus(userId).then(setIdentity).catch(() => setIdentity({ status: 'none' }))
   }, [isOwner, userId])
 
+  // Back from Stripe: once verified, the type the owner already picked is saved automatically.
+  useEffect(() => {
+    if (isOwner && identity?.status === 'verified' && isGroupKind(choice) && !isGroupKind(kind)) changeKind(choice)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [identity, choice, kind, isOwner])
+
   useEffect(() => {
     if (isGroupKind(kind)) listManagedProfiles(calendar.id).then(setProfiles).catch((ex) => setErr(ex.message))
   }, [calendar.id, kind])
@@ -43,11 +50,11 @@ export default function FamilyPanel({ calendar, userId, isOwner }) {
   }
 
   async function changeKind(next) {
-    setBusy(true); setErr(null); setNotice(null)
+    setChoice(next); setBusy(true); setErr(null); setNotice(null)
     try {
       setKind(await setCalendarKind(calendar.id, next))
     } catch (ex) {
-      setErr(ex.message === 'creator_not_verified' ? t('famErrCreator') : t(errorKey(ex.message)))
+      setErr(t(errorKey(ex.message)))
     } finally { setBusy(false) }
   }
 
@@ -101,13 +108,13 @@ export default function FamilyPanel({ calendar, userId, isOwner }) {
 
       <div className="space-y-1">
         <label htmlFor="fam-kind" className="block text-sm font-medium text-neutral-900">{t('famKindLabel')}</label>
-        <select id="fam-kind" className={field} value={kind} disabled={!isOwner || busy}
+        <select id="fam-kind" className={field} value={choice} disabled={!isOwner || busy}
           onChange={(e) => changeKind(e.target.value)}>
           {KINDS.map((k) => <option key={k} value={k}>{t(`famKind_${k}`)}</option>)}
         </select>
       </div>
 
-      {isOwner && identity && group && identity.status !== 'verified' && (
+      {isOwner && identity && isGroupKind(choice) && identity.status !== 'verified' && (
         <div className="rounded-xl bg-neutral-50 p-3 space-y-2">
           <p className="text-xs text-neutral-700">{identity.status === 'pending' ? t('famIdentityPending') : t('famVerifyNeeded')}</p>
           {identity.status !== 'pending' && (
