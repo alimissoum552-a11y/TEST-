@@ -153,20 +153,20 @@ export function TeamWellbeingNotice({ calendarId, userId }) {
 }
 
 // Owner journal: when the analysis ran, what it read, and whether a group message was posted. Counts only.
-function AnalysisLog({ log, locale }) {
+export function AnalysisLog({ log, locale }) {
   const { t } = useI18n()
   if (log === null) return null
   return (
     <details className="rounded-xl border border-neutral-100 p-3">
-      <summary className="cursor-pointer text-sm font-medium text-neutral-900">{t(wbLogTitle)}</summary>
-      <p className="mt-2 text-xs text-neutral-500">{t(wbLogNote)}</p>
-      {log.length === 0 ? <p className="mt-2 text-xs text-neutral-500">{t(wbLogEmpty)}</p> : (
+      <summary className="cursor-pointer text-sm font-medium text-neutral-900">{t('wbLogTitle')}</summary>
+      <p className="mt-2 text-xs text-neutral-500">{t('wbLogNote')}</p>
+      {log.length === 0 ? <p className="mt-2 text-xs text-neutral-500">{t('wbLogEmpty')}</p> : (
         <ul className="mt-2 divide-y divide-neutral-100 text-xs text-neutral-700">
           {log.map((r, i) => (
             <li key={i} className="py-2 space-y-0.5">
               <p className="text-neutral-900">{new Date(r.ran_at).toLocaleString(locale || undefined)}</p>
-              <p>{r.sources} · {r.messages_read} {t(wbLogMessages)} · {r.load_days} {t(wbLogDays)} · {r.crisis_alerts} {t(wbLogPrivate)}</p>
-              <p className="text-neutral-500">{r.posted ? t(wbLogPosted) : t(wbLogSilent)}</p>
+              <p>{r.sources} · {r.messages_read} {t('wbLogMessages')} · {r.load_days} {t('wbLogDays')} · {r.crisis_alerts} {t('wbLogPrivate')}</p>
+              <p className="text-neutral-500">{r.posted ? t('wbLogPosted') : t('wbLogSilent')}</p>
             </li>
           ))}
         </ul>
