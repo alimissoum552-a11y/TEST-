@@ -1,6 +1,6 @@
 # Application mineur et calendrier d'équipe dédié : conception
 
-Statut : **implanté dans le code et testé en local ; la mise en production attend l'approbation du propriétaire (voir section 12).** Elle complète `docs/FAMILY_TEAM.md` et **remplace** sa décision « un mineur n'a pas de compte
+Statut : **en production depuis le 17 novembre 2026, testé de bout en bout (voir section 12) ; relecture juridique en attente.** Elle complète `docs/FAMILY_TEAM.md` et **remplace** sa décision « un mineur n'a pas de compte
 en dessous de l'âge du consentement » : le mineur aura désormais un accès créé et géré par un adulte responsable.
 Elle doit être relue par un juriste avant toute mise en service.
 
@@ -153,12 +153,12 @@ Ces limites sont appliquées **côté base de données** (règles de sécurité)
 
 ## 12. État de l'implantation
 
-**Dans le code, testé en local, pas encore en production**
+**En production, testé de bout en bout**
 - Migration `migrations_020_minor_access.sql` : type de compte, rôle `minor`, règles de sécurité (le mineur ne lit pas les profils des autres, n'édite pas son profil, n'utilise ni IA, ni bien-être, ni clés d'accès), colonnes d'accès et de consentement, tables `minor_consents` et `minor_login_attempts`, règle de l'IA sans approbation d'opérateur, consentement exigé sous 13 ans dans `sign_managed_profile`.
 - Fonctions `minor-access` (création, régénération, coupure de l'identifiant ; connexion) et `minor-consent` (e-mail du responsable, page d'approbation). Secret `MINOR_ID_SECRET`.
 - Les fonctions `assistant`, `mcp`, `webauthn` et `identity` refusent un compte mineur.
 - Écrans : « Nouveau calendrier d'équipe », panneau Famille (consentement, case d'accès, identifiant affiché une fois, régénérer, couper), page de consentement `#/consent`, accès mineur `#/minor`, application réduite (calendrier en lecture seule et chat).
-- Tests : 14 cas de base de données (transaction annulée), fonctions utilitaires, 22 vérifications dans un navigateur.
+- Tests : 14 cas de base de données (transaction annulée), fonctions utilitaires, 22 vérifications dans un navigateur, et **39 vérifications de bout en bout en production** avec des comptes temporaires supprimés ensuite. Ce test a trouvé une faille (un mineur pouvait créer un calendrier), corrigée par la migration 021.
 
 **Non livré**
 - Passage d'un mineur à un compte adulte à 16 ans.

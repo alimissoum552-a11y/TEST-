@@ -37,6 +37,7 @@ project. Each file is written to be safe to re-run (`if not exists`, `drop polic
 | `migrations_018_family_rls_fix.sql` | Fix: infinite recursion between the row policies of `managed_profiles` and `profile_guardians` |
 | `migrations_019_name_match.sql` | `name_key()` (names compared in any order, without accents), clearer signing errors |
 | `migrations_020_minor_access.sql` | `profiles.account_type`, role `minor`, minor restrictions, `team_member_names()`, access and consent columns, `minor_consents`, `minor_login_attempts`, AI rule without operator approval |
+| `migrations_021_minor_no_calendars.sql` | Fix found by the end-to-end test: a minor could create a calendar. Restrictive policies on `calendars`, invitations, members, usage and AI notes |
 
 Apply one migration (example with the Supabase Management API or the SQL editor). Then check the objects it creates.
 Do not edit an applied migration: add a new numbered file.

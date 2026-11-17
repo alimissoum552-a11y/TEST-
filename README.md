@@ -103,7 +103,7 @@ calendar-app/
     lib/calendar.test.js       Unit tests for the date helpers
   supabase/
     schema.sql                 Base schema
-    migrations_001 ... 020     Numbered migrations, applied in order
+    migrations_001 ... 021     Numbered migrations, applied in order
     reminders_cron.sql         Scheduled job for reminder e-mails (run once)
     wellbeing_cron.sql         Hourly team analysis and journal retention (run once)
     family_cron.sql            Purge of unsigned minor profiles (run once)
