@@ -384,7 +384,6 @@ export default function Landing() {
     { id: 'connector', title: L.connector[0], text: L.connector[1], render: () => <ConnectorDemo L={L} /> },
   ]
 
-  const cta = 'w-44 text-center px-5 py-3 rounded-2xl bg-white ring-1 ring-neutral-300 text-sm font-medium text-neutral-900 hover:bg-neutral-50'
 
   return (
     <div className="min-h-screen bg-neutral-100 text-neutral-900 overflow-x-hidden">
@@ -413,13 +412,6 @@ export default function Landing() {
 
       <section className="pb-10">
         <Carousel panels={panels} startIndex={panels.findIndex((p) => p.id === 'ai')} label={(i, n) => `${L.cardsTitle} ${i} / ${n}`} />
-      </section>
-
-      <section className="px-6 pb-16">
-        <div className="flex flex-wrap justify-center gap-3">
-          <a href="#/signup" className={cta}>{L.signup}</a>
-          <a href="#/signin" className={cta}>{L.signin}</a>
-        </div>
       </section>
 
       <section className="px-6 md:px-10 pb-16 max-w-6xl mx-auto" aria-labelledby="aud-title">
