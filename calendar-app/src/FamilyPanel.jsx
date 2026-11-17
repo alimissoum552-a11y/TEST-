@@ -282,7 +282,6 @@ export default function FamilyPanel({ calendar, userId, isOwner }) {
                 <option value="">{t('famSexNone')}</option>
                 <option value="female">{t('famSexFemale')}</option>
                 <option value="male">{t('famSexMale')}</option>
-                <option value="other">{t('famSexOther')}</option>
               </select>
               <p className="text-[11px] text-neutral-500">{t('famSexWhy')}</p>
             </div>

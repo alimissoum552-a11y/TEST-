@@ -2,7 +2,7 @@
 // The database re-checks everything (migrations_016_family_team.sql); this file only guides the form.
 
 export const GROUP_KINDS = ['family', 'sports', 'class']
-export const SEX_VALUES = ['female', 'male', 'other']
+export const SEX_VALUES = ['female', 'male'] // optional: the field can also stay empty
 // Declarations are required for these functions (docs/FAMILY_TEAM.md, section 14.5).
 export const SENSITIVE_FUNCTIONS = ['sex', 'ai']
 // Age of digital consent used for the rules (16 in both Europe and the United States, see section 13).

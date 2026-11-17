@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   nameMatches, normalizeName, validBirthYear, ageFromBirthYear, needsResponsibleAdult,
-  functionsNeedingDeclaration, isGroupKind, CONSENT_AGE, consentRequired,
+  functionsNeedingDeclaration, isGroupKind, CONSENT_AGE, consentRequired, SEX_VALUES,
 } from './family.js'
 
 const NOW = new Date('2026-11-17T12:00:00Z')
@@ -53,6 +53,13 @@ describe('sensitive functions and kinds', () => {
     expect(isGroupKind('class')).toBe(true)
     expect(isGroupKind('work')).toBe(false)
     expect(isGroupKind('personal')).toBe(false)
+  })
+})
+
+describe("sex values", () => {
+  it("are female and male only, and the field stays optional", () => {
+    expect(SEX_VALUES).toEqual(['female', 'male'])
+    expect(functionsNeedingDeclaration({ sex: null })).toEqual([])
   })
 })
 
