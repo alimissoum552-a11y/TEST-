@@ -108,6 +108,51 @@ Deno.serve(async (req) => {
       return json({ ok: true })
     }
 
+    // ---- step-up: the user is signed in, confirm it is really them before entering ----
+    if (action === 'stepup-options' || action === 'stepup-verify') {
+      const supa = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!, {
+        global: { headers: { Authorization: req.headers.get('Authorization') ?? '' } },
+      })
+      const user = await signedInUser(req, supa)
+      const { data: creds } = await db.from('webauthn_credentials')
+        .select('credential_id, transports').eq('user_id', user.id)
+      if (!creds?.length) return json({ error: 'no_passkey' }, 404)
+
+      if (action === 'stepup-options') {
+        const options = await generateAuthenticationOptions({
+          rpID: rpID(),
+          allowCredentials: creds.map((c: any) => ({ id: c.credential_id, transports: c.transports })),
+          userVerification: 'required',
+        })
+        return json({ options, challengeToken: await signToken({ c: options.challenge, u: user.id, k: 'stepup' }) })
+      }
+
+      const payload = await readToken(body.challengeToken, 'stepup')
+      if (payload.u !== user.id) return json({ error: 'not_allowed' }, 403)
+      const credId = String(body?.response?.id || '')
+      const { data: cred } = await db.from('webauthn_credentials')
+        .select('*').eq('credential_id', credId).eq('user_id', user.id).maybeSingle()
+      if (!cred) return json({ error: 'not_allowed' }, 403)
+      const verification = await verifyAuthenticationResponse({
+        response: body.response,
+        expectedChallenge: payload.c,
+        expectedOrigin: origin(),
+        expectedRPID: rpID(),
+        requireUserVerification: true,
+        credential: {
+          id: cred.credential_id,
+          publicKey: fromB64url(cred.public_key),
+          counter: Number(cred.counter),
+          transports: cred.transports ?? [],
+        },
+      })
+      if (!verification.verified) return json({ error: 'not_allowed' }, 403)
+      await db.from('webauthn_credentials')
+        .update({ counter: verification.authenticationInfo.newCounter, last_used_at: new Date().toISOString() })
+        .eq('id', cred.id)
+      return json({ ok: true })
+    }
+
     // ---- sign-in (no session yet) ----
     if (action === 'auth-options') {
       const email = String(body?.email || '').trim().toLowerCase()

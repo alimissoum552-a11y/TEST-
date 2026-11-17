@@ -46,3 +46,20 @@ export async function deviceSupportsPasskey() {
       await window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
   } catch { return false }
 }
+
+// Second factor: the user is already signed in with a password, but the account
+// has a passkey, so the app asks the device to confirm before entering.
+export async function verifyWithPasskey() {
+  const { options, challengeToken } = await invoke('stepup-options')
+  const response = await startAuthentication({ optionsJSON: options })
+  await invoke('stepup-verify', { response, challengeToken })
+}
+
+const VERIFIED_PREFIX = 'calendar-app.passkey-verified:'
+export const markPasskeyVerified = (userId) => { try { sessionStorage.setItem(VERIFIED_PREFIX + userId, '1') } catch { /* ignore */ } }
+export const isPasskeyVerified = (userId) => { try { return sessionStorage.getItem(VERIFIED_PREFIX + userId) === '1' } catch { return false } }
+export const clearPasskeyVerifications = () => {
+  try {
+    for (const k of Object.keys(sessionStorage)) if (k.startsWith(VERIFIED_PREFIX)) sessionStorage.removeItem(k)
+  } catch { /* ignore */ }
+}

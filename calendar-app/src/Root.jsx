@@ -8,6 +8,8 @@ import JoinPage from './JoinPage.jsx'
 import AiGuidePage from './AiGuidePage.jsx'
 import OAuthConsentPage from './OAuthConsentPage.jsx'
 import Landing from './Landing.jsx'
+import PasskeyGate from './PasskeyGate.jsx'
+import { listPasskeys, isPasskeyVerified, markPasskeyVerified, clearPasskeyVerifications } from './passkeys.js'
 
 // A pending invitation is kept in this browser until it is answered or dismissed.
 // That way it survives sign-out, sign-in, and the e-mail confirmation step of a new account.
@@ -32,6 +34,28 @@ export default function Root() {
   const [pending, setPending] = useState(() => routeInvite || readPendingInvite())
   const [joinedCalendarId, setJoinedCalendarId] = useState(null)
   const [session, setSession] = useState(undefined) // undefined = loading
+  const [passkeyGate, setPasskeyGate] = useState('idle') // idle | checking | required | ok
+
+  // A password sign-in is not enough when the account has a passkey: confirm with the device.
+  useEffect(() => {
+    if (!session) {
+      clearPasskeyVerifications()
+      setPasskeyGate('idle')
+      return
+    }
+    if (isPasskeyVerified(session.user.id)) { setPasskeyGate('ok'); return }
+    let cancelled = false
+    setPasskeyGate('checking')
+    listPasskeys(session.user.id)
+      .then((rows) => { if (!cancelled) setPasskeyGate(rows.length ? 'required' : 'ok') })
+      .catch(() => { if (!cancelled) setPasskeyGate('ok') })
+    return () => { cancelled = true }
+  }, [session])
+
+  function markVerified() {
+    if (session) markPasskeyVerified(session.user.id)
+    setPasskeyGate('ok')
+  }
 
   useEffect(() => {
     if (routeInvite) { savePendingInvite(routeInvite); setPending(routeInvite) }
@@ -65,5 +89,7 @@ export default function Root() {
         onJoined={setJoinedCalendarId} onDone={finishInvite} />
     )
   }
+  if (passkeyGate === 'required') return <PasskeyGate onVerified={markVerified} />
+  if (passkeyGate === 'checking') return <div className="min-h-screen bg-neutral-200" />
   return <App user={session.user} initialCalendarId={joinedCalendarId} />
 }

@@ -13,6 +13,10 @@ const RTL = new Set(['ar'])
 
 const DICT = {
   en: {
+    passkeyGateTitle: "Confirm with your passkey",
+    passkeyGateBody: "This account is protected by a passkey. Use your device unlock to finish signing in.",
+    passkeyGateConfirm: "Confirm with passkey",
+    passkeyGateSignOut: "Sign out instead",
     aiGuide: "AI guide",
     aiSettings: "AI permissions",
     aiPermCreate: "Create events",
@@ -171,6 +175,10 @@ const DICT = {
     passkeyDevice: "This device",
   },
   fr: {
+    passkeyGateTitle: "Confirmez avec votre passkey",
+    passkeyGateBody: "Ce compte est protégé par une passkey. Utilisez le déverrouillage de l’appareil pour terminer la connexion.",
+    passkeyGateConfirm: "Confirmer avec la passkey",
+    passkeyGateSignOut: "Se déconnecter à la place",
     aiGuide: "Guide de l’IA",
     aiSettings: "Permissions de l’IA",
     aiPermCreate: "Créer des événements",
@@ -329,6 +337,10 @@ const DICT = {
     passkeyDevice: "Cet appareil",
   },
   es: {
+    passkeyGateTitle: "Confirma con tu passkey",
+    passkeyGateBody: "Esta cuenta está protegida con una passkey. Usa el desbloqueo del dispositivo para terminar de iniciar sesión.",
+    passkeyGateConfirm: "Confirmar con passkey",
+    passkeyGateSignOut: "Cerrar sesión en su lugar",
     aiGuide: "Guía de la IA",
     aiSettings: "Permisos de la IA",
     aiPermCreate: "Crear eventos",
@@ -487,6 +499,10 @@ const DICT = {
     passkeyDevice: "Este dispositivo",
   },
   de: {
+    passkeyGateTitle: "Mit deiner Passkey bestätigen",
+    passkeyGateBody: "Dieses Konto ist durch eine Passkey geschützt. Nutze die Geräteentsperrung, um die Anmeldung abzuschließen.",
+    passkeyGateConfirm: "Mit Passkey bestätigen",
+    passkeyGateSignOut: "Stattdessen abmelden",
     aiGuide: "KI-Anleitung",
     aiSettings: "KI-Berechtigungen",
     aiPermCreate: "Termine erstellen",
@@ -645,6 +661,10 @@ const DICT = {
     passkeyDevice: "Dieses Gerät",
   },
   ar: {
+    passkeyGateTitle: "أكّد بمفتاح المرور",
+    passkeyGateBody: "هذا الحساب محمي بمفتاح مرور. استخدم فتح قفل الجهاز لإكمال تسجيل الدخول.",
+    passkeyGateConfirm: "التأكيد بمفتاح المرور",
+    passkeyGateSignOut: "تسجيل الخروج بدلاً من ذلك",
     aiGuide: "دليل الذكاء الاصطناعي",
     aiSettings: "أذونات الذكاء الاصطناعي",
     aiPermCreate: "إنشاء الأحداث",
@@ -803,6 +823,10 @@ const DICT = {
     passkeyDevice: "هذا الجهاز",
   },
   pt: {
+    passkeyGateTitle: "Confirme com a sua passkey",
+    passkeyGateBody: "Esta conta está protegida por uma passkey. Use o desbloqueio do dispositivo para concluir a sessão.",
+    passkeyGateConfirm: "Confirmar com passkey",
+    passkeyGateSignOut: "Terminar sessão em vez disso",
     aiGuide: "Guia da IA",
     aiSettings: "Permissões da IA",
     aiPermCreate: "Criar eventos",
