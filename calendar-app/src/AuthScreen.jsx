@@ -31,6 +31,7 @@ export default function AuthScreen({ initialError = null }) {
   const [message, setMessage] = useState(initialError ? { type: 'error', text: t(initialError) } : null)
   const [showPassword, setShowPassword] = useState(false)
   const [resetStep, setResetStep] = useState(null) // null | 'email'
+  const [emailFallback, setEmailFallback] = useState(false) // the device had no passkey: offer the e-mail link
 
   async function submit(e) {
     e.preventDefault()
@@ -43,6 +44,18 @@ export default function AuthScreen({ initialError = null }) {
     if (res.error) setMessage({ type: 'error', text: res.error.message })
     else if (mode === 'signup' && !res.data.session)
       setMessage({ type: 'ok', text: t('checkEmail') })
+  }
+
+  // Sends the reset link to the typed address. Supabase answers the same way whether or not the account exists.
+  async function sendResetEmail() {
+    setMessage(null)
+    const address = email.trim().toLowerCase()
+    if (!address) { setMessage({ type: 'error', text: t('passkeyNeedEmail') }); return }
+    const redirectTo = `${window.location.origin}/#/reset-password`
+    const { error } = await supabase.auth.resetPasswordForEmail(address, { redirectTo })
+    setMessage(error ? { type: 'error', text: error.message } : { type: 'ok', text: t('resetLinkSent') })
+    setResetStep(null)
+    setEmailFallback(false)
   }
 
   const input = 'w-full rounded-xl border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:border-neutral-900'
@@ -79,7 +92,7 @@ export default function AuthScreen({ initialError = null }) {
             <p className="text-sm text-neutral-700">{t('resetEmailBody')}</p>
             <div className="flex gap-2">
               <button type="button" onClick={async () => {
-                setMessage(null)
+                setMessage(null); setEmailFallback(false)
                 if (!email.trim()) { setMessage({ type: 'error', text: t('passkeyNeedEmail') }); return }
                 setBusy(true)
                 try {
@@ -89,22 +102,23 @@ export default function AuthScreen({ initialError = null }) {
                   const code = ex?.message || ''
                   if (code === 'no_passkey') {
                     // No passkey on this account: send a reset link to the e-mail instead.
-                    const redirectTo = `${window.location.origin}/#/reset-password`
-                    const { error } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), { redirectTo })
-                    setMessage(error
-                      ? { type: 'error', text: error.message }
-                      : { type: 'ok', text: t('resetLinkSent') })
-                    setResetStep(null)
+                    await sendResetEmail()
                   } else {
                     setMessage({ type: 'error', text: ex?.name === 'NotAllowedError' ? t('passkeyCancelled') : t('resetFailed') })
+                    // The device does not have the passkey (or it was cancelled): the e-mail link is the way back in.
+                    setEmailFallback(true)
                   }
                 } finally { setBusy(false) }
               }} disabled={busy}
                 className="flex-1 py-2 rounded-xl bg-neutral-900 text-white text-sm disabled:opacity-50">{t('resetContinue')}</button>
-              <button type="button" onClick={() => { setResetStep(null); setMessage(null) }}
+              <button type="button" onClick={() => { setResetStep(null); setMessage(null); setEmailFallback(false) }}
                 className="px-3 py-2 rounded-xl bg-neutral-100 text-sm">{t('cancel')}</button>
             </div>
           </div>
+        )}
+        {resetStep === 'email' && emailFallback && (
+          <button type="button" disabled={busy} onClick={async () => { setBusy(true); try { await sendResetEmail() } finally { setBusy(false) } }}
+            className="w-full py-2.5 rounded-xl bg-white ring-1 ring-neutral-300 text-sm font-medium text-neutral-900 hover:bg-neutral-50 disabled:opacity-50">{t('resetByEmail')}</button>
         )}
         {mode === 'signup' && (
           <label className="flex items-start gap-2 text-xs leading-relaxed text-neutral-600">
