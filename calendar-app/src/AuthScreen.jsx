@@ -82,10 +82,22 @@ export default function AuthScreen({ initialError = null }) {
                 setMessage(null)
                 if (!email.trim()) { setMessage({ type: 'error', text: t('passkeyNeedEmail') }); return }
                 setBusy(true)
-                try { await signInWithPasskey(email.trim().toLowerCase()); window.location.hash = '/reset-password' }
-                catch (ex) {
+                try {
+                  await signInWithPasskey(email.trim().toLowerCase())
+                  window.location.hash = '/reset-password'
+                } catch (ex) {
                   const code = ex?.message || ''
-                  setMessage({ type: 'error', text: code === 'no_passkey' ? t('resetNoPasskey') : (ex?.name === 'NotAllowedError' ? t('passkeyCancelled') : t('resetFailed')) })
+                  if (code === 'no_passkey') {
+                    // No passkey on this account: send a reset link to the e-mail instead.
+                    const redirectTo = `${window.location.origin}/#/reset-password`
+                    const { error } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), { redirectTo })
+                    setMessage(error
+                      ? { type: 'error', text: error.message }
+                      : { type: 'ok', text: t('resetLinkSent') })
+                    setResetStep(null)
+                  } else {
+                    setMessage({ type: 'error', text: ex?.name === 'NotAllowedError' ? t('passkeyCancelled') : t('resetFailed') })
+                  }
                 } finally { setBusy(false) }
               }} disabled={busy}
                 className="flex-1 py-2 rounded-xl bg-neutral-900 text-white text-sm disabled:opacity-50">{t('resetContinue')}</button>

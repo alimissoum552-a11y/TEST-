@@ -183,6 +183,7 @@ const DICT = {
     passkeyRemove: "Remove passkey",
     passkeyWaiting: "Waiting for your device…",
     passkeyNeedEmail: "Enter your email first.",
+    resetLinkSent: "If this address has an account, a reset link is on its way. Check your inbox.",
   },
   fr: {
     forgotPassword: "Mot de passe oublié ?",
@@ -355,6 +356,7 @@ const DICT = {
     passkeyRemove: "Supprimer la passkey",
     passkeyWaiting: "En attente de votre appareil…",
     passkeyNeedEmail: "Saisissez d’abord votre email.",
+    resetLinkSent: "Si cette adresse a un compte, un lien de réinitialisation est en route. Vérifiez votre boîte de réception.",
   },
   es: {
     forgotPassword: "¿Olvidaste tu contraseña?",
@@ -527,6 +529,7 @@ const DICT = {
     passkeyRemove: "Eliminar la passkey",
     passkeyWaiting: "Esperando a tu dispositivo…",
     passkeyNeedEmail: "Introduce tu email primero.",
+    resetLinkSent: "Si esta dirección tiene una cuenta, el enlace de restablecimiento está en camino. Revisa tu correo.",
   },
   de: {
     forgotPassword: "Passwort vergessen?",
@@ -699,6 +702,7 @@ const DICT = {
     passkeyRemove: "Passkey entfernen",
     passkeyWaiting: "Warte auf dein Gerät…",
     passkeyNeedEmail: "Gib zuerst deine E-Mail ein.",
+    resetLinkSent: "Wenn zu dieser Adresse ein Konto besteht, ist ein Link zum Zurücksetzen unterwegs. Prüfe dein Postfach.",
   },
   ar: {
     forgotPassword: "نسيت كلمة المرور؟",
@@ -871,6 +875,7 @@ const DICT = {
     passkeyRemove: "إزالة مفتاح المرور",
     passkeyWaiting: "في انتظار جهازك…",
     passkeyNeedEmail: "أدخل بريدك الإلكتروني أولاً.",
+    resetLinkSent: "إذا كان لهذا العنوان حساب، فقد أُرسل رابط إعادة التعيين. تحقّق من بريدك.",
   },
   pt: {
     forgotPassword: "Esqueceu-se da palavra-passe?",
@@ -1068,6 +1073,7 @@ const DICT = {
     passkeyRemove: "Remover a passkey",
     passkeyWaiting: "A aguardar o seu dispositivo…",
     passkeyNeedEmail: "Introduza primeiro o seu email.",
+    resetLinkSent: "Se este endereço tiver conta, o link de reposição está a caminho. Verifique a sua caixa de entrada.",
   },
 }
 

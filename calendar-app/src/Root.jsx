@@ -25,8 +25,12 @@ const savePendingInvite = (id) => {
 export default function Root() {
   const legal = useLegalRoute()
   const [hash, setHash] = useState(window.location.hash)
+  const [recovery, setRecovery] = useState(() => /[#&?]type=recovery/.test(window.location.hash))
   useEffect(() => {
-    const f = () => setHash(window.location.hash)
+    const f = () => {
+      setHash(window.location.hash)
+      if (/[#&?]type=recovery/.test(window.location.hash)) setRecovery(true)
+    }
     window.addEventListener('hashchange', f)
     return () => window.removeEventListener('hashchange', f)
   }, [])
@@ -95,7 +99,7 @@ export default function Root() {
         onJoined={setJoinedCalendarId} onDone={finishInvite} />
     )
   }
-  if (reset) return <ResetPasswordPage />
+  if ((reset || recovery) && session) return <ResetPasswordPage />
   if (passkeyGate === 'checking') return <PasskeyWaiting />
   return <App user={session.user} initialCalendarId={joinedCalendarId} />
 }
