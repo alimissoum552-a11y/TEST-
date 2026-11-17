@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useI18n } from './i18n/index.jsx'
 import Avatar from './Avatar.jsx'
-import { getMyProfile, uploadAvatar, removeAvatar, listMyGrants, revokeMyGrant, setMyHandle } from './lib/api.js'
+import { getMyProfile, uploadAvatar, removeAvatar, listMyGrants, revokeMyGrant, setMyHandle, getIdentityStatus } from './lib/api.js'
+import VerifiedBadge from './VerifiedBadge.jsx'
 
 // Lets the user see their avatar, change it to a photo, or remove it.
 export default function ProfilePanel({ user, onClose, onChanged, onHandleChanged }) {
@@ -14,9 +15,14 @@ export default function ProfilePanel({ user, onClose, onChanged, onHandleChanged
   const [handleInput, setHandleInput] = useState('')
   const [hBusy, setHBusy] = useState(false)
   const [hMsg, setHMsg] = useState(null)
+  const [identity, setIdentity] = useState(null)
 
   useEffect(() => {
     getMyProfile(user.id).then((p) => { setProfile(p); setHandleInput(p.handle || '') }).catch((ex) => setMsg({ err: true, text: ex.message }))
+  }, [user.id])
+
+  useEffect(() => {
+    getIdentityStatus(user.id).then(setIdentity).catch(() => setIdentity(null))
   }, [user.id])
 
   useEffect(() => {
@@ -76,6 +82,7 @@ export default function ProfilePanel({ user, onClose, onChanged, onHandleChanged
           <div className="min-w-0">
             <p className="truncate text-sm font-medium text-neutral-900">{name || email}</p>
             <p className="truncate text-xs text-neutral-500">{email}</p>
+            {identity?.status === 'verified' && <VerifiedBadge className="mt-1.5" />}
           </div>
         </div>
 
