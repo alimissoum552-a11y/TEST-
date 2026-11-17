@@ -162,5 +162,5 @@ Ces limites sont appliquées **côté base de données** (règles de sécurité)
 
 **Non livré**
 - Passage d'un mineur à un compte adulte à 16 ans.
-- Purge automatique des comptes de mineurs supprimés (la suppression d'un profil retire le profil, pas le compte technique).
+- ~~Suppression du compte technique d'un mineur retiré~~ : faite par la fonction `team-admin` (retrait d'un profil et suppression d'un calendrier), réservée au propriétaire.
 - Relecture juridique (section 9).

@@ -667,7 +667,7 @@ export default function App({ user, initialCalendarId = null, minorMode = false 
         {assistant && user && <AssistantPanel user={user} onClose={() => setAssistant(false)} onApplied={() => setReloadKey((k) => k + 1)} onOpenWellbeing={() => { setAssistant(false); setWellbeing(true) }} />}
         {wellbeing && user && <WellbeingPanel user={user} onClose={() => setWellbeing(false)} />}
         {newTeam && user && !minorMode && <NewTeamPanel user={user} onClose={() => setNewTeam(false)} onCreated={(id) => { setActiveId(id); setReloadKey((k) => k + 1) }} />}
-        {team && activeCalendar && <TeamPanel calendar={activeCalendar} calendarId={activeCalendar.id} ownerId={activeCalendar.owner_id} userId={user?.id} isOwner={activeCalendar.my_role === 'owner'} onClose={() => setTeam(false)} />}
+        {team && activeCalendar && <TeamPanel calendar={activeCalendar} calendarId={activeCalendar.id} ownerId={activeCalendar.owner_id} userId={user?.id} isOwner={activeCalendar.my_role === 'owner'} onClose={() => setTeam(false)} onDeleted={() => { setTeam(false); setActiveId(calendar?.id ?? null); setReloadKey((k) => k + 1) }} />}
         {sharing && activeCalendar && <SharePanel calendarId={activeCalendar.id} canManage={['owner','administrator'].includes(activeCalendar.my_role)} onClose={() => setSharing(false)} />}
         {openEvent && <EventDetail event={openEvent} readOnly={minorMode} onClose={() => setOpenEvent(null)} onDelete={handleDelete} onSave={handleSave} />}
       </div>

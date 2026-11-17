@@ -69,7 +69,7 @@ See `docs/OPERATIONS.md` for deploy and secrets, and `docs/AI.md` for the AI rul
 - [~] **Family, sports team and class modes**: live. Not built yet: the minor's own account and view (from the age of digital
       consent), a screen to record the legal approval of AI, the verified badge visible to other members. Stripe Identity runs
       with a live key while the legal review is still pending: close this gap.
-- [~] **Minor access**: coded and tested locally, production pending approval. Not built yet: the switch to an adult account at 16, and the cleanup of the technical account when a profile is deleted.
+- [~] **Minor access**: coded and tested locally, production pending approval. Not built yet: the switch to an adult account at 16. The owner can remove a member, remove a minor profile (its technical account is deleted too) and delete a team calendar (`team-admin`).
 - [~] **Well-being**: live. Not built yet: automatic purge of check-ins, clinical validation of the distress rules.
 
 ### Corrections to the previous version of this file

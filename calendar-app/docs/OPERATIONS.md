@@ -68,6 +68,7 @@ happened once with `chat_ai_notes` (fixed in migration 011).
 | `identity` | App (start) and Stripe (webhook) | User session for the start; Stripe signature for the webhook | Identity verification of the creators of family, sports team and class calendars. Deployed with `--no-verify-jwt`. |
 | `minor-access` | App (adult owner) and the minor login page | User session for create, regenerate, disable; none for login (limited attempts) | Access identifier of a minor and login. Deployed with `--no-verify-jwt`. |
 | `minor-consent` | App (adult owner) and the consent page | User session for the request; a one-time token for info and approve | Guardian consent by e-mail for a child who may be under 13. Deployed with `--no-verify-jwt`. |
+| `team-admin` | App (calendar owner) | User session, owner of the calendar | Removes a minor profile together with the technical account of the minor, and deletes a calendar (minor accounts first, then the event history). The personal calendar cannot be deleted. |
 
 Deploy one function (the CLI asks for confirmation in agent mode; `--yes` confirms that one deploy):
 
@@ -277,4 +278,4 @@ token limited to `Zone → DNS → Edit`, then revoked.
 | The restricted key of the previous, shared Stripe account is still valid | Revoke it in the Stripe dashboard of that account. Change nothing else on that account. |
 | Well-being check-ins are not purged automatically | There is no retention job for `wellbeing_checkins`. Add one, or keep the Privacy Policy wording ("until you delete your account"). |
 | `MINOR_ID_SECRET` lost or changed | Every access identifier stops working; the adults must issue new ones. Keep it with the other secrets. |
-| Minor accounts are not deleted with their profile | Deleting a managed profile removes the profile, not the technical account of the minor. Add a cleanup before the public launch. |
+| A calendar deleted outside the app | Deleting a calendar by SQL leaves the technical accounts of its minors. Use the app (`team-admin`), which deletes them first. |

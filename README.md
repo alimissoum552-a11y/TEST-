@@ -117,6 +117,7 @@ calendar-app/
       identity/                Stripe Identity: verification session and webhook
       minor-access/            Access identifier and login of a minor
       minor-consent/           Guardian consent by e-mail
+      team-admin/              Owner-only: remove a minor with their account, delete a calendar
       _shared/                 Helpers shared by the minor functions, with tests
   docs/                        Product, AI, well-being, family modes, operations, roadmap
 ```
@@ -154,7 +155,7 @@ Every table has row-level security enabled. Roles on a calendar: `owner`,
 policies, is in [calendar-app/docs/AI.md](calendar-app/docs/AI.md), section 2.
 
 Edge Functions: `send-invite`, `send-reminders`, `assistant`, `chat-ai`, `mcp` (MCP connector, any client), `webauthn`,
-`wellbeing-team`, `identity`, `minor-access`, `minor-consent`. The OAuth server
+`wellbeing-team`, `identity`, `minor-access`, `minor-consent`, `team-admin`. The OAuth server
 settings and the connector are described in [calendar-app/docs/OPERATIONS.md](calendar-app/docs/OPERATIONS.md).
 
 ## Deployment

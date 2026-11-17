@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useI18n } from './i18n/index.jsx'
 import {
   getIdentityStatus, refreshIdentityStatus, listManagedProfiles, addManagedProfile, signManagedProfile,
-  addGuardianByEmail, requestMinorConsent, createMinorAccess, regenerateMinorAccess, disableMinorAccess,
+  addGuardianByEmail, requestMinorConsent, createMinorAccess, regenerateMinorAccess, disableMinorAccess, removeManagedProfile,
 } from './lib/api.js'
 import { isGroupKind, validBirthYear, needsResponsibleAdult, consentRequired } from './lib/family.js'
 
@@ -27,6 +27,7 @@ export default function FamilyPanel({ calendar, userId, isOwner }) {
   const [guardianDone, setGuardianDone] = useState(false)
   const [consentEmail, setConsentEmail] = useState({})
   const [issued, setIssued] = useState(null) // { name, id }: shown once
+  const [removingId, setRemovingId] = useState(null)
 
   // The owner's verified name is needed to sign. If Stripe's name was not stored yet, read it again.
   useEffect(() => {
@@ -109,6 +110,17 @@ export default function FamilyPanel({ calendar, userId, isOwner }) {
         const res = await (action === 'create' ? createMinorAccess(p.id) : regenerateMinorAccess(p.id))
         setIssued({ name: p.first_name, id: res.access_id })
       }
+      await reload()
+    } catch (ex) { setErr(t(errorKey(ex.message))) } finally { setBusy(false) }
+  }
+
+  // Owner only. The server deletes the technical account of the minor with the profile.
+  async function removeProfile(p) {
+    setBusy(true); setErr(null); setNotice(null)
+    try {
+      await removeManagedProfile(p.id)
+      setRemovingId(null)
+      setNotice(t('tmRemoved'))
       await reload()
     } catch (ex) { setErr(t(errorKey(ex.message))) } finally { setBusy(false) }
   }
@@ -223,6 +235,21 @@ export default function FamilyPanel({ calendar, userId, isOwner }) {
                         className="flex-1 py-2 rounded-xl bg-neutral-900 text-white text-xs disabled:opacity-50">{t('famSignButton')}</button>
                     </div>
                   </div>
+                )}
+
+                {isOwner && (
+                  removingId === p.id ? (
+                    <div className="rounded-xl bg-neutral-50 p-3 space-y-2">
+                      <p className="text-xs text-neutral-700">{t('tmRemoveMinorConfirm').replace('{name}', p.first_name)}</p>
+                      <div className="flex gap-2">
+                        <button type="button" onClick={() => setRemovingId(null)} className="flex-1 py-2 rounded-xl bg-neutral-100 text-xs">{t('cancel')}</button>
+                        <button type="button" onClick={() => removeProfile(p)} disabled={busy}
+                          className="flex-1 py-2 rounded-xl bg-neutral-900 text-white text-xs disabled:opacity-50">{t('tmConfirm')}</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button type="button" onClick={() => { setRemovingId(p.id); setErr(null) }} className="text-xs text-neutral-500 hover:text-neutral-900">{t('remove')}</button>
+                  )
                 )}
 
                 {isOwner && p.status === 'active' && (
