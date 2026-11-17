@@ -10,7 +10,7 @@ export default function LockPanel({ enabled, onClose, onChanged, onLockNow }) {
   const [pin, setPin] = useState('')
   const [confirm, setConfirm] = useState('')
   const [err, setErr] = useState(null)
-  const input = 'w-full rounded-xl border border-neutral-200 px-3 py-2 text-center tracking-[0.3em] text-sm focus:outline-none focus:border-neutral-900'
+  const input = 'w-full rounded-xl border border-neutral-200 px-3 py-2 text-center tracking-[0.3em] placeholder:tracking-normal text-sm focus:outline-none focus:border-neutral-900'
 
   async function save(e) {
     e.preventDefault()

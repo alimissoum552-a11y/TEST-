@@ -30,7 +30,7 @@ export default function LockScreen({ onUnlock }) {
         <h1 className="text-xl font-semibold">{t('lockTitle')}</h1>
         <input value={pin} onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 8))}
           inputMode="numeric" autoComplete="off" autoFocus placeholder={t('lockPlaceholder')} aria-label={t('lockPlaceholder')}
-          className="w-full rounded-xl bg-white/10 px-4 py-3 text-center text-lg tracking-[0.4em] text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/40" />
+          className="w-full rounded-xl bg-white/10 px-4 py-3 text-center text-lg tracking-[0.4em] placeholder:tracking-normal text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/40" />
         {err && <p className="text-sm text-white">{err}</p>}
         <button disabled={busy || pin.length < 4}
           className="w-full py-3 rounded-xl bg-white text-neutral-900 text-sm font-medium disabled:opacity-40">{t('lockUnlock')}</button>
