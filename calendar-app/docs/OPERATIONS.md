@@ -148,6 +148,19 @@ Enabled on the project through the Management API (`PATCH /v1/projects/<ref>/con
 Test clients created by dynamic registration are removed in the Supabase dashboard. Do not delete rows of the `auth`
 schema by SQL.
 
+### An e-mail that did not arrive
+
+Authentication e-mails (confirmation, reset) go through Supabase with Resend as SMTP (`smtp.resend.com`, sender `noreply@collyo.app`);
+invitations and consent e-mails are sent by the Edge Functions through the Resend API. To check one:
+
+1. Supabase: `select email_confirmed_at, confirmation_sent_at from auth.users where email = ...` shows whether the server tried to send.
+2. Resend: `GET https://api.resend.com/emails?limit=20` (key `RESEND_API_KEY`) lists each message with `last_event` (`delivered`, `bounced`, ...).
+   `delivered` means the recipient server accepted it: the message is then in the inbox, the spam or the promotions folder.
+3. DNS of `collyo.app` (verified): SPF on `send.collyo.app`, DKIM `resend._domainkey`, DMARC `p=none`.
+
+The sign-up screen shows a spam hint and a button to send the confirmation e-mail again (once a minute). An address that already
+has a confirmed account gets no e-mail from Supabase: the screen says so.
+
 ## 3. Scheduled job: reminders
 
 Created by `supabase/reminders_cron.sql`, active since 16 November 2026, runs `* * * * *`.

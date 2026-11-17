@@ -133,7 +133,7 @@ async function inviteGuardian(req: Request, admin: any, body: any): Promise<Resp
   const link = existingId ? appUrl : `${appUrl}/#/signup`
   const body1 = existingId
     ? '<p>You were added to the team. Sign in with this address to see the team calendar and the chat, and to sign the declaration if one is waiting.</p>'
-    : `<p>Create an account with <strong>${escapeHtml(email)}</strong>. Once your address is confirmed you are added to the team automatically.</p>`
+    : `<p>Create an account with <strong>${escapeHtml(email)}</strong>. Collyo then sends you a confirmation e-mail: open it to confirm your address (check your spam folder if you do not see it). Once your address is confirmed you are added to the team automatically.</p>`
   const html = `<div style="font-family:system-ui,sans-serif;color:#171717;line-height:1.5">
   <p>${escapeHtml(ownerName)} named you as an adult responsible for <strong>${escapeHtml(prof.first_name)}</strong> in the team <strong>${escapeHtml(team)}</strong> on Collyo.</p>
   ${body1}

@@ -32,6 +32,16 @@ export default function AuthScreen({ initialError = null }) {
   const [showPassword, setShowPassword] = useState(false)
   const [resetStep, setResetStep] = useState(null) // null | 'email'
   const [emailFallback, setEmailFallback] = useState(false) // the device had no passkey: offer the e-mail link
+  const [signupSent, setSignupSent] = useState(false) // a confirmation e-mail was requested for this address
+  const [cooldown, setCooldown] = useState(0) // seconds before the confirmation e-mail can be sent again
+
+  // One interval while a wait is running; it stops by itself when the wait is over.
+  const waiting = cooldown > 0
+  useEffect(() => {
+    if (!waiting) return undefined
+    const id = setInterval(() => setCooldown((c) => Math.max(0, c - 1)), 1000)
+    return () => clearInterval(id)
+  }, [waiting])
 
   async function submit(e) {
     e.preventDefault()
@@ -42,8 +52,23 @@ export default function AuthScreen({ initialError = null }) {
       : await supabase.auth.signUp({ email, password, options: { data: { display_name: name } } })
     setBusy(false)
     if (res.error) setMessage({ type: 'error', text: res.error.message })
-    else if (mode === 'signup' && !res.data.session)
+    // For an address that already has a confirmed account, Supabase answers without an error and sends nothing.
+    else if (mode === 'signup' && res.data.user && res.data.user.identities?.length === 0)
+      setMessage({ type: 'error', text: t('accountExists') })
+    else if (mode === 'signup' && !res.data.session) {
       setMessage({ type: 'ok', text: t('checkEmail') })
+      setSignupSent(true); setCooldown(60)
+    }
+  }
+
+  // Sends the confirmation e-mail again (once a minute, the limit of the e-mail service).
+  async function resendConfirmation() {
+    if (cooldown > 0 || !email.trim()) return
+    setBusy(true)
+    const { error } = await supabase.auth.resend({ type: 'signup', email: email.trim() })
+    setBusy(false)
+    setMessage(error ? { type: 'error', text: /second|rate|limit/i.test(error.message) ? t('resendWait') : error.message } : { type: 'ok', text: t('confirmResent') })
+    setCooldown(60)
   }
 
   // Sends the reset link to the typed address. Supabase answers the same way whether or not the account exists.
@@ -83,6 +108,15 @@ export default function AuthScreen({ initialError = null }) {
         </div>
         {message && (
           <p className={`text-sm ${message.type === 'error' ? 'text-neutral-900 font-medium' : 'text-neutral-600'}`}>{message.text}</p>
+        )}
+        {mode === 'signup' && signupSent && (
+          <div className="space-y-2">
+            <p className="text-xs text-neutral-500">{t('checkSpam')}</p>
+            <button type="button" onClick={resendConfirmation} disabled={busy || cooldown > 0}
+              className="text-sm text-neutral-900 underline underline-offset-2 disabled:opacity-50 disabled:no-underline">
+              {cooldown > 0 ? `${t('resendConfirm')} (${cooldown})` : t('resendConfirm')}
+            </button>
+          </div>
         )}
         {mode === 'signin' && !resetStep && (
           <button type="button" onClick={() => { setResetStep('email'); setMessage(null) }}
