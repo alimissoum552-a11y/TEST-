@@ -412,7 +412,7 @@ function NewEventForm({ calendarId, userId, day, onCreated, onCancel }) {
   )
 }
 
-export default function App({ user, initialCalendarId = null }) {
+export default function App({ user, initialCalendarId = null, lockOn = false, onLockChanged, onLockNow }) {
   const { t, locale, lang } = useI18n()
   const [tab, setTab] = useState('month')
   const [selected, setSelected] = useState(() => startOfDay(new Date()))
