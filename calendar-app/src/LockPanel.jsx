@@ -4,7 +4,7 @@ import { pinValid, setPasscode, verifyPasscode, clearPasscode } from './lock.js'
 
 // Small menu behind the lock icon: enable, change, disable the local passcode,
 // or lock the app right away.
-export default function LockPanel({ enabled, onClose, onChanged, onLockNow }) {
+export default function LockPanel({ enabled, inline = false, onClose, onChanged, onLockNow }) {
   const { t } = useI18n()
   const [mode, setMode] = useState('menu') // menu | set | disable
   const [pin, setPin] = useState('')
@@ -29,7 +29,9 @@ export default function LockPanel({ enabled, onClose, onChanged, onLockNow }) {
   }
 
   return (
-    <div className="absolute end-0 top-full z-30 mt-2 w-64 rounded-2xl bg-white p-4 shadow-xl ring-1 ring-neutral-200 space-y-3">
+    <div className={inline
+      ? 'w-full rounded-2xl border border-neutral-200 p-4 space-y-3'
+      : 'absolute end-0 top-full z-30 mt-2 w-64 rounded-2xl bg-white p-4 shadow-xl ring-1 ring-neutral-200 space-y-3'}>
       <div className="flex items-center justify-between gap-2">
         <p className="text-sm font-semibold text-neutral-900">{t('lockMenuTitle')}</p>
         <button type="button" onClick={onClose} className="text-xs text-neutral-500 hover:text-neutral-900">{t('close')}</button>
