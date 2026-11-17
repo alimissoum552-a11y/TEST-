@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react'
 import { useI18n } from './i18n/index.jsx'
 import { listMembers, getProfile } from './lib/api.js'
 import { TeamWellbeingSettings } from './TeamWellbeing.jsx'
+import FamilyPanel from './FamilyPanel.jsx'
 
 // Read-only list of the calendar's team members and their roles.
-export default function TeamPanel({ calendarId, ownerId, userId, isOwner = false, onClose }) {
+export default function TeamPanel({ calendar, calendarId, ownerId, userId, isOwner = false, onClose }) {
   const { t } = useI18n()
   const [members, setMembers] = useState(null)
   const [err, setErr] = useState(null)
@@ -28,6 +29,8 @@ export default function TeamPanel({ calendarId, ownerId, userId, isOwner = false
         {err && <p className="text-sm font-medium text-neutral-900">{err}</p>}
         {members === null && !err && <p className="text-sm text-neutral-400">…</p>}
         {members && members.length === 0 && <p className="text-sm text-neutral-500">{t('noMembers')}</p>}
+
+        <FamilyPanel calendar={calendar || { id: calendarId, kind: 'work' }} userId={userId} isOwner={isOwner} />
 
         <TeamWellbeingSettings calendarId={calendarId} userId={userId} isOwner={isOwner} />
 

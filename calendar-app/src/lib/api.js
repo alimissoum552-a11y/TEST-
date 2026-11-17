@@ -151,7 +151,7 @@ export async function getMyProfile(userId) {
 // All calendars the user can access: their own plus those they are a member of.
 export async function listAccessibleCalendars(userId) {
   const { data: own, error: e1 } = await supabase
-    .from('calendars').select('id, name, owner_id, is_default').eq('owner_id', userId)
+    .from('calendars').select('id, name, owner_id, is_default, kind').eq('owner_id', userId)
   if (e1) throw e1
   const { data: memberships, error: e2 } = await supabase
     .from('calendar_members').select('calendar_id, role').eq('user_id', userId)
@@ -160,7 +160,7 @@ export async function listAccessibleCalendars(userId) {
   let shared = []
   if (sharedIds.length) {
     const { data, error } = await supabase
-      .from('calendars').select('id, name, owner_id, is_default').in('id', sharedIds)
+      .from('calendars').select('id, name, owner_id, is_default, kind').in('id', sharedIds)
     if (error) throw error
     // Owner names make shared calendars distinguishable when they share a default name.
     const ownerIds = [...new Set(data.map((c) => c.owner_id))]
@@ -471,4 +471,54 @@ export async function getWellbeingAnalysisLog(calendarId, limit = 10) {
     .eq('calendar_id', calendarId).order('ran_at', { ascending: false }).limit(limit)
   if (error) throw error
   return data ?? []
+}
+
+// ---- Family, sports team and class modes (docs/FAMILY_TEAM.md) ----
+export async function getIdentityStatus(userId) {
+  const { data, error } = await supabase.from('identity_verifications').select('status, verified_name')
+    .eq('user_id', userId).maybeSingle()
+  if (error) throw error
+  return data || { status: 'none' }
+}
+
+// Returns the Stripe-hosted page to open, or the status when already verified.
+export async function startIdentityVerification() {
+  const { data, error } = await supabase.functions.invoke('identity', { body: { action: 'start' } })
+  if (error) {
+    let code = 'server_error'
+    try { code = (await error.context.json()).error || code } catch { /* no JSON body */ }
+    throw new Error(code)
+  }
+  return data
+}
+
+export async function setCalendarKind(calendarId, kind) {
+  const { data, error } = await supabase.from('calendars').update({ kind }).eq('id', calendarId).select('kind')
+  if (error) throw error
+  return data?.[0]?.kind ?? kind
+}
+
+export async function listManagedProfiles(calendarId) {
+  const { data, error } = await supabase.from('managed_profiles')
+    .select('id, first_name, birth_year, sex, category, status, created_at, activated_at')
+    .eq('calendar_id', calendarId).neq('status', 'removed').order('created_at', { ascending: true })
+  if (error) throw error
+  return data ?? []
+}
+
+export async function addManagedProfile(calendarId, userId, { first_name, birth_year, sex, category }) {
+  const { data, error } = await supabase.from('managed_profiles')
+    .insert({ calendar_id: calendarId, added_by: userId, first_name, birth_year, sex: sex || null, category: category || null, status: 'pending' })
+    .select('id, first_name, birth_year, sex, category, status, created_at, activated_at').single()
+  if (error) throw error
+  return data
+}
+
+// The adult types their first and last name; the database compares them and stores the declaration.
+export async function signManagedProfile(profileId, { first, last, functions, version }) {
+  const { data, error } = await supabase.rpc('sign_managed_profile', {
+    p_profile: profileId, p_first: first, p_last: last, p_functions: functions, p_version: version,
+  })
+  if (error) throw error
+  return data
 }
