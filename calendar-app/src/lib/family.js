@@ -17,10 +17,17 @@ export function normalizeName(value) {
   return String(value ?? '').trim().replace(/\s+/g, ' ').toLowerCase()
 }
 
-// True when the typed first and last name match the expected name (order and case insensitive).
+// Same rule as name_key() in the database: words sorted, accents and case ignored. Stripe can return the first and
+// last name in the other order, so "Said ZEGHIDI" and "ZEGHIDI Said" are the same name.
+export function nameKey(value) {
+  return String(value ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+    .trim().split(/\s+/).filter(Boolean).sort().join(' ')
+}
+
+// True when the typed first and last name match the expected name (order, accents and case ignored).
 export function nameMatches(typedFirst, typedLast, expected) {
-  const typed = normalizeName(`${typedFirst ?? ''} ${typedLast ?? ''}`)
-  return typed !== '' && typed === normalizeName(expected)
+  const typed = nameKey(`${typedFirst ?? ''} ${typedLast ?? ''}`)
+  return typed !== '' && typed === nameKey(expected)
 }
 
 // Birth year must be plausible for a managed profile: not before 1990 and not in the future.

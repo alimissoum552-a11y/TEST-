@@ -13,6 +13,12 @@ describe('names', () => {
   it('matches first and last name in any case, with extra spaces', () => {
     expect(nameMatches('marie', 'Dupont', 'Marie  Dupont')).toBe(true)
   })
+  it('ignores the order of first and last name (Stripe can return them swapped)', () => {
+    expect(nameMatches('Said', 'ZEGHIDI', 'ZEGHIDI Said')).toBe(true)
+  })
+  it('ignores accents', () => {
+    expect(nameMatches('José', 'Núñez', 'jose nunez')).toBe(true)
+  })
   it('rejects a different name and an empty name', () => {
     expect(nameMatches('Marie', 'Martin', 'Marie Dupont')).toBe(false)
     expect(nameMatches('', '', '')).toBe(false)

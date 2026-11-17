@@ -20,6 +20,8 @@ Deno.serve(async (req) => {
     const signature = req.headers.get('stripe-signature')
 
     if (signature) return await handleWebhook(req, admin, signature)
+    const body = await req.clone().json().catch(() => ({}))
+    if (body?.action === 'refresh') return await handleRefresh(req, admin)
     return await handleStart(req, admin)
   } catch (_e) {
     return json({ error: 'server_error' }, 500)
@@ -80,10 +82,14 @@ async function handleWebhook(req: Request, admin: any, signature: string): Promi
   if (!userId) return json({ ok: true, ignored: true })
 
   if (event.type === 'identity.verification_session.verified') {
-    const country = session?.verified_outputs?.address?.country ?? null
+    // The event does not carry the verified data: read it from Stripe with the key of the dedicated account.
+    let detail = session
+    const key = Deno.env.get('STRIPE_API_KEY')
+    if (!verifiedNameOf(session) && key) detail = (await fetchWithOutputs(key, session.id)) ?? session
     await admin.from('identity_verifications').upsert({
       user_id: userId, status: 'verified', stripe_session_id: session.id,
-      verified_name: verifiedNameOf(session), country, updated_at: new Date().toISOString(),
+      verified_name: verifiedNameOf(detail), country: detail?.verified_outputs?.address?.country ?? null,
+      updated_at: new Date().toISOString(),
     }, { onConflict: 'user_id' })
   } else if (event.type === 'identity.verification_session.requires_input' || event.type === 'identity.verification_session.canceled') {
     await admin.from('identity_verifications').upsert({
@@ -91,6 +97,41 @@ async function handleWebhook(req: Request, admin: any, signature: string): Promi
     }, { onConflict: 'user_id' })
   }
   return json({ ok: true })
+}
+
+// Reads a verification session together with its verified outputs (name, country). Only the name and country are kept.
+async function fetchWithOutputs(secret: string, sessionId: string): Promise<any | null> {
+  const res = await fetch(
+    `https://api.stripe.com/v1/identity/verification_sessions/${encodeURIComponent(sessionId)}?expand[]=verified_outputs`,
+    { headers: { Authorization: `Bearer ${secret}` } },
+  )
+  return res.ok ? await res.json() : null
+}
+
+// A signed-in user whose verification succeeded but whose name was not stored (earlier webhook) asks for a refresh.
+// Only the session recorded for that user is read; nothing comes from the request.
+async function handleRefresh(req: Request, admin: any): Promise<Response> {
+  const supa = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!, {
+    global: { headers: { Authorization: req.headers.get('Authorization') ?? '' } },
+  })
+  const { data: { user } } = await supa.auth.getUser()
+  if (!user) return json({ error: 'unauthorized' }, 401)
+
+  const key = Deno.env.get('STRIPE_API_KEY')
+  if (!key) return json({ error: 'identity_not_configured' }, 503)
+
+  const { data: row } = await admin.from('identity_verifications')
+    .select('status, stripe_session_id, verified_name').eq('user_id', user.id).maybeSingle()
+  if (!row?.stripe_session_id) return json({ status: row?.status ?? 'none' })
+  if (row.status !== 'verified' || row.verified_name) return json({ status: row.status, verified_name: !!row.verified_name })
+
+  const detail = await fetchWithOutputs(key, row.stripe_session_id)
+  const name = detail ? verifiedNameOf(detail) : null
+  if (!name) return json({ error: 'identity_unavailable', stripe_error: { message: 'verified name not available' } }, 502)
+  await admin.from('identity_verifications').update({
+    verified_name: name, country: detail?.verified_outputs?.address?.country ?? null, updated_at: new Date().toISOString(),
+  }).eq('user_id', user.id)
+  return json({ status: 'verified', verified_name: true })
 }
 
 function json(body: unknown, status = 200) {

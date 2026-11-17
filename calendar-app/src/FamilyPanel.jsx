@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useI18n } from './i18n/index.jsx'
 import {
   getIdentityStatus, startIdentityVerification, setCalendarKind,
-  listManagedProfiles, addManagedProfile, signManagedProfile, addGuardianByEmail,
+  listManagedProfiles, addManagedProfile, signManagedProfile, addGuardianByEmail, refreshIdentityStatus,
 } from './lib/api.js'
 import { isGroupKind, validBirthYear, needsResponsibleAdult } from './lib/family.js'
 
@@ -28,7 +28,14 @@ export default function FamilyPanel({ calendar, userId, isOwner }) {
   const [guardianDone, setGuardianDone] = useState(false)
 
   useEffect(() => {
-    if (isOwner) getIdentityStatus(userId).then(setIdentity).catch(() => setIdentity({ status: 'none' }))
+    if (!isOwner) return
+    getIdentityStatus(userId).then(async (status) => {
+      // Verified but the name was not stored yet: read it again at Stripe, so the declaration can be signed.
+      if (status.status === 'verified' && !status.verified_name) {
+        try { await refreshIdentityStatus(); status = await getIdentityStatus(userId) } catch { /* the sign step explains */ }
+      }
+      setIdentity(status)
+    }).catch(() => setIdentity({ status: 'none' }))
   }, [isOwner, userId])
 
   // Back from Stripe: once verified, the type the owner already picked is saved automatically.
@@ -46,6 +53,8 @@ export default function FamilyPanel({ calendar, userId, isOwner }) {
       name_mismatch: 'famErrNameMismatch',
       creator_not_verified: 'famErrCreator',
       account_not_found: 'famErrNoAccount',
+      identity_name_missing: 'famErrNameMissing',
+      account_name_missing: 'famErrAccountName',
     })[message] || 'famErrGeneric'
   }
 
@@ -97,7 +106,10 @@ export default function FamilyPanel({ calendar, userId, isOwner }) {
       setSigningId(null)
       setSign({ first: '', last: '', agree: false, ai: false })
       setNotice(t('famSigned'))
-    } catch (ex) { setErr(t(errorKey(ex.message))) } finally { setBusy(false) }
+    } catch (ex) {
+      setErr(t(errorKey(ex.message)))
+      if (ex.message === 'identity_name_missing') refreshIdentityStatus().catch(() => {})
+    } finally { setBusy(false) }
   }
 
   const group = isGroupKind(kind)

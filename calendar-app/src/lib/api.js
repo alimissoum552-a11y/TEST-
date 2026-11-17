@@ -535,3 +535,20 @@ export async function addGuardianByEmail(profileId, email) {
   const { error } = await supabase.rpc('add_guardian_by_email', { p_profile: profileId, p_email: email })
   if (error) throw error
 }
+
+// Reads again the verified name at Stripe for a verified account whose name was not stored (identity function).
+export async function refreshIdentityStatus() {
+  const { data, error } = await supabase.functions.invoke('identity', { body: { action: 'refresh' } })
+  if (error) {
+    let code = 'server_error'
+    try { code = (await error.context.json()).error || code } catch { /* no JSON body */ }
+    throw new Error(code)
+  }
+  return data
+}
+
+// Display name of the account. Other adults sign declarations with it (it must match their identity document).
+export async function updateMyName(userId, name) {
+  const { error } = await supabase.from('profiles').update({ display_name: name.trim() }).eq('id', userId)
+  if (error) throw error
+}

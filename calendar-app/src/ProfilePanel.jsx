@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useI18n } from './i18n/index.jsx'
 import Avatar from './Avatar.jsx'
-import { getMyProfile, uploadAvatar, removeAvatar, listMyGrants, revokeMyGrant, setMyHandle, getIdentityStatus } from './lib/api.js'
+import { getMyProfile, uploadAvatar, removeAvatar, listMyGrants, revokeMyGrant, setMyHandle, getIdentityStatus, updateMyName } from './lib/api.js'
 import VerifiedBadge from './VerifiedBadge.jsx'
 
 // Lets the user see their avatar, change it to a photo, or remove it.
@@ -15,10 +15,13 @@ export default function ProfilePanel({ user, onClose, onChanged, onHandleChanged
   const [handleInput, setHandleInput] = useState('')
   const [hBusy, setHBusy] = useState(false)
   const [hMsg, setHMsg] = useState(null)
+  const [nameInput, setNameInput] = useState('')
+  const [nBusy, setNBusy] = useState(false)
+  const [nMsg, setNMsg] = useState(null)
   const [identity, setIdentity] = useState(null)
 
   useEffect(() => {
-    getMyProfile(user.id).then((p) => { setProfile(p); setHandleInput(p.handle || '') }).catch((ex) => setMsg({ err: true, text: ex.message }))
+    getMyProfile(user.id).then((p) => { setProfile(p); setHandleInput(p.handle || ''); setNameInput(p.display_name || '') }).catch((ex) => setMsg({ err: true, text: ex.message }))
   }, [user.id])
 
   useEffect(() => {
@@ -28,6 +31,17 @@ export default function ProfilePanel({ user, onClose, onChanged, onHandleChanged
   useEffect(() => {
     listMyGrants().then(setGrants).catch(() => setGrants([]))
   }, [user.id])
+
+  async function saveName() {
+    if (!nameInput.trim()) return
+    setNBusy(true); setNMsg(null)
+    try {
+      await updateMyName(user.id, nameInput)
+      setProfile((p) => ({ ...p, display_name: nameInput.trim() }))
+      setNMsg({ text: t('wbSaved') }); onChanged?.()
+    } catch (ex) { setNMsg({ err: true, text: ex.message }) }
+    finally { setNBusy(false) }
+  }
 
   async function saveHandle() {
     setHBusy(true); setHMsg(null)
@@ -99,6 +113,18 @@ export default function ProfilePanel({ user, onClose, onChanged, onHandleChanged
             </button>
           )}
         </div>
+
+        <section className="space-y-2">
+          <label htmlFor="name-input" className="text-xs font-medium uppercase tracking-wide text-neutral-500">{t('name')}</label>
+          <div className="flex items-center gap-2">
+            <input id="name-input" value={nameInput} maxLength={80} onChange={(e) => setNameInput(e.target.value)}
+              className="flex-1 min-w-0 rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:border-neutral-900" />
+            <button type="button" onClick={saveName} disabled={nBusy || !nameInput.trim()}
+              className="shrink-0 px-3 py-2 rounded-xl bg-neutral-900 text-white text-sm disabled:opacity-50">{t('save')}</button>
+          </div>
+          <p className="text-xs text-neutral-500">{t('profileNameHint')}</p>
+          {nMsg && <p className={`text-xs ${nMsg.err ? 'font-medium text-neutral-900' : 'text-neutral-600'}`}>{nMsg.text}</p>}
+        </section>
 
         <section className="space-y-2">
           <label htmlFor="handle-input" className="text-xs font-medium uppercase tracking-wide text-neutral-500">{t('handleLabel')}</label>
