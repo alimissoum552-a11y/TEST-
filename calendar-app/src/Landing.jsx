@@ -182,7 +182,12 @@ function HeroVisual() {
 function Carousel({ panels, label, startIndex = 0 }) {
   const trackRef = useRef(null)
   const indexRef = useRef(0)
-  const [index, setIndex] = useState(0)
+  const [raw, setRaw] = useState(0) // position among the three copies, 0..3n-1
+  const n = panels.length
+  const index = raw % n // position in the real list
+  // Three copies side by side: the track is always re-centred on the middle copy once it stops moving,
+  // so the carousel has no left or right end (the last panel is followed by the first one).
+  const items = [0, 1, 2].flatMap((copy) => panels.map((p, i) => ({ p, i, copy })))
   const rtl = typeof document !== 'undefined' && document.documentElement.dir === 'rtl'
 
   const paint = useCallback(() => {
@@ -202,57 +207,80 @@ function Carousel({ panels, label, startIndex = 0 }) {
       el.style.opacity = String(1 - abs * 0.45)
     })
     indexRef.current = best
-    setIndex(best)
+    setRaw(best)
   }, [])
+
+  // Snapping is paused while the track is moved without animation, so the browser cannot pull it to a neighbour.
+  const jump = useCallback((delta) => {
+    const track = trackRef.current
+    if (!track || !delta) return
+    track.style.scrollSnapType = 'none'
+    track.scrollBy({ left: delta, behavior: 'auto' })
+    requestAnimationFrame(() => { track.style.scrollSnapType = '' })
+  }, [])
+
+  const centreDelta = (track, el) => {
+    const tr = track.getBoundingClientRect(), er = el.getBoundingClientRect()
+    return (er.left + er.width / 2) - (tr.left + tr.width / 2)
+  }
 
   useEffect(() => {
     const track = trackRef.current
     if (!track) return
-    let raf = 0
-    const onScroll = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(paint) }
-    // Centre the first panel on load (the browser starts at the scroll origin, not at a snap point).
-    const first = track.children[startIndex] ?? track.children[0]
-    if (first) {
-      // Snapping is paused while placing the track, so the browser cannot pull it to a neighbouring panel.
-      const tr = track.getBoundingClientRect(), fr = first.getBoundingClientRect()
-      track.style.scrollSnapType = 'none'
-      track.scrollLeft += (fr.left + fr.width / 2) - (tr.left + tr.width / 2)
-      requestAnimationFrame(() => { track.style.scrollSnapType = '' })
+    let raf = 0, settle = 0
+    // Once the track has stopped, a panel in the first or last copy is swapped for the same panel in the middle copy.
+    const recentre = () => {
+      const i = indexRef.current
+      if (i >= n && i < 2 * n) return
+      const target = track.children[(i % n) + n]
+      if (target) jump(centreDelta(track, target))
     }
+    const onScroll = () => {
+      cancelAnimationFrame(raf); raf = requestAnimationFrame(paint)
+      clearTimeout(settle); settle = setTimeout(recentre, 140)
+    }
+    // Centre the first panel on load (the browser starts at the scroll origin, not at a snap point).
+    const first = track.children[n + startIndex] ?? track.children[n]
+    if (first) jump(centreDelta(track, first))
     paint()
     track.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', onScroll)
-    return () => { track.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onScroll); cancelAnimationFrame(raf) }
-  }, [paint])
+    return () => { track.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onScroll); cancelAnimationFrame(raf); clearTimeout(settle) }
+  }, [paint, jump, n, startIndex])
 
   // Horizontal move only: never scrolls the page itself (scrollIntoView could).
-  const goTo = (i) => {
+  // A step starts from the middle copy, so there is always a neighbour on both sides, even right after a fast swipe.
+  const step = (dir) => {
     const track = trackRef.current
-    const el = track?.children[Math.max(0, Math.min(panels.length - 1, i))]
-    if (!track || !el) return
-    const tr = track.getBoundingClientRect(), er = el.getBoundingClientRect()
-    track.scrollBy({ left: (er.left + er.width / 2) - (tr.left + tr.width / 2), behavior: reduceMotion() ? 'auto' : 'smooth' })
+    if (!track) return
+    const mid = (indexRef.current % n) + n
+    if (mid !== indexRef.current) jump(centreDelta(track, track.children[mid]))
+    const el = track.children[mid + dir]
+    if (el) track.scrollBy({ left: centreDelta(track, el), behavior: reduceMotion() ? 'auto' : 'smooth' })
   }
   const onKey = (e) => {
     const forward = rtl ? 'ArrowLeft' : 'ArrowRight'
     const back = rtl ? 'ArrowRight' : 'ArrowLeft'
-    if (e.key === forward) { e.preventDefault(); goTo(indexRef.current + 1) }
-    if (e.key === back) { e.preventDefault(); goTo(indexRef.current - 1) }
+    if (e.key === forward) { e.preventDefault(); step(1) }
+    if (e.key === back) { e.preventDefault(); step(-1) }
   }
 
   return (
     <div>
-      <div ref={trackRef} tabIndex={0} onKeyDown={onKey} role="region" aria-roledescription="carousel" aria-label={label(index + 1, panels.length)}
+      <div ref={trackRef} tabIndex={0} onKeyDown={onKey} role="region" aria-roledescription="carousel" aria-label={label(index + 1, n)}
         className="flex gap-5 overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [--panel:72vw] md:[--panel:36rem] lg:[--panel:44rem] px-[calc((100%_-_var(--panel))_/_2)] py-4 -my-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 rounded-3xl">
-        {panels.map((p, i) => (
-          <article key={p.id} aria-roledescription="slide" aria-label={`${i + 1} / ${panels.length}`} aria-hidden={i !== index}
-            className="snap-center snap-always shrink-0 w-[var(--panel)] rounded-3xl bg-white p-6 md:p-8 shadow-xl ring-1 ring-neutral-200 will-change-transform">
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold bg-neutral-900 text-white">{p.sparkle ? <AiAvatar size="sm" tone="light" /> : i + 1}</span>
-            <h3 className="mt-3 text-xl font-semibold text-neutral-900">{p.title}</h3>
-            <p className="mt-1 text-sm text-neutral-600">{p.text}</p>
-            <div className="mt-5">{p.render(i === index)}</div>
-          </article>
-        ))}
+        {items.map(({ p, i, copy }) => {
+          const on = copy * n + i === raw
+          return (
+            <article key={`${copy}-${p.id}`} aria-roledescription="slide" aria-label={`${i + 1} / ${n}`} aria-hidden={!on}
+              className="snap-center snap-always shrink-0 w-[var(--panel)] rounded-3xl bg-white p-6 md:p-8 shadow-xl ring-1 ring-neutral-200 will-change-transform">
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold bg-neutral-900 text-white">{p.sparkle ? <AiAvatar size="sm" tone="light" /> : i + 1}</span>
+              <h3 className="mt-3 text-xl font-semibold text-neutral-900">{p.title}</h3>
+              <p className="mt-1 text-sm text-neutral-600">{p.text}</p>
+              <div className="mt-5">{p.render(on)}</div>
+            </article>
+          )
+        })}
       </div>
     </div>
   )
