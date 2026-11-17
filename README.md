@@ -93,7 +93,7 @@ calendar-app/
     WellbeingPanel.jsx         Personal well-being settings and private alerts
     TeamWellbeing.jsx          Owner settings, chat information panel, analysis journal
     VerifiedBadge.jsx          "Identity verified" badge
-    NewTeamPanel.jsx           New team calendar (family, sports team, class)
+    NewTeamPanel.jsx           New group: a dedicated calendar (family, sports team, class)
     ConsentPage.jsx, MinorLogin.jsx   Guardian consent page, minor access page
     LegalPage.jsx, legal.js    Legal content, six languages
     router.js                  Hash routes

@@ -29,7 +29,7 @@ Elle doit être relue par un juriste avant toute mise en service.
 
 ## 2. Calendrier d'équipe dédié
 
-- Un écran **« Créer un calendrier d'équipe »** : nom et type (famille, équipe sportive, classe). Réservé aux créateurs vérifiés (Stripe Identity).
+- Un écran **« Nouveau groupe »** : nom et type (famille, équipe sportive, classe). Réservé aux créateurs vérifiés (Stripe Identity).
 - Le calendrier est **nouveau** : il ne reprend pas le calendrier personnel du propriétaire. Aujourd'hui, l'application change le type du calendrier existant, ce qui mélangerait les événements.
 - Accès : le propriétaire, les adultes invités (par @pseudo), les parents qui ont un compte adulte, et les comptes mineurs de cette équipe. Personne d'autre.
 
@@ -157,7 +157,7 @@ Ces limites sont appliquées **côté base de données** (règles de sécurité)
 - Migration `migrations_020_minor_access.sql` : type de compte, rôle `minor`, règles de sécurité (le mineur ne lit pas les profils des autres, n'édite pas son profil, n'utilise ni IA, ni bien-être, ni clés d'accès), colonnes d'accès et de consentement, tables `minor_consents` et `minor_login_attempts`, règle de l'IA sans approbation d'opérateur, consentement exigé sous 13 ans dans `sign_managed_profile`.
 - Fonctions `minor-access` (création, régénération, coupure de l'identifiant ; connexion) et `minor-consent` (e-mail du responsable, page d'approbation). Secret `MINOR_ID_SECRET`.
 - Les fonctions `assistant`, `mcp`, `webauthn` et `identity` refusent un compte mineur.
-- Écrans : « Nouveau calendrier d'équipe », panneau Famille (consentement, case d'accès, identifiant affiché une fois, régénérer, couper), page de consentement `#/consent`, accès mineur `#/minor`, application réduite (calendrier en lecture seule et chat).
+- Écrans : « Nouveau groupe », panneau Famille (consentement, case d'accès, identifiant affiché une fois, régénérer, couper), page de consentement `#/consent`, accès mineur `#/minor`, application réduite (calendrier en lecture seule et chat).
 - Tests : 14 cas de base de données (transaction annulée), fonctions utilitaires, 22 vérifications dans un navigateur, et **39 vérifications de bout en bout en production** avec des comptes temporaires supprimés ensuite. Ce test a trouvé une faille (un mineur pouvait créer un calendrier), corrigée par la migration 021.
 
 **Non livré**

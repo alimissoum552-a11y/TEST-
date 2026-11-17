@@ -37,6 +37,7 @@ const ICON_PATHS = {
   menu: <><path d="M4 7h16M4 12h16M4 17h16" /></>,
   close: <><path d="M6 6l12 12M18 6L6 18" /></>,
   team: <><circle cx="9" cy="8" r="3.2" /><path d="M3.5 19.5c.8-3 3-4.8 5.5-4.8s4.7 1.8 5.5 4.8" /><circle cx="17" cy="9" r="2.5" /><path d="M16 14.3c2.4.2 4.2 1.7 4.9 4.2" /></>,
+  groupAdd: <><circle cx="9.5" cy="8" r="3.3" /><path d="M3.5 19.5c.8-3.1 3-4.9 6-4.9 1.3 0 2.5.3 3.5 1" /><path d="M18 8v6M15 11h6" /></>,
   share: <><circle cx="6" cy="12" r="2.5" /><circle cx="18" cy="6" r="2.5" /><circle cx="18" cy="18" r="2.5" /><path d="M8.3 10.8l7.4-3.6M8.3 13.2l7.4 3.6" /></>,
   logout: <><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3" /><path d="M10 16l-4-4 4-4M6 12h10" /></>,
   language: <><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c2.5 3 2.5 15 0 18M12 3c-2.5 3-2.5 15 0 18" /></>,
@@ -624,7 +625,7 @@ export default function App({ user, initialCalendarId = null, minorMode = false 
                   {user && <button onClick={() => { setConnector(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="plug" /> <span>{t('connectorMenu')}</span></button>}
                   <button onClick={() => { setAssistant(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="ai" /> <span>{t('assistant')}</span></button>
                   {user && <button onClick={() => { setWellbeing(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="heart" /> <span>{t('wbMenu')}</span></button>}
-                  <button onClick={() => { setNewTeam(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="team" /> <span>{t('ntMenu')}</span></button>
+                  <button onClick={() => { setNewTeam(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="groupAdd" /> <span>{t('ntMenu')}</span></button>
                   {activeCalendar && <button onClick={() => { setTeam(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="team" /> <span>{t('team')}</span></button>}
                   {activeCalendar && <button onClick={() => { setSharing(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="share" /> <span>{t('sharing')}</span></button>}
                   <button onClick={() => { setMenuOpen(false); window.location.hash = '/ai-guide' }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="guide" /> <span>{t('aiGuide')}</span></button>
