@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { supabase } from './lib/supabase.js'
 import { useI18n, LanguageSelect, LanguageButton } from './i18n/index.jsx'
 import { goLegal, parseRoute } from './router.js'
+import { signInWithPasskey } from './passkeys.js'
+import { Eye, EyeOff } from './ResetPasswordPage.jsx'
 
 export default function AuthScreen({ initialError = null }) {
   const { t } = useI18n()
@@ -27,6 +29,8 @@ export default function AuthScreen({ initialError = null }) {
   const [busy, setBusy] = useState(false)
   const [accepted, setAccepted] = useState(false)
   const [message, setMessage] = useState(initialError ? { type: 'error', text: t(initialError) } : null)
+  const [showPassword, setShowPassword] = useState(false)
+  const [resetStep, setResetStep] = useState(null) // null | 'email'
 
   async function submit(e) {
     e.preventDefault()
@@ -54,9 +58,41 @@ export default function AuthScreen({ initialError = null }) {
           <input className={input} placeholder={t('name')} value={name} onChange={(e) => setName(e.target.value)} />
         )}
         <input className={input} type="email" required placeholder={t('email')} value={email} onChange={(e) => setEmail(e.target.value)} />
-        <input className={input} type="password" required minLength={6} placeholder={t('password')} value={password} onChange={(e) => setPassword(e.target.value)} />
+        <div className="relative">
+          <input className={input + ' pe-11'} type={showPassword ? 'text' : 'password'} required minLength={6}
+            placeholder={t('password')} value={password} onChange={(e) => setPassword(e.target.value)} />
+          <button type="button" onClick={() => setShowPassword((v) => !v)}
+            aria-label={showPassword ? t('hidePassword') : t('showPassword')}
+            className="absolute end-2 top-1/2 -translate-y-1/2 p-1.5 text-neutral-500 hover:text-neutral-900">
+            {showPassword ? <EyeOff /> : <Eye />}
+          </button>
+        </div>
         {message && (
           <p className={`text-sm ${message.type === 'error' ? 'text-neutral-900 font-medium' : 'text-neutral-600'}`}>{message.text}</p>
+        )}
+        {mode === 'signin' && !resetStep && (
+          <button type="button" onClick={() => { setResetStep('email'); setMessage(null) }}
+            className="text-sm text-neutral-500 hover:text-neutral-900">{t('forgotPassword')}</button>
+        )}
+        {resetStep === 'email' && (
+          <div className="rounded-2xl border border-neutral-200 p-4 space-y-2">
+            <p className="text-sm text-neutral-700">{t('resetEmailBody')}</p>
+            <div className="flex gap-2">
+              <button type="button" onClick={async () => {
+                setMessage(null)
+                if (!email.trim()) { setMessage({ type: 'error', text: t('passkeyNeedEmail') }); return }
+                setBusy(true)
+                try { await signInWithPasskey(email.trim().toLowerCase()); window.location.hash = '/reset-password' }
+                catch (ex) {
+                  const code = ex?.message || ''
+                  setMessage({ type: 'error', text: code === 'no_passkey' ? t('resetNoPasskey') : (ex?.name === 'NotAllowedError' ? t('passkeyCancelled') : t('resetFailed')) })
+                } finally { setBusy(false) }
+              }} disabled={busy}
+                className="flex-1 py-2 rounded-xl bg-neutral-900 text-white text-sm disabled:opacity-50">{t('resetContinue')}</button>
+              <button type="button" onClick={() => { setResetStep(null); setMessage(null) }}
+                className="px-3 py-2 rounded-xl bg-neutral-100 text-sm">{t('cancel')}</button>
+            </div>
+          </div>
         )}
         {mode === 'signup' && (
           <label className="flex items-start gap-2 text-xs leading-relaxed text-neutral-600">
@@ -72,7 +108,7 @@ export default function AuthScreen({ initialError = null }) {
           </label>
         )}
         <button disabled={busy} className="w-full py-2.5 rounded-xl bg-neutral-900 text-white text-sm hover:bg-neutral-700 disabled:opacity-50">
-          {busy ? '…' : mode === 'signin' ? 'Se connecter' : 'Créer le compte'}
+          {busy ? '…' : mode === 'signin' ? t('signIn') : t('createAccount')}
         </button>
         <button type="button" onClick={() => { setMode(mode === 'signin' ? 'signup' : 'signin'); setMessage(null) }}
           className="w-full text-sm text-neutral-500 hover:text-neutral-800">

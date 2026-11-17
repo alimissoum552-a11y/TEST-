@@ -8,6 +8,7 @@ import JoinPage from './JoinPage.jsx'
 import AiGuidePage from './AiGuidePage.jsx'
 import OAuthConsentPage from './OAuthConsentPage.jsx'
 import Landing from './Landing.jsx'
+import ResetPasswordPage from './ResetPasswordPage.jsx'
 import { useI18n } from './i18n/index.jsx'
 import { listPasskeys, verifyWithPasskey, isPasskeyVerified, markPasskeyVerified, clearPasskeyVerifications } from './passkeys.js'
 
@@ -30,7 +31,7 @@ export default function Root() {
     return () => window.removeEventListener('hashchange', f)
   }, [])
 
-  const { invite: routeInvite, consent, auth, guide } = parseRoute(hash)
+  const { invite: routeInvite, consent, auth, guide, reset } = parseRoute(hash)
   const [pending, setPending] = useState(() => routeInvite || readPendingInvite())
   const [joinedCalendarId, setJoinedCalendarId] = useState(null)
   const [session, setSession] = useState(undefined) // undefined = loading
@@ -94,6 +95,7 @@ export default function Root() {
         onJoined={setJoinedCalendarId} onDone={finishInvite} />
     )
   }
+  if (reset) return <ResetPasswordPage />
   if (passkeyGate === 'checking') return <PasskeyWaiting />
   return <App user={session.user} initialCalendarId={joinedCalendarId} />
 }

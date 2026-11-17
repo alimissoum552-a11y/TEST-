@@ -36,8 +36,10 @@ export async function signInWithPasskey(email) {
   const { options, challengeToken } = await invoke('auth-options', { email })
   const response = await startAuthentication({ optionsJSON: options })
   const { token_hash } = await invoke('auth-verify', { response, challengeToken })
-  const { error } = await supabase.auth.verifyOtp({ token_hash, type: 'magiclink' })
+  const { data, error } = await supabase.auth.verifyOtp({ token_hash, type: 'magiclink' })
   if (error) throw error
+  // The device just proved who it is: do not ask again for this session.
+  if (data?.user?.id) markPasskeyVerified(data.user.id)
 }
 
 export async function deviceSupportsPasskey() {

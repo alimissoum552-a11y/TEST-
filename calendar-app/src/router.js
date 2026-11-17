@@ -10,7 +10,8 @@ export function parseRoute(hash) {
   const invite = hash.match(/^#\/join\?invite=([0-9a-f-]{36})$/i)?.[1] ?? null
   const consent = hash.match(/^#\/oauth\/consent\?authorization_id=([^&]+)/)?.[1] ?? null
   const guide = /#\/ai-guide$/.test(hash)
-  return { legal, auth, invite, consent, guide }
+  const reset = /#\/reset-password$/.test(hash)
+  return { legal, auth, invite, consent, guide, reset }
 }
 
 export function useLegalRoute() {
