@@ -117,10 +117,9 @@ export default function FamilyPanel({ calendar, userId, isOwner }) {
       {isOwner && identity && isGroupKind(choice) && identity.status !== 'verified' && (
         <div className="rounded-xl bg-neutral-50 p-3 space-y-2">
           <p className="text-xs text-neutral-700">{identity.status === 'pending' ? t('famIdentityPending') : t('famVerifyNeeded')}</p>
-          {identity.status !== 'pending' && (
-            <button type="button" onClick={verify} disabled={busy}
-              className="px-3 py-2 rounded-xl bg-neutral-900 text-white text-xs disabled:opacity-50">{t('famVerifyButton')}</button>
-          )}
+          {/* Always offered until verified: an abandoned attempt must not block the owner. */}
+          <button type="button" onClick={verify} disabled={busy}
+            className="px-3 py-2 rounded-xl bg-neutral-900 text-white text-xs disabled:opacity-50">{t('famVerifyButton')}</button>
         </div>
       )}
       {isOwner && identity?.status === 'verified' && group && (
