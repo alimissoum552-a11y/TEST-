@@ -13,6 +13,7 @@ const RTL = new Set(['ar'])
 
 const DICT = {
   en: {
+    aiGuide: "AI guide",
     aiSettings: "AI permissions",
     aiPermCreate: "Create events",
     aiPermUpdate: "Move and edit events",
@@ -156,6 +157,7 @@ const DICT = {
     monthName: 'September', year: '2026', save: 'Save', description: 'Description',
   },
   fr: {
+    aiGuide: "Guide de l’IA",
     aiSettings: "Permissions de l’IA",
     aiPermCreate: "Créer des événements",
     aiPermUpdate: "Déplacer et modifier des événements",
@@ -299,6 +301,7 @@ const DICT = {
     monthName: 'Septembre', year: '2026', save: 'Enregistrer', description: 'Description',
   },
   es: {
+    aiGuide: "Guía de la IA",
     aiSettings: "Permisos de la IA",
     aiPermCreate: "Crear eventos",
     aiPermUpdate: "Mover y editar eventos",
@@ -442,6 +445,7 @@ const DICT = {
     monthName: 'Septiembre', year: '2026', save: 'Guardar', description: 'Descripción',
   },
   de: {
+    aiGuide: "KI-Anleitung",
     aiSettings: "KI-Berechtigungen",
     aiPermCreate: "Termine erstellen",
     aiPermUpdate: "Termine verschieben und bearbeiten",
@@ -585,6 +589,7 @@ const DICT = {
     monthName: 'September', year: '2026', save: 'Speichern', description: 'Beschreibung',
   },
   ar: {
+    aiGuide: "دليل الذكاء الاصطناعي",
     aiSettings: "أذونات الذكاء الاصطناعي",
     aiPermCreate: "إنشاء الأحداث",
     aiPermUpdate: "نقل الأحداث وتعديلها",
@@ -728,6 +733,7 @@ const DICT = {
     monthName: 'سبتمبر', year: '2026', save: 'حفظ', description: 'الوصف',
   },
   pt: {
+    aiGuide: "Guia da IA",
     aiSettings: "Permissões da IA",
     aiPermCreate: "Criar eventos",
     aiPermUpdate: "Mover e editar eventos",

@@ -94,6 +94,8 @@ export default function AssistantPanel({ user, onClose, onApplied }) {
               </label>
             ))}
             <p className="text-xs text-neutral-500">{t('aiPermNote')}</p>
+            <button type="button" onClick={() => { window.location.hash = '/ai-guide' }}
+              className="text-xs text-neutral-900 underline underline-offset-2">{t('aiGuide')} →</button>
           </div>
         )}
 

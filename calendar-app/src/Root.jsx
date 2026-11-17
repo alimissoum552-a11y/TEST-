@@ -5,6 +5,7 @@ import { supabase, supabaseConfigured } from './lib/supabase.js'
 import LegalPage from './LegalPage.jsx'
 import { useLegalRoute, goBackFromLegal, parseRoute } from './router.js'
 import JoinPage from './JoinPage.jsx'
+import AiGuidePage from './AiGuidePage.jsx'
 import OAuthConsentPage from './OAuthConsentPage.jsx'
 import Landing from './Landing.jsx'
 
@@ -52,6 +53,7 @@ export default function Root() {
   }
 
   if (legal) return <LegalPage kind={legal} onBack={goBackFromLegal} />
+  if (route.guide) return <AiGuidePage onBack={() => { window.location.hash = '' }} />
   if (session === undefined) return <div className="min-h-screen bg-neutral-200" />
   if (!supabaseConfigured) return <App user={null} />
   // Visitors who are not signed in see the landing page at the root; sign-in and sign-up routes open the form.
