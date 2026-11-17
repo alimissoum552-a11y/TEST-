@@ -3,7 +3,7 @@ import { supabase } from './lib/supabase.js'
 import { useI18n, LanguageSelect, LanguageButton } from './i18n/index.jsx'
 import { goLegal, parseRoute } from './router.js'
 
-export default function AuthScreen() {
+export default function AuthScreen({ initialError = null }) {
   const { t } = useI18n()
   const [langOpen, setLangOpen] = useState(false)
   // Mode is read from the URL (#/signin or #/signup) so returning from a legal page restores it.
@@ -26,7 +26,7 @@ export default function AuthScreen() {
   const [name, setName] = useState('')
   const [busy, setBusy] = useState(false)
   const [accepted, setAccepted] = useState(false)
-  const [message, setMessage] = useState(null)
+  const [message, setMessage] = useState(initialError ? { type: 'error', text: t(initialError) } : null)
 
   async function submit(e) {
     e.preventDefault()

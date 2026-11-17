@@ -8,6 +8,7 @@ import JoinPage from './JoinPage.jsx'
 import AiGuidePage from './AiGuidePage.jsx'
 import OAuthConsentPage from './OAuthConsentPage.jsx'
 import Landing from './Landing.jsx'
+import { listPasskeys, verifyWithPasskey, isPasskeyVerified, markPasskeyVerified, clearPasskeyVerifications } from './passkeys.js'
 
 // A pending invitation is kept in this browser until it is answered or dismissed.
 // That way it survives sign-out, sign-in, and the e-mail confirmation step of a new account.
@@ -32,6 +33,34 @@ export default function Root() {
   const [pending, setPending] = useState(() => routeInvite || readPendingInvite())
   const [joinedCalendarId, setJoinedCalendarId] = useState(null)
   const [session, setSession] = useState(undefined) // undefined = loading
+  const [passkeyGate, setPasskeyGate] = useState('idle') // idle | checking | ok
+  const [authError, setAuthError] = useState(null)
+
+  // A passkey account must confirm with the device before the calendar opens.
+  // No extra screen: the device shows its own prompt; meanwhile the app stays blank.
+  useEffect(() => {
+    if (!session) { clearPasskeyVerifications(); setPasskeyGate('idle'); return }
+    if (isPasskeyVerified(session.user.id)) { setPasskeyGate('ok'); return }
+    let cancelled = false
+    setPasskeyGate('checking')
+    ;(async () => {
+      try {
+        const keys = await listPasskeys(session.user.id)
+        if (!keys.length) { if (!cancelled) setPasskeyGate('ok'); return }
+        await verifyWithPasskey()
+        if (cancelled) return
+        markPasskeyVerified(session.user.id)
+        setAuthError(null)
+        setPasskeyGate('ok')
+      } catch (ex) {
+        if (cancelled) return
+        setAuthError(ex?.name === 'NotAllowedError' ? 'passkeyCancelled' : 'passkeyFailed')
+        await supabase.auth.signOut()
+        setPasskeyGate('idle')
+      }
+    })()
+    return () => { cancelled = true }
+  }, [session])
   useEffect(() => {
     if (routeInvite) { savePendingInvite(routeInvite); setPending(routeInvite) }
   }, [routeInvite])
@@ -56,7 +85,7 @@ export default function Root() {
   if (session === undefined) return <div className="min-h-screen bg-neutral-200" />
   if (!supabaseConfigured) return <App user={null} />
   // Visitors who are not signed in see the landing page at the root; sign-in and sign-up routes open the form.
-  if (!session) return (routeInvite || consent || auth) ? <AuthScreen /> : <Landing />
+  if (!session) return (routeInvite || consent || auth) ? <AuthScreen initialError={authError} /> : <Landing />
   if (consent) return <OAuthConsentPage key={consent} authorizationId={consent} />
   if (pending) {
     return (
@@ -64,5 +93,6 @@ export default function Root() {
         onJoined={setJoinedCalendarId} onDone={finishInvite} />
     )
   }
+  if (passkeyGate === 'checking') return <div className="min-h-screen bg-neutral-200" />
   return <App user={session.user} initialCalendarId={joinedCalendarId} />
 }
