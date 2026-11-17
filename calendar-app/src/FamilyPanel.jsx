@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useI18n } from './i18n/index.jsx'
 import {
   getIdentityStatus, startIdentityVerification, setCalendarKind,
-  listManagedProfiles, addManagedProfile, signManagedProfile,
+  listManagedProfiles, addManagedProfile, signManagedProfile, addGuardianByEmail,
 } from './lib/api.js'
 import { isGroupKind, validBirthYear, needsResponsibleAdult } from './lib/family.js'
 
@@ -22,7 +22,9 @@ export default function FamilyPanel({ calendar, userId, isOwner }) {
   const [notice, setNotice] = useState(null)
   const [form, setForm] = useState({ first_name: '', birth_year: '', sex: '', category: '' })
   const [signingId, setSigningId] = useState(null)
-  const [sign, setSign] = useState({ first: '', last: '', agree: false })
+  const [sign, setSign] = useState({ first: '', last: '', agree: false, ai: false })
+  const [guardian, setGuardian] = useState({ profileId: '', email: '' })
+  const [guardianDone, setGuardianDone] = useState(false)
 
   useEffect(() => {
     if (isOwner) getIdentityStatus(userId).then(setIdentity).catch(() => setIdentity({ status: 'none' }))
@@ -36,6 +38,7 @@ export default function FamilyPanel({ calendar, userId, isOwner }) {
     return ({
       name_mismatch: 'famErrNameMismatch',
       creator_not_verified: 'famErrCreator',
+      account_not_found: 'famErrNoAccount',
     })[message] || 'famErrGeneric'
   }
 
@@ -76,13 +79,13 @@ export default function FamilyPanel({ calendar, userId, isOwner }) {
   async function signProfile(profile) {
     setBusy(true); setErr(null)
     try {
-      const functions = profile.sex ? ['sex'] : []
+      const functions = [...(profile.sex ? ['sex'] : []), ...(sign.ai ? ['ai'] : [])]
       const updated = await signManagedProfile(profile.id, {
         first: sign.first, last: sign.last, functions, version: DECLARATION_VERSION,
       })
       setProfiles((list) => list.map((p) => (p.id === profile.id ? { ...p, ...updated } : p)))
       setSigningId(null)
-      setSign({ first: '', last: '', agree: false })
+      setSign({ first: '', last: '', agree: false, ai: false })
       setNotice(t('famSigned'))
     } catch (ex) { setErr(t(errorKey(ex.message))) } finally { setBusy(false) }
   }
@@ -154,6 +157,14 @@ export default function FamilyPanel({ calendar, userId, isOwner }) {
                         className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-neutral-900" />
                       <span>{t('famSignCheck')}</span>
                     </label>
+                    <label className="flex items-start gap-2 text-xs text-neutral-800">
+                      <input type="checkbox" checked={sign.ai} onChange={(e) => setSign({ ...sign, ai: e.target.checked })}
+                        className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-neutral-900" />
+                      <span>
+                        <span className="block">{t('famSignAi')}</span>
+                        <span className="block text-neutral-500 mt-0.5">{t('famAiNote')}</span>
+                      </span>
+                    </label>
                     <div className="flex gap-2">
                       <button type="button" onClick={() => setSigningId(null)} className="flex-1 py-2 rounded-xl bg-neutral-100 text-xs">{t('cancel')}</button>
                       <button type="button" onClick={() => signProfile(p)}
@@ -188,6 +199,30 @@ export default function FamilyPanel({ calendar, userId, isOwner }) {
             </form>
           )}
         </div>
+      )}
+
+      {isOwner && group && profiles.length > 0 && (
+        <form onSubmit={async (e) => {
+          e.preventDefault()
+          setBusy(true); setErr(null); setGuardianDone(false)
+          try {
+            await addGuardianByEmail(guardian.profileId, guardian.email.trim())
+            setGuardian({ profileId: guardian.profileId, email: '' })
+            setGuardianDone(true)
+          } catch (ex) { setErr(t(errorKey(ex.message))) } finally { setBusy(false) }
+        }} className="rounded-xl border border-neutral-200 p-3 space-y-3">
+          <p className="text-xs font-semibold text-neutral-900">{t('famGuardianTitle')}</p>
+          <select className={field} required value={guardian.profileId} aria-label={t('famGuardianProfile')}
+            onChange={(e) => setGuardian({ ...guardian, profileId: e.target.value })}>
+            <option value="">{t('famGuardianProfile')}</option>
+            {profiles.filter((p) => p.status !== 'removed').map((p) => <option key={p.id} value={p.id}>{p.first_name}</option>)}
+          </select>
+          <input className={field} type="email" required placeholder={t('famGuardianEmail')} value={guardian.email}
+            onChange={(e) => setGuardian({ ...guardian, email: e.target.value })} />
+          <button type="submit" disabled={busy || !guardian.profileId || !guardian.email.trim()}
+            className="w-full py-2 rounded-xl bg-neutral-900 text-white text-xs disabled:opacity-50">{t('famGuardianAdd')}</button>
+          {guardianDone && <p className="text-xs text-neutral-700">{t('famGuardianAdded')}</p>}
+        </form>
       )}
 
       {err && <p className="text-xs font-medium text-neutral-900">{err}</p>}

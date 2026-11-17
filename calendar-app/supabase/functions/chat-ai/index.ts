@@ -126,6 +126,9 @@ Deno.serve(async (req) => {
     }
 
     if (!cal.chat_ai_enabled) return json({ error: 'ai_disabled' }, 409)
+    // Calendars with minors: AI only after the legal approval and a signed declaration covering AI (migrations_017).
+    const { data: minorsOk } = await supa.rpc('minor_ai_allowed', { p_calendar: calId })
+    if (minorsOk === false) return json({ error: 'ai_not_approved_for_minors' }, 409)
 
     // The caller's own permissions, the same ones set in the AI panel settings.
     const { data: permRow } = await supa.from('ai_permissions')

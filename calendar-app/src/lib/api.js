@@ -522,3 +522,9 @@ export async function signManagedProfile(profileId, { first, last, functions, ve
   if (error) throw error
   return data
 }
+
+// Owner adds a second adult responsible for a managed profile, by the e-mail of their account.
+export async function addGuardianByEmail(profileId, email) {
+  const { error } = await supabase.rpc('add_guardian_by_email', { p_profile: profileId, p_email: email })
+  if (error) throw error
+}

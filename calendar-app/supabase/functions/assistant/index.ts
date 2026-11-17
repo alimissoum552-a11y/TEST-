@@ -167,7 +167,12 @@ Deno.serve(async (req) => {
     if ((count ?? 0) >= DAILY_REQUEST_CAP) return json({ error: 'daily_limit' }, 429)
 
     // Calendars the caller can access. Ownership decides whether titles may be read.
-    const cals = await accessibleCalendars(supa, user.id)
+    // Calendars with minors are hidden from the assistant unless the minor AI rules are met (migrations_017).
+    const cals: Cal[] = []
+    for (const c of await accessibleCalendars(supa, user.id)) {
+      const { data: minorsOk } = await supa.rpc('minor_ai_allowed', { p_calendar: c.id })
+      if (minorsOk !== false) cals.push(c)
+    }
     const byId = new Map(cals.map((c) => [c.id, c]))
     const consulted = new Set<string>()
     const applied: { action: string; id: string; title: string }[] = []

@@ -36,6 +36,9 @@ async function analyseCalendar(admin: SupabaseClient, apiKey: string, team: any)
   const threshold = clampThreshold(team.meeting_hours_alert)
   const { data: cal } = await admin.from('calendars').select('id, owner_id').eq('id', calId).maybeSingle()
   if (!cal) return
+  // Minors: no analysis unless the legal approval and the signed AI declaration are in place (migrations_017).
+  const { data: minorsOk } = await admin.rpc('minor_ai_allowed', { p_calendar: calId })
+  if (minorsOk === false) return
 
   const sources: string[] = []
   let load: { day: string; hours: number }[] = []
