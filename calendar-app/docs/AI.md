@@ -38,10 +38,11 @@ Edge Function: `chat-ai`. Reads run with the caller's token (RLS applies); write
 
 ---
 
-### 1.3 Claude connector (read-only)
+### 1.3 Connector (MCP, read-only, any client)
 
-A user can connect Collyo to Claude as a custom connector, with their own Claude account. Check in the Claude help
-centre which plans allow custom connectors. Collyo is then an OAuth provider for that app:
+A user can connect Collyo to any AI client that supports custom remote MCP connectors, with their own account
+there. Claude is the worked example; the server is client-agnostic. Check in each client's documentation which
+plans allow custom connectors. Collyo is then an OAuth provider for that app:
 
 - The user approves the app on the consent page (`#/oauth/consent`), which shows the app name and its permissions.
 - The app receives an OAuth access token issued by Supabase Auth (OAuth 2.1 server, dynamic client registration).
@@ -52,7 +53,7 @@ centre which plans allow custom connectors. Collyo is then an OAuth provider for
 - The user can revoke any app in the profile panel ("Connected apps").
 
 Data flow: data reaches the app only when the user uses the connector in their own account. Collyo does not push data
-to Claude. The Privacy Policy, section 12, says so. The team chat is not exposed by the connector.
+to any client. The Privacy Policy, section 12, says so. The team chat is not exposed by the connector.
 
 ## 2. Who can do what
 
@@ -179,7 +180,7 @@ Automated end-to-end tests are not in the repository yet. They belong to step S6
 | G5 | No e-mail notification for chat messages or AI replies. | Out of scope for now. |
 | G6 | `ai_usage` rows are kept without a retention rule. | Add a retention rule (for example 13 months) and say it in the Privacy page. |
 | G7 | The assistant policy is a draft, not reviewed by a lawyer. | Lawyer review before the paid launch (step S12). |
-| G8 | Connector (section 1.3) is built and tested with direct OAuth calls. The end-to-end test inside claude.ai is still to do by the owner. | Test the connector in claude.ai, then decide on listing. The subscription cannot power the product; the connector only lets the user use Claude with their own calendar data. |
+| G8 | Connector (section 1.3) is built and tested with direct OAuth calls. The end-to-end test inside a client is still to do by the owner. | Test the connector in claude.ai, then decide on listing. The subscription cannot power the product; the connector only lets the user use Claude with their own calendar data. |
 | G9 | Two test OAuth clients created during the tests remain in the `auth` schema (`oauth_clients`). | Delete them from the Supabase dashboard (OAuth apps), not by SQL. |
 | G10 | The MCP endpoint accepts any OAuth client that the user approves, not a fixed list. | Review registered clients, or add an allow-list, before listing the connector publicly. |
 

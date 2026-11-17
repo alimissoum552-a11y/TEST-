@@ -51,7 +51,7 @@ happened once with `chat_ai_notes` (fixed in migration 011).
 | `send-reminders` | pg_cron, every minute | `x-cron-secret` header | Reminder e-mails for due events |
 | `assistant` | App, assistant panel | User JWT | Personal read-only assistant |
 | `chat-ai` | App, when a member mentions the AI | User JWT | AI reply and notes in the team chat |
-| `mcp` | Claude connector (MCP client) | OAuth access token, checked by the function | Read-only calendar tools. Deploy with `--no-verify-jwt` so the function returns the OAuth challenge itself. |
+| `mcp` | MCP connector (any client, Claude is one example) | OAuth access token, checked by the function | Read-only calendar tools. Deploy with `--no-verify-jwt` so the function returns the OAuth challenge itself. |
 
 Deploy one function (the CLI asks for confirmation in agent mode; `--yes` confirms that one deploy):
 
@@ -94,7 +94,7 @@ address from the secret `MCP_PUBLIC_URL` (`https://collyo.app/mcp`) and announce
 and in the OAuth challenge. Changing the address needs both: the rewrite and the secret, then a redeploy of the function
 and of the front end.
 
-### OAuth server (Claude connector)
+### OAuth server (MCP connector)
 
 Enabled on the project through the Management API (`PATCH /v1/projects/<ref>/config/auth`):
 `oauth_server_enabled: true`, `oauth_server_allow_dynamic_registration: true`,

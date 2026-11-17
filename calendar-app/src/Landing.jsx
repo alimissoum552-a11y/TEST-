@@ -133,7 +133,7 @@ function ShareDemo({ L }) {
   )
 }
 
-function ClaudeDemo({ L }) {
+function ConnectorDemo({ L }) {
   const url = typeof window !== 'undefined' ? `${window.location.origin}/mcp` : ''
   const [copied, setCopied] = useState(false)
   async function copy() {
@@ -269,7 +269,7 @@ export default function Landing() {
     { id: 'ai', title: L.ai[0], text: L.ai[1], sparkle: true, render: () => <AiDemo L={L} /> },
     { id: 'reminders', title: L.reminders[0], text: L.reminders[1], render: () => <RemindDemo L={L} /> },
     { id: 'share', title: L.share[0], text: L.share[1], render: () => <ShareDemo L={L} /> },
-    { id: 'claude', title: L.claude[0], text: L.claude[1], render: () => <ClaudeDemo L={L} /> },
+    { id: 'connector', title: L.connector[0], text: L.connector[1], render: () => <ConnectorDemo L={L} /> },
   ]
 
   const cta = 'w-44 text-center px-5 py-3 rounded-2xl bg-white ring-1 ring-neutral-300 text-sm font-medium text-neutral-900 hover:bg-neutral-50'
