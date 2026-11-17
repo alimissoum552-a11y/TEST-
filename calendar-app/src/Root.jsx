@@ -9,7 +9,7 @@ import AiGuidePage from './AiGuidePage.jsx'
 import OAuthConsentPage from './OAuthConsentPage.jsx'
 import Landing from './Landing.jsx'
 import LockScreen from './LockScreen.jsx'
-import { isLockEnabled } from './lock.js'
+import { isLockEnabled, migrateOldLock } from './lock.js'
 
 // A pending invitation is kept in this browser until it is answered or dismissed.
 // That way it survives sign-out, sign-in, and the e-mail confirmation step of a new account.
@@ -34,6 +34,7 @@ export default function Root() {
   const [pending, setPending] = useState(() => routeInvite || readPendingInvite())
   const [joinedCalendarId, setJoinedCalendarId] = useState(null)
   const [session, setSession] = useState(undefined) // undefined = loading
+  useEffect(() => { migrateOldLock() }, [])
   const [lockOn, setLockOn] = useState(() => isLockEnabled())
   const [locked, setLocked] = useState(() => isLockEnabled())
 

@@ -624,7 +624,7 @@ export default function App({ user, initialCalendarId = null, lockOn = false, on
                     <Icon name={lockOn ? 'lock' : 'lockOpen'} /> <span>{t('lockMenuTitle')}</span>
                   </button>
                   {lockOpen && (
-                    <LockPanel inline enabled={lockOn} onClose={() => setLockOpen(false)}
+                    <LockPanel inline enabled={lockOn} user={user} onClose={() => setLockOpen(false)}
                       onChanged={(v) => { onLockChanged?.(v); setLockOpen(false) }}
                       onLockNow={() => { setLockOpen(false); onLockNow?.() }} />
                   )}
