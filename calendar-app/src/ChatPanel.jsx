@@ -16,7 +16,8 @@ import {
 const TYPING_SEND_MS = 2000
 const TYPING_HIDE_MS = 3000
 const MENTION = /@(ai|ia|ki)\b/i
-const AI_ERRORS = { ai_disabled: 'chatAiDisabled', daily_limit: 'assistantLimit', assistant_not_configured: 'assistantNotConfigured' }
+// ai_not_approved_for_minors: the calendar has a minor who is not covered by a signed declaration that includes AI.
+const AI_ERRORS = { ai_disabled: 'chatAiDisabled', daily_limit: 'assistantLimit', assistant_not_configured: 'assistantNotConfigured', ai_not_approved_for_minors: 'chatAiNotApproved' }
 
 export default function ChatPanel({ calendarId, user, myHandle, canWrite, isOwner, onClose, onApplied, minor = false }) {
   const { t, locale } = useI18n()
@@ -153,7 +154,8 @@ export default function ChatPanel({ calendarId, user, myHandle, canWrite, isOwne
       const row = await sendMessage(calendarId, user.id, content)
       setMessages((prev) => (prev.some((m) => m.id === row.id) ? prev : [...prev, row]))
       setText('')
-      if (aiOn && MENTION.test(content)) await requestAi()
+      // Only adults can ask the AI (docs/MINOR_APP.md, section 6): a minor gets an explanation, not a failed call.
+      if (aiOn && MENTION.test(content)) { if (minor) setErr(t('chatAiAdultsOnly')); else await requestAi() }
     } catch (ex) { setErr(ex.message) } finally { setBusy(false) }
   }
 
