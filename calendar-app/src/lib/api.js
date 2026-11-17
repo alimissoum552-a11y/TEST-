@@ -486,8 +486,15 @@ export async function startIdentityVerification() {
   const { data, error } = await supabase.functions.invoke('identity', { body: { action: 'start' } })
   if (error) {
     let code = 'server_error'
-    try { code = (await error.context.json()).error || code } catch { /* no JSON body */ }
-    throw new Error(code)
+    let detail = null
+    try {
+      const body = await error.context.json()
+      code = body.error || code
+      detail = body.stripe_error?.message || null
+    } catch { /* no JSON body */ }
+    const ex = new Error(code)
+    ex.detail = detail
+    throw ex
   }
   return data
 }

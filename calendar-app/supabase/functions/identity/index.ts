@@ -52,7 +52,15 @@ async function handleStart(req: Request, admin: any): Promise<Response> {
     headers: { Authorization: `Bearer ${secret}`, 'Content-Type': 'application/x-www-form-urlencoded' },
     body: form.toString(),
   })
-  if (!res.ok) return json({ error: 'identity_unavailable' }, 502)
+  if (!res.ok) {
+    // Stripe's error type, code and message are safe to show to the calendar owner and make failures diagnosable.
+    const body = await res.json().catch(() => ({}))
+    const e = body?.error ?? {}
+    return json({
+      error: 'identity_unavailable',
+      stripe_error: { type: e.type ?? null, code: e.code ?? null, message: String(e.message ?? '').slice(0, 300) },
+    }, 502)
+  }
   const session = await res.json()
 
   await admin.from('identity_verifications').upsert({

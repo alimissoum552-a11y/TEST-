@@ -64,7 +64,10 @@ export default function FamilyPanel({ calendar, userId, isOwner }) {
       const res = await startIdentityVerification()
       if (res?.status === 'verified') { setIdentity({ status: 'verified' }); return }
       if (res?.url) window.location.href = res.url
-    } catch (ex) { setErr(t('famErrGeneric')) } finally { setBusy(false) }
+    } catch (ex) {
+      // The code (and Stripe's message when there is one) tells the owner what to fix.
+      setErr(`${t('famErrGeneric')} [${ex.message}${ex.detail ? `: ${ex.detail}` : ''}]`)
+    } finally { setBusy(false) }
   }
 
   async function addMinor(e) {
