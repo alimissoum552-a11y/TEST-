@@ -27,11 +27,19 @@ project. Each file is written to be safe to re-run (`if not exists`, `drop polic
 | `migrations_009_assistant.sql` | `profiles.ai_accepted_at`, `calendar_busy()` RPC, `ai_usage` |
 | `migrations_010_team_chat.sql` | `messages` table, RLS, Realtime |
 | `migrations_011_chat_ai.sql` | `calendars.chat_ai_enabled`, `messages.is_ai`, `chat_ai_notes`, Realtime for both |
+| `migrations_012_mentions.sql` | Member handles (@pseudo), `notifications`, mention trigger, Realtime |
+| `migrations_013_ai_permissions.sql` | `ai_permissions` (create, move, delete: off by default) |
+| `migrations_013_wellbeing.sql` | `wellbeing_settings`, `wellbeing_checkins`, `team_wellbeing`, `team_wellbeing_optout` (two files carry the number 013; both are applied, the order does not matter) |
+| `migrations_014_webauthn.sql` | `webauthn_credentials` (passkeys) |
+| `migrations_015_wellbeing_ai.sql` | `wellbeing_alerts` (private), `wellbeing_analysis_log` (owner read) |
+| `migrations_016_family_team.sql` | `calendars.kind`, `identity_verifications`, `managed_profiles`, `profile_guardians`, `declarations`, `sign_managed_profile()`, creator check trigger |
+| `migrations_017_family_ai.sql` | `ai_legal_approvals`, `minor_ai_allowed()`, `add_guardian_by_email()` |
+| `migrations_018_family_rls_fix.sql` | Fix: infinite recursion between the row policies of `managed_profiles` and `profile_guardians` |
 
 Apply one migration (example with the Supabase Management API or the SQL editor). Then check the objects it creates.
 Do not edit an applied migration: add a new numbered file.
 
-Realtime publication `supabase_realtime` must contain: `events`, `messages`, `calendars`, `chat_ai_notes`.
+Realtime publication `supabase_realtime` must contain: `events`, `calendar_members`, `messages`, `calendars`, `chat_ai_notes`, `notifications`.
 Check with:
 
 ```sql
@@ -49,9 +57,12 @@ happened once with `chat_ai_notes` (fixed in migration 011).
 |---|---|---|---|
 | `send-invite` | App, after an invitation | User JWT | Invitation e-mail through Resend |
 | `send-reminders` | pg_cron, every minute | `x-cron-secret` header | Reminder e-mails for due events |
-| `assistant` | App, assistant panel | User JWT | Personal read-only assistant |
-| `chat-ai` | App, when a member mentions the AI | User JWT | AI reply and notes in the team chat |
+| `assistant` | App, assistant panel | User JWT | Personal assistant. Writes events only with the user's permissions. Well-being mode (check-ins, crisis marker). Hides calendars with minors unless `minor_ai_allowed()` is true. |
+| `chat-ai` | App, when a member mentions the AI | User JWT | AI reply and notes in the team chat. Needs owner, administrator or contributor. Refuses calendars with minors unless `minor_ai_allowed()` is true (409 `ai_not_approved_for_minors`). |
 | `mcp` | MCP connector (any client, Claude is one example) | OAuth access token, checked by the function | Read-only calendar tools. Deploy with `--no-verify-jwt` so the function returns the OAuth challenge itself. |
+| `webauthn` | App, passkey sign-in and management | User JWT or signed challenge | Passkeys (WebAuthn). Deployed with `--no-verify-jwt`. |
+| `wellbeing-team` | pg_cron, every hour | `x-cron-secret` header | Team well-being analysis: meeting load per day, message review, private distress alerts, group message at most every 12 hours, analysis journal. Deployed with `--no-verify-jwt`. |
+| `identity` | App (start) and Stripe (webhook) | User session for the start; Stripe signature for the webhook | Identity verification of the creators of family, sports team and class calendars. Deployed with `--no-verify-jwt`. |
 
 Deploy one function (the CLI asks for confirmation in agent mode; `--yes` confirms that one deploy):
 
@@ -70,13 +81,17 @@ Secrets are set on the project, not on GitHub, and their values are never printe
 
 | Secret | Required by | Notes |
 |---|---|---|
-| `ANTHROPIC_API_KEY` | `assistant`, `chat-ai` | Without it both return 503 `assistant_not_configured`. |
+| `ANTHROPIC_API_KEY` | `assistant`, `chat-ai`, `wellbeing-team` | Without it the first two return 503 `assistant_not_configured`; `wellbeing-team` skips the model calls. |
 | `RESEND_API_KEY` | `send-invite`, `send-reminders` | |
 | `INVITE_FROM` | `send-invite` | `Calendar <invites@collyo.app>` |
 | `INVITE_REPLY_TO` | `send-invite` | `support@collyo.app` |
 | `APP_URL` | `send-invite` | `https://collyo.app` |
 | `REMINDER_FROM` | `send-reminders` | Optional, default `Calendar <noreply@collyo.app>` |
-| `CRON_SECRET` | `send-reminders` | Same value as the Vault secret `cron_secret`. |
+| `CRON_SECRET` | `send-reminders`, `wellbeing-team` | Same value as the Vault secret `cron_secret`. |
+| `WEBAUTHN_SECRET` | `webauthn` | Signs the passkey challenges. |
+| `MCP_PUBLIC_URL` | `mcp` | Public base address announced to clients. |
+| `STRIPE_API_KEY` | `identity` | Secret key of the **dedicated Collyo Stripe account**. Its mode (test or live) is the mode of the key. |
+| `STRIPE_WEBHOOK_SECRET` | `identity` | Signing secret of the Collyo webhook endpoint, same mode as the key. |
 
 List secret names (never values):
 
@@ -86,6 +101,25 @@ curl -s -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
 ```
 
 ---
+
+### Stripe Identity (creators of family, sports team and class calendars)
+
+- A **dedicated Stripe account** for Collyo, separate from other products. Only the creator of a family, sports team or
+  class calendar is verified. Other members, including minors, are added with a signed declaration
+  (`docs/FAMILY_TEAM.md`).
+- Function `identity`, deployed with `--no-verify-jwt`. Without the `Stripe-Signature` header it needs a user session and
+  starts a verification session (document, matching selfie, live capture, return address `https://collyo.app/`). With the
+  header it checks the webhook signature (5 minutes tolerance) and records the result.
+- Webhook endpoint, in the Stripe dashboard and **in the same mode as the key**:
+  `https://oybvllumenwbzekgxjtz.supabase.co/functions/v1/identity`. Events: `identity.verification_session.verified`,
+  `identity.verification_session.requires_input`, `identity.verification_session.canceled`.
+- A restricted key needs the permission **Identity Verification Results: write**. The function reads `STRIPE_API_KEY`.
+- The session carries `metadata.user_id`. A session created by hand in the Stripe dashboard has none and is ignored.
+- Stored in `identity_verifications`: status, verified name, country, session identifier. Never the document or the selfie.
+- Checks: without a login the start returns 401; an invalid signature returns 400; when Stripe refuses, the error code and
+  message are returned to the calendar owner and shown in brackets in the Team panel.
+- Changing mode (test to live): replace both secrets, create the webhook in the matching mode, and keep the old key out of
+  the repository and out of GitHub secrets.
 
 ### Public address of the connector
 
@@ -124,6 +158,16 @@ Expected: a `403` only for calls without the secret; `200` with `{"sent": n}` fo
 
 To rotate `CRON_SECRET`: set the new value on the function and update the Vault secret with the same value, in one
 change. Otherwise the job gets 403 until both match.
+
+### Other scheduled jobs
+
+| Job | Schedule | File | What it does |
+|---|---|---|---|
+| `wellbeing-team` | `17 * * * *` | `supabase/wellbeing_cron.sql` | Calls the `wellbeing-team` function with the Vault secret |
+| `wellbeing-log-retention` | `30 3 * * *` | `supabase/wellbeing_cron.sql` | Deletes analysis journal rows older than 90 days |
+| `family-purge-pending` | `40 3 * * *` | `supabase/family_cron.sql` | Deletes minor profiles still pending after 30 days |
+
+Check them: `select jobname, schedule, active from cron.job order by jobname;`
 
 ---
 
@@ -202,6 +246,7 @@ against it. Do not leave test data behind: remove test messages, reset `chat_ai_
 | Owner of the Vercel team | Deploys, team settings | Enable two-factor authentication. |
 | Test account | Browser and API tests | Owns one calendar. Reset its switches after each test. Change its password if it was shared outside the team. |
 | Supabase project owner | Migrations, secrets, functions | Access token used by the CLI and the Management API. |
+| Stripe account (Collyo) | Identity verification of creators | Dedicated account. The key lives only in Supabase secrets, never in the repository or in GitHub secrets. |
 
 Credentials are not stored in the repository. Tokens come from the environment (`SUPABASE_ACCESS_TOKEN`,
 `VERCEL_ACCESS_TOKEN`, `RESEND_API_KEY`, `CLOUDFLARE_API_KEY`). The Cloudflare global key should be replaced by a
@@ -220,3 +265,8 @@ token limited to `Zone → DNS → Edit`, then revoked.
 | AI key missing after a project change | Re-add `ANTHROPIC_API_KEY` in Supabase secrets; the functions return 503 until then. |
 | `ai_usage` grows without retention | Add a retention job (see `docs/AI.md`, G6). |
 | Invitation accepted without a membership row (seen once in production) | Investigate the acceptance path before inviting new people. |
+| Stripe key in live mode before the legal review of `docs/FAMILY_TEAM.md` | Real identity documents are processed. Complete the review, or go back to a test key. |
+| Webhook secret and key in different modes | Verification results are rejected (400) and the creator stays pending. Keep both in the same mode. |
+| The restricted key of the previous, shared Stripe account is still valid | Revoke it in the Stripe dashboard of that account. Change nothing else on that account. |
+| Well-being check-ins are not purged automatically | There is no retention job for `wellbeing_checkins`. Add one, or keep the Privacy Policy wording ("until you delete your account"). |
+| AI legal approvals are inserted by hand | `ai_legal_approvals` has no screen: an operator records the reference after the legal review. |

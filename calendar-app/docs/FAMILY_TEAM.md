@@ -1,6 +1,6 @@
 # Modes famille, équipe sportive et classe scolaire : conception
 
-Statut : **conception, rien n'est implanté.** Ce document fixe les choix faits avant tout code.
+Statut : **implanté en production (voir section 15), relecture juridique en attente.** Ce document fixe les choix faits avant le code.
 Il doit être relu par le responsable juridique avant toute mise en service, en particulier pour les mineurs.
 Marchés visés : **Europe et Amérique**.
 
@@ -66,7 +66,7 @@ Un mineur ne peut jamais être gestionnaire.
 - **Données biométriques** : le selfie relève des données biométriques (RGPD art. 9 quand il sert à identifier). Stripe en est le responsable de traitement pour cette étape. Il faut vérifier le contrat de sous-traitance (DPA) et l'information donnée à l'utilisateur.
 - **Disponibilité** : vérifier que Stripe Identity couvre les pays et types de pièces visés, en Europe et en Amérique.
 - **Coût** : facturé à la vérification réussie. Tarif à confirmer sur le compte Stripe avant le lancement.
-- **Compte partagé (décision du propriétaire)** : le compte Stripe est partagé avec un autre projet, dont le point de terminaison reçoit aussi les événements `identity.verification_session.*`. Les résultats de vérification des créateurs Collyo peuvent donc être transmis à cet autre projet. Décision prise par le propriétaire, à réexaminer avec le juriste avant mise en service (un compte séparé reste recommandé).
+- **Compte dédié** : Collyo utilise un compte Stripe dédié, séparé d'un autre projet. L'idée d'un compte partagé, envisagée un temps, est abandonnée : les événements d'identité de Collyo ne partent que vers la fonction `identity`.
 - **Refus ou échec** : l'activation reste bloquée, avec la raison générale (« vérification non aboutie ») et un moyen de réessayer. Aucun détail n'est donné à l'entourage.
 
 ### 4.4 Ce que la vérification ne prouve pas
@@ -226,3 +226,24 @@ Le texte est versionné. Chaque signature est liée à la version exacte accept�
 
 ### 14.7 Ordre de réalisation (mise à jour)
 La signature et la mise en revue passent avant les profils mineurs (section 12, étape 5), car aucun profil n'est actif sans elles.
+
+---
+
+## 15. État de l'implantation (17 novembre 2026)
+
+**Livré et en production**
+- Type de calendrier (travail, famille, équipe sportive, classe) et vérification du créateur par Stripe Identity, sur un compte dédié.
+- Profils mineurs, en attente jusqu'à la signature d'un adulte responsable ; suppression après 30 jours sans signature.
+- Déclaration signée avec comparaison du nom (créateur : nom vérifié ; autre adulte : nom du compte) ; second adulte ajouté par e-mail.
+- Sexe enregistré seulement si la déclaration le couvre.
+- IA bloquée pour les calendriers avec mineurs (`minor_ai_allowed`) dans `chat-ai`, `assistant` et `wellbeing-team`.
+- Badge « identité vérifiée » sur le profil de la personne vérifiée (visible par elle seule).
+- Onze cas de test de la base joués dans une transaction annulée ; un défaut de récursion des règles de sécurité a été corrigé (migration 018).
+
+**Non livré**
+- Compte propre du mineur à 16 ans et vue du mineur.
+- Écran d'enregistrement de l'approbation juridique de l'IA (insertion par un opérateur dans `ai_legal_approvals`).
+- Badge visible par les autres membres du calendrier.
+- Relecture juridique (sections 13 et 14).
+
+**Écart à fermer** : la clé Stripe est en mode live, donc de vraies pièces d'identité peuvent être traitées, alors que la relecture juridique n'est pas faite.

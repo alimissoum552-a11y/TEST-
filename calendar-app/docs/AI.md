@@ -9,7 +9,7 @@ Status: shipped on production in November 2026. Read this with `docs/OPERATIONS.
 
 There are two AI features. They share the same model provider, but they have different scopes.
 
-### 1.1 Assistant panel (personal, read-only)
+### 1.1 Assistant panel (personal)
 
 Menu entry **AI**. Each signed-in user talks to the assistant about their own calendars.
 
@@ -17,7 +17,9 @@ Menu entry **AI**. Each signed-in user talks to the assistant about their own ca
   no descriptions); the list of calendars the user can access.
 - Computes: free slots inside working hours, with a deterministic function (`supabase/functions/assistant/slots.ts`),
   not by the model.
-- Writes: nothing. It suggests a time; the user creates the event.
+- Writes: only what the user allowed in the AI settings (create, move, delete: each off by default). Without a permission it
+  suggests a time and the user creates the event. It tells the user what it changed. Calendars with minors are hidden from it
+  unless the rules of section 1.5 are met.
 - Requires: acceptance of the AI policy before the first message (`profiles.ai_accepted_at`).
 
 Edge Function: `assistant` (model `claude-sonnet-5-5`, up to 6 tool rounds, 2000 characters per message, 20 messages
@@ -32,7 +34,8 @@ Chat panel of a calendar. The owner switches the AI on with the sparkle button; 
 - Reads: the last 40 messages of the chat and the shared notes.
 - Writes: one reply, stored as a chat message flagged `is_ai`; and, when the discussion contains a decision, task or
   plan, an update of the shared notes (`chat_ai_notes`, max 6000 characters).
-- Cannot: create, move or delete events, change members, or change the switch.
+- Can create, move or delete events only with the AI permissions of the member who mentioned it, and never changes members or
+  the switch. A reader cannot trigger it. Calendars with minors follow section 1.5.
 
 Edge Function: `chat-ai`. Reads run with the caller's token (RLS applies); writes run with the service role.
 
@@ -54,6 +57,24 @@ plans allow custom connectors. Collyo is then an OAuth provider for that app:
 
 Data flow: data reaches the app only when the user uses the connector in their own account. Collyo does not push data
 to any client. The Privacy Policy, section 12, says so. The team chat is not exposed by the connector.
+
+### 1.4 Well-being (personal and team)
+
+Described in `docs/WELLBEING.md`. In short:
+
+- **Personal**: the assistant gets a well-being role only when the user switched the mode on. Check-in tools (`log_checkin`,
+  `get_checkins`) exist only if the user allowed check-ins. The assistant does not diagnose. If the user shows serious distress, it
+  stops coaching and the app shows emergency resources.
+- **Team**: `wellbeing-team` runs every hour for calendars whose owner switched the analysis on. It reads the calendar's meeting
+  load and, if the owner chose it, the messages of the last hour (without members who opted out), numbered and without names. A
+  distress signal creates a private alert for that person only. The group receives at most one message every 12 hours, naming
+  nobody. The journal keeps counts, never message text, for 90 days.
+
+### 1.5 Calendars with minors
+
+For family, sports team and class calendars (`docs/FAMILY_TEAM.md`), AI is allowed only if `minor_ai_allowed(calendar)` is true:
+a legal approval is recorded in `ai_legal_approvals` **and** every active minor is covered by a signed declaration that includes
+AI. Otherwise `chat-ai` answers 409, the assistant hides the calendar, and `wellbeing-team` skips it.
 
 ## 2. Who can do what
 
@@ -146,9 +167,10 @@ Supabase Edge Function secrets (set on the Supabase project, not on GitHub):
 
 | Secret | Used by |
 |---|---|
-| `ANTHROPIC_API_KEY` | `assistant`, `chat-ai` |
+| `ANTHROPIC_API_KEY` | `assistant`, `chat-ai`, `wellbeing-team` |
 | `RESEND_API_KEY`, `INVITE_FROM`, `INVITE_REPLY_TO`, `APP_URL`, `REMINDER_FROM` (optional) | `send-invite`, `send-reminders` |
-| `CRON_SECRET` | `send-reminders` (also stored in Vault for the cron job) |
+| `CRON_SECRET` | `send-reminders`, `wellbeing-team` (also stored in Vault for the cron jobs) |
+| `STRIPE_API_KEY`, `STRIPE_WEBHOOK_SECRET` | `identity` (see `docs/OPERATIONS.md`) |
 
 `SUPABASE_URL`, `SUPABASE_ANON_KEY` and `SUPABASE_SERVICE_ROLE_KEY` are provided by Supabase to every function.
 
@@ -173,7 +195,7 @@ Automated end-to-end tests are not in the repository yet. They belong to step S6
 
 | # | Gap | Proposed decision |
 |---|---|---|
-| G1 | A **reader** can make the chat AI reply (the function checks visibility, not the write role). | Restrict `chat-ai` to owner, administrator and contributor, as the chat writers. |
+| G1 | Fixed: `chat-ai` requires owner, administrator or contributor. | Done. |
 | G2 | The assistant panel does not list a calendar as "consulted" when it only lists calendars. | Count listed calendars in `consulted`. Small fix. |
 | G3 | No plan, quota or price yet. Daily cap only. Billing (S7 to S12) is not built. | Set prices from `ai_usage` after a measured period, as agreed. |
 | G4 | A member cannot opt out of availability sharing for a calendar they joined. | Add a per-calendar member setting, or a per-user default, before the paid plans. |
@@ -183,13 +205,17 @@ Automated end-to-end tests are not in the repository yet. They belong to step S6
 | G8 | Connector (section 1.3) is built and tested with direct OAuth calls. The end-to-end test inside a client is still to do by the owner. | Test the connector in claude.ai, then decide on listing. The subscription cannot power the product; the connector only lets the user use Claude with their own calendar data. |
 | G9 | Two test OAuth clients created during the tests remain in the `auth` schema (`oauth_clients`). | Delete them from the Supabase dashboard (OAuth apps), not by SQL. |
 | G10 | The MCP endpoint accepts any OAuth client that the user approves, not a fixed list. | Review registered clients, or add an allow-list, before listing the connector publicly. |
+| G11 | Well-being check-ins have no automatic retention (the 12 months planned in `docs/WELLBEING.md` is not implemented). | Add a retention job, or keep "until the account is deleted" in the Privacy Policy. |
+| G12 | The legal approval for AI on calendars with minors is inserted by an operator, without a screen. | Add an operator tool after the legal review. |
+| G13 | Distress detection relies on a model and has not been validated by a mental-health professional. | Clinical review before a wide release. |
 
 ---
 
 ## 9. How to change the AI safely
 
 1. Change the behaviour in the Edge Function, not in the client. The client must not hold the model key.
-2. Keep the tools read-only unless a step in `docs/ROADMAP.md` (S17) says otherwise, with explicit user confirmation.
+2. Write tools exist only behind the user's AI permissions (`ai_permissions`, off by default) and, for calendars with minors,
+   behind `minor_ai_allowed()`. Add no write tool without a permission check in the function.
 3. Check the permission table in section 2 after any change to the policies, and update the table.
 4. Add the limit, the data flow and the legal text together. A new data flow without a privacy sentence is a bug.
 5. Deploy the function with `supabase functions deploy <name> --remote=<project-ref> --yes` and check the response

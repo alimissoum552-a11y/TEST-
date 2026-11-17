@@ -304,6 +304,54 @@ function WellbeingDemo({ L }) {
   )
 }
 
+// Family, sports team and class: example events per type, and the verification steps. Fixed sample data.
+function GroupsDemo({ L }) {
+  const [kind, setKind] = useState('family')
+  const tabs = [
+    ['family', L.gFamily, L.gFamilyEx],
+    ['sports', L.gSports, L.gSportsEx],
+    ['class', L.gClass, L.gClassEx],
+  ]
+  const events = tabs.find((t) => t[0] === kind)[2]
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap gap-2" role="group">
+          {tabs.map(([k, label]) => (
+            <button key={k} type="button" onClick={() => setKind(k)} aria-pressed={kind === k}
+              className={`px-3 py-1.5 rounded-full text-xs transition-colors ${kind === k ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'}`}>
+              {label}
+            </button>
+          ))}
+        </div>
+        <span className="text-[10px] uppercase tracking-wide text-neutral-500">{L.wbExample}</span>
+      </div>
+
+      <ul className="space-y-1.5 text-xs text-neutral-800 min-h-[6rem]">
+        {events.map((e) => <li key={e} className="rounded-xl bg-neutral-100 px-3 py-2">{e}</li>)}
+      </ul>
+
+      <ol className="space-y-1.5 text-xs text-neutral-700">
+        {L.gSteps.map((s, i) => (
+          <li key={i} className="flex items-start gap-2">
+            <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-neutral-900 text-[10px] text-white" aria-hidden="true">{i + 1}</span>
+            <span>
+              {s}
+              {i === 0 && (
+                <span className="ms-1.5 inline-flex items-center gap-1 rounded-full bg-neutral-900 px-2 py-0.5 text-[10px] font-medium text-white">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+                  {L.gVerified}
+                </span>
+              )}
+            </span>
+          </li>
+        ))}
+      </ol>
+      <p className="text-[11px] text-neutral-500">{L.gNote}</p>
+    </div>
+  )
+}
+
 export default function Landing() {
   const { lang, t } = useI18n()
   const L = LANDING[lang] || LANDING.en
@@ -315,6 +363,7 @@ export default function Landing() {
     { id: 'team', title: L.team[0], text: L.team[1], render: (active) => <ChatDemo L={L} active={active} /> },
     { id: 'ai', title: L.ai[0], text: L.ai[1], sparkle: true, render: () => <AiDemo L={L} /> },
     { id: 'wellbeing', title: L.wellbeing[0], text: L.wellbeing[1], render: () => <WellbeingDemo L={L} /> },
+    { id: 'groups', title: L.groups[0], text: L.groups[1], render: () => <GroupsDemo L={L} /> },
     { id: 'reminders', title: L.reminders[0], text: L.reminders[1], render: () => <RemindDemo L={L} /> },
     { id: 'share', title: L.share[0], text: L.share[1], render: () => <ShareDemo L={L} /> },
     { id: 'connector', title: L.connector[0], text: L.connector[1], render: () => <ConnectorDemo L={L} /> },

@@ -49,18 +49,28 @@ It combines three ideas:
 - **Team chat per calendar**, with online members, "is typing" and @mentions.
   Readers can read; writers can write; each author can delete their own messages.
 - **AI assistant** (personal): answers questions about the user's calendars and
-  suggests free times. Read-only; it reads titles only for the user's own
-  calendars, and only busy times for shared ones.
+  suggests free times. It reads titles only for the user's own calendars, and only
+  busy times for shared ones. It creates, moves or deletes events only if the user
+  allows it in the AI settings.
 - **AI in the team chat**, switched on only by the owner. When a member mentions
   the AI, it replies and keeps shared notes of decisions, tasks and plans.
 - **Consent and transparency**: the assistant policy is accepted before first use;
   members are told when the chat AI is on and that availability is shared.
 
-How these work, who can do what, and the limits are in `docs/AI.md`.
+- **Mentions and notifications**: each member has a handle (@pseudo); a mention rings the bell.
+- **Sign-in**: passkeys (WebAuthn) and password reset by e-mail.
+- **Well-being mode** (optional): personal settings and energy check-ins; a team analysis switched on by the owner
+  (meeting load, optional message review) with private distress alerts and an owner journal. Not medical advice.
+- **Family, sports team and class calendars**: the creator is verified with Stripe Identity; minors are added as managed
+  profiles that stay in review until an adult responsible signs a declaration; AI is blocked for calendars with minors until
+  a legal approval is recorded. A verified badge appears on the creator's profile.
+- **Connector** (MCP, read-only) for any compatible AI client.
+
+How these work, who can do what, and the limits are in `docs/AI.md`, `docs/WELLBEING.md` and `docs/FAMILY_TEAM.md`.
 
 ## Not yet delivered
 
 Automatic planning (tasks, focus blocks, scheduling engine), project
 decomposition, universal inbox, team orchestrator, external calendar sync,
-plans and billing, the Claude subscription connector. These are listed in
-`docs/ROADMAP.md`.
+plans and billing, the minor's own account and view, a screen to record the legal approval of AI for calendars with minors,
+an automatic purge of well-being check-ins. These are listed in `docs/ROADMAP.md` and in the design documents.

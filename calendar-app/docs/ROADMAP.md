@@ -9,10 +9,13 @@ Status: `[x]` shipped, `[~]` in progress, `[ ]` planned, `[!]` blocked.
 
 ## Current state (verified against the code and the database)
 
-Database tables: `profiles`, `calendars`, `events`, `calendar_members`,
-`calendar_invites`, `event_history`, `messages`, `chat_ai_notes`, `ai_usage`.
-Storage bucket: `avatars`. Migrations 001 to 011 are applied in production.
-Edge functions: `send-invite`, `send-reminders` (cron), `assistant`, `chat-ai`.
+Database tables: `profiles`, `calendars` (with `kind`), `events`, `calendar_members`, `calendar_invites`, `event_history`,
+`messages`, `chat_ai_notes`, `ai_usage`, `ai_permissions`, `notifications`, `webauthn_credentials`, `wellbeing_settings`,
+`wellbeing_checkins`, `team_wellbeing`, `team_wellbeing_optout`, `wellbeing_alerts`, `wellbeing_analysis_log`,
+`identity_verifications`, `managed_profiles`, `profile_guardians`, `declarations`, `ai_legal_approvals`.
+Storage bucket: `avatars`. Migrations 001 to 018 are applied in production.
+Edge functions: `send-invite`, `send-reminders` (cron), `assistant`, `chat-ai`, `mcp`, `webauthn`, `wellbeing-team` (cron),
+`identity` (Stripe).
 See `docs/OPERATIONS.md` for deploy and secrets, and `docs/AI.md` for the AI rules.
 
 ### Shipped
@@ -37,20 +40,34 @@ See `docs/OPERATIONS.md` for deploy and secrets, and `docs/AI.md` for the AI rul
 - [x] Custom domain `collyo.app` verified in Resend; sender `invites@collyo.app`,
       reply-to `support@collyo.app`, routing `invites@` to the owner inbox
 - [x] Deployment on Vercel (by CLI; automatic deploys blocked, see OPERATIONS)
-- [x] AI assistant panel: personal, read-only, consent, shared availability only, daily cap
+- [x] AI assistant panel: personal, consent, shared availability only, daily cap; writes events only with the user's permissions
 - [x] Deterministic free-slot search with unit tests (time zones, daylight saving)
 - [x] Team chat per calendar: history, Realtime, online members, "is typing", @mentions, readers read-only
 - [x] Team chat AI, switched on by the owner only: replies to @AI / @IA / @KI, keeps shared notes
 - [x] Usage log per request (`ai_usage`) for pricing
+- [x] Member handles (@pseudo) and a notification bell for mentions
+- [x] Passkeys (WebAuthn) at sign-in, and password reset by e-mail
+- [x] AI permissions per user (create, move, delete), off by default
+- [x] MCP connector (read-only) with an OAuth consent page and revocation
+- [x] Well-being mode: personal settings and check-ins, team analysis, private distress alerts, owner journal (`docs/WELLBEING.md`)
+- [x] Family, sports team and class calendars: verified creator (Stripe Identity), managed minors, signed declaration, AI blocked
+      for minors until approval (`docs/FAMILY_TEAM.md`)
+- [x] Verified identity badge on the profile
+- [x] Landing page with live demos in six languages, including well-being and the three group types
 
 ### Partly shipped (differs from the plan below)
 
-- [~] **AI assistant (S13 to S17)**: a read-only assistant and a chat AI are live. Tasks, focus blocks, the solver
+- [~] **AI assistant (S13 to S17)**: an assistant and a chat AI are live; they write events only with the user's permission. Tasks, focus blocks, the solver
       and the proposal-and-confirm flow are not built. The chat AI and the assistant do not depend on S7 and S8
       (entitlements, metering); they are capped per day only. This was a deliberate choice; see `docs/AI.md`, section 8.
 - [~] **S3. Reminders**: sent once by e-mail. Not yet in the user's time zone: the mail shows UTC.
 - [~] **MCP connector (read-only, any AI client)**: OAuth server, consent page, four read-only tools, revocation in the profile.
       Built and tested with direct requests. Still to do: the end-to-end test inside claude.ai by the owner.
+
+- [~] **Family, sports team and class modes**: live. Not built yet: the minor's own account and view (from the age of digital
+      consent), a screen to record the legal approval of AI, the verified badge visible to other members. Stripe Identity runs
+      with a live key while the legal review is still pending: close this gap.
+- [~] **Well-being**: live. Not built yet: automatic purge of check-ins, clinical validation of the distress rules.
 
 ### Corrections to the previous version of this file
 

@@ -97,7 +97,7 @@ Règles communes aux deux contextes, à valider par un professionnel de santé m
 
 - **Données de santé** : consentement explicite pour chaque catégorie (énergie, humeur, profil bien-être). Collecte minimale.
 - **Table séparée** pour les données bien-être personnelles, accessibles **uniquement** à leur propriétaire (règles RLS). Aucun membre d'équipe, administrateur ou propriétaire de calendrier ne peut les lire.
-- **Conservation** : bilans conservés 12 mois, puis supprimés automatiquement ; suppression immédiate à la demande.
+- **Conservation** : le journal d'analyse est purgé après 90 jours (tâche planifiée). Les bilans sont conservés jusqu'à la suppression du compte : la purge automatique à 12 mois prévue ici n'est pas encore implantée (voir `docs/AI.md`, G11).
 - **Export et suppression** : l'utilisateur peut exporter et supprimer ses données bien-être depuis le menu.
 - **Journal** : chaque analyse d'équipe est tracée (date, sources, résultat), visible par le propriétaire.
 - **Fournisseur** : les traitements passent par le même fournisseur d'IA que `docs/AI.md`. La politique de confidentialité doit le mentionner pour ces données.
