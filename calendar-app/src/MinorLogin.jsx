@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useI18n, LanguageSelect, LanguageButton } from './i18n/index.jsx'
 import { minorLogin } from './lib/api.js'
+import Logo from './Logo.jsx'
 
 const field = 'w-full rounded-xl border border-neutral-200 px-3 py-2.5 text-sm focus:outline-none focus:border-neutral-900 bg-white'
 
@@ -29,7 +30,7 @@ export default function MinorLogin() {
     <div className="min-h-screen bg-neutral-100 flex items-center justify-center p-6">
       <form onSubmit={submit} className="w-full max-w-sm rounded-3xl bg-white p-6 md:p-8 shadow-xl space-y-4">
         <div className="flex items-center justify-between">
-          <span className="text-lg font-semibold tracking-tight">Collyo</span>
+          <Logo />
           <div className="relative">
             <LanguageButton open={langOpen} onToggle={() => setLangOpen((o) => !o)} />
             {langOpen && <LanguageSelect onPick={() => setLangOpen(false)} placement="down" />}

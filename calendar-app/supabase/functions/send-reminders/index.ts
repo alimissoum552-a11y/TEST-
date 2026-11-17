@@ -2,6 +2,7 @@
 // Secrets: RESEND_API_KEY, CRON_SECRET, REMINDER_FROM (optional), APP_URL (optional).
 // SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are provided by Supabase.
 import { createClient } from 'npm:@supabase/supabase-js@2'
+import { brandHeader } from '../_shared/brand.ts'
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -75,6 +76,7 @@ async function sendMail(to: string, ev: {
       to: [to],
       subject: `Reminder: ${ev.title}`,
       html: `<div style="font-family:system-ui,sans-serif;color:#171717;line-height:1.5">
+  ${brandHeader()}
   <p>Starts in ${ev.reminder_minutes} minute${ev.reminder_minutes === 1 ? '' : 's'}:</p>
   <p><strong>${escapeHtml(ev.title)}</strong><br>${escapeHtml(when)} (UTC)</p>
   ${place}

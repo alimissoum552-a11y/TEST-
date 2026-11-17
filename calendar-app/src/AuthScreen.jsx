@@ -4,6 +4,7 @@ import { useI18n, LanguageSelect, LanguageButton } from './i18n/index.jsx'
 import { goLegal, parseRoute } from './router.js'
 import { signInWithPasskey } from './passkeys.js'
 import { Eye, EyeOff } from './ResetPasswordPage.jsx'
+import Logo from './Logo.jsx'
 
 export default function AuthScreen({ initialError = null }) {
   const { t } = useI18n()
@@ -90,6 +91,7 @@ export default function AuthScreen({ initialError = null }) {
     <div className="min-h-screen bg-neutral-200 flex items-center justify-center p-4">
       <div className="w-full max-w-sm space-y-3">
       <form onSubmit={submit} className="bg-white rounded-3xl shadow-xl p-8 space-y-4">
+        <Logo />
         <h1 className="text-2xl font-semibold text-neutral-900">
           {mode === 'signin' ? t('signIn') : t('createAccount')}
         </h1>

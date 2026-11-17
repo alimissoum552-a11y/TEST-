@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import AiAvatar from './AiAvatar.jsx'
 import { useI18n, LanguageButton, LanguageSelect } from './i18n/index.jsx'
 import { LANDING } from './landing.js'
+import Logo from './Logo.jsx'
 
 // Public landing page for visitors who are not signed in. The only links are sign-up and sign-in.
 // The feature panels are a swipeable carousel: one panel leaves while the next arrives, like turning the
@@ -357,6 +358,20 @@ export default function Landing() {
   const L = LANDING[lang] || LANDING.en
   const [langOpen, setLangOpen] = useState(false)
   const [step, setStep] = useState(null)
+  const [aud, setAud] = useState(0)
+
+  // Page title and description follow the language, and go back to the defaults when leaving the landing page.
+  useEffect(() => {
+    const meta = document.querySelector('meta[name="description"]')
+    const prevTitle = document.title
+    const prevDesc = meta ? meta.getAttribute('content') : null
+    document.title = L.seoTitle
+    if (meta) meta.setAttribute('content', L.seoDesc)
+    return () => {
+      document.title = prevTitle
+      if (meta && prevDesc !== null) meta.setAttribute('content', prevDesc)
+    }
+  }, [L])
 
   const panels = [
     { id: 'calendar', title: L.calendar[0], text: L.calendar[1], render: () => <CalendarDemo /> },
@@ -374,7 +389,7 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-neutral-100 text-neutral-900 overflow-x-hidden">
       <header className="flex items-center justify-between px-6 md:px-10 py-5 max-w-6xl mx-auto">
-        <span className="text-lg font-semibold tracking-tight">Collyo</span>
+        <Logo />
         <div className="relative">
           <LanguageButton open={langOpen} onToggle={() => setLangOpen((o) => !o)} />
           {langOpen && <LanguageSelect onPick={() => setLangOpen(false)} placement="down" />}
@@ -386,6 +401,10 @@ export default function Landing() {
           <span className="inline-flex items-center gap-2 rounded-full bg-white ring-1 ring-neutral-200 px-3 py-1 text-xs font-medium text-neutral-800"><span aria-hidden="true">✦</span>{L.eyebrow}</span>
           <h1 className="text-4xl md:text-5xl font-semibold leading-tight tracking-tight">{L.title}</h1>
           <p className="text-base md:text-lg text-neutral-600">{L.sub}</p>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-3 pt-2">
+            <a href="#/signup" data-hero-cta className="px-6 py-3 rounded-2xl bg-neutral-900 text-sm font-medium text-white hover:bg-neutral-700">{L.signup}</a>
+            <a href="#/signin" className="text-sm font-medium text-neutral-700 underline-offset-4 hover:underline hover:text-neutral-900">{L.signin}</a>
+          </div>
         </div>
         <div className="rounded-3xl bg-white p-5 shadow-xl ring-1 ring-neutral-200">
           <HeroVisual />
@@ -403,6 +422,37 @@ export default function Landing() {
         </div>
       </section>
 
+      <section className="px-6 md:px-10 pb-16 max-w-6xl mx-auto" aria-labelledby="aud-title">
+        <h2 id="aud-title" className="text-2xl md:text-3xl font-semibold tracking-tight">{L.audTitle}</h2>
+        <div role="tablist" aria-label={L.audTitle} className="mt-5 flex flex-wrap gap-2">
+          {L.audTabs.map((name, i) => (
+            <button key={i} type="button" role="tab" id={`aud-tab-${i}`} aria-selected={aud === i} aria-controls="aud-panel" onClick={() => setAud(i)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${aud === i ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-800 ring-1 ring-neutral-300 hover:bg-neutral-50'}`}>{name}</button>
+          ))}
+        </div>
+        <div role="tabpanel" id="aud-panel" aria-labelledby={`aud-tab-${aud}`} className="mt-5 rounded-3xl bg-white p-6 md:p-8 ring-1 ring-neutral-200">
+          <h3 className="text-xl font-semibold">{L.aud[aud][0]}</h3>
+          <ul className="mt-4 space-y-3">
+            {L.aud[aud][1].map((b, i) => (
+              <li key={i} className="flex gap-3 text-base text-neutral-700"><span aria-hidden="true" className="mt-0.5 text-neutral-900">✓</span><span>{b}</span></li>
+            ))}
+          </ul>
+          <a href="#/signup" className="mt-6 inline-block px-5 py-2.5 rounded-2xl bg-neutral-900 text-sm font-medium text-white hover:bg-neutral-700">{L.signup}</a>
+        </div>
+      </section>
+
+      <section className="px-6 md:px-10 pb-16 max-w-6xl mx-auto" aria-labelledby="trust-title">
+        <h2 id="trust-title" className="text-2xl md:text-3xl font-semibold tracking-tight">{L.trustTitle}</h2>
+        <ul className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {L.trust.map((it, i) => (
+            <li key={i} className="rounded-3xl bg-white p-6 ring-1 ring-neutral-200">
+              <p className="text-base font-semibold text-neutral-900">{it[0]}</p>
+              <p className="mt-2 text-sm text-neutral-600">{it[1]}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+
       <section className="px-6 md:px-10 pb-16 max-w-6xl mx-auto">
         <ol className="grid gap-4 md:grid-cols-3">
           {L.steps.map((s, i) => {
@@ -411,13 +461,28 @@ export default function Landing() {
               <li key={i} className="flex">
                 <button type="button" onClick={() => setStep(on ? null : i)} aria-pressed={on} data-step={i}
                   className={`w-full h-full min-h-[11rem] flex flex-col text-start rounded-3xl bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl active:scale-[0.98] ${on ? 'ring-2 ring-neutral-900 shadow-xl -translate-y-1' : 'ring-1 ring-neutral-200'}`}>
-                  <span className={`text-3xl font-semibold transition-colors ${on ? 'text-neutral-900' : 'text-neutral-300'}`}>{String(i + 1).padStart(2, '0')}</span>
+                  <span className={`text-3xl font-semibold transition-colors ${on ? 'text-neutral-900' : 'text-neutral-500'}`}>{String(i + 1).padStart(2, '0')}</span>
                   <p className="mt-3 text-base font-medium text-neutral-900">{s}</p>
                 </button>
               </li>
             )
           })}
         </ol>
+      </section>
+
+      <section className="px-6 md:px-10 pb-16 max-w-3xl mx-auto" aria-labelledby="faq-title">
+        <h2 id="faq-title" className="text-2xl md:text-3xl font-semibold tracking-tight">{L.faqTitle}</h2>
+        <div className="mt-5 space-y-3">
+          {L.faq.map((it, i) => (
+            <details key={i} className="group rounded-2xl bg-white ring-1 ring-neutral-200 px-5 py-4">
+              <summary className="cursor-pointer list-none flex items-center justify-between gap-4 text-base font-medium text-neutral-900">
+                <span>{it[0]}</span>
+                <span aria-hidden="true" className="text-neutral-500 transition-transform group-open:rotate-45">+</span>
+              </summary>
+              <p className="mt-3 text-sm text-neutral-600">{it[1]}</p>
+            </details>
+          ))}
+        </div>
       </section>
 
       <footer className="px-6 md:px-10 pb-10 max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-x-6 gap-y-3 text-xs text-neutral-500">

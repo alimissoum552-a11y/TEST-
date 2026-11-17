@@ -1,6 +1,7 @@
 // Sends a calendar invitation email through Resend.
 // Deployed as a Supabase Edge Function. Secrets: RESEND_API_KEY, INVITE_FROM, INVITE_REPLY_TO, APP_URL.
 import { createClient } from 'npm:@supabase/supabase-js@2'
+import { brandHeader } from '../_shared/brand.ts'
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -50,6 +51,7 @@ Deno.serve(async (req) => {
         ...(replyTo ? { reply_to: replyTo } : {}),
         subject: `${inviter} invited you to join "${cal.name}"`,
         html: `<div style="font-family:system-ui,sans-serif;color:#171717;line-height:1.5">
+  ${brandHeader()}
   <p>${escapeHtml(inviter)} invited you to join the calendar <strong>${escapeHtml(cal.name)}</strong> as <strong>${escapeHtml(role)}</strong>.</p>
   <p><strong>Opening the link below means joining the team.</strong> You will be added to the calendar automatically, on your own account, and you will see its events.</p>
   <p><a href="${joinUrl}" style="display:inline-block;padding:10px 18px;border-radius:12px;background:#171717;color:#fff;text-decoration:none">Join the team</a></p>

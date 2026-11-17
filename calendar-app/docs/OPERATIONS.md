@@ -295,3 +295,10 @@ token limited to `Zone → DNS → Edit`, then revoked.
 | Well-being check-ins are not purged automatically | There is no retention job for `wellbeing_checkins`. Add one, or keep the Privacy Policy wording ("until you delete your account"). |
 | `MINOR_ID_SECRET` lost or changed | Every access identifier stops working; the adults must issue new ones. Keep it with the other secrets. |
 | A calendar deleted outside the app | Deleting a calendar by SQL leaves the technical accounts of its minors. Use the app (`team-admin`), which deletes them first. |
+
+## E-mail branding
+
+Every e-mail starts with the Collyo "C" mark and the name.
+
+- E-mails sent by the Edge functions (send-invite, send-reminders, minor-consent) use `brandHeader()` from `supabase/functions/_shared/brand.ts`. The image is `https://collyo.app/logo-192.png`, served from `public/logo-192.png`: do not rename or remove that file.
+- The Supabase Auth e-mails (confirmation, password reset, magic link, invitation, e-mail change) are project settings, not code. They carry the same header, set with the Management API (`PATCH /v1/projects/{ref}/config/auth`, fields `mailer_templates_*_content`). Re-apply the header if the templates are ever reset.

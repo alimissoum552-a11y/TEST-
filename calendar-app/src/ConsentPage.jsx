@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useI18n, LanguageSelect, LanguageButton } from './i18n/index.jsx'
 import { getConsentInfo, approveConsent } from './lib/api.js'
+import Logo from './Logo.jsx'
 
 // Page opened from the e-mail sent to the guardian of a child under 13: #/consent?token=...
 // No sign-in. The guardian reads what is collected and approves with one button. The link works once.
@@ -32,7 +33,7 @@ export default function ConsentPage({ token }) {
     <div className="min-h-screen bg-neutral-100 flex items-center justify-center p-6">
       <div className="w-full max-w-md rounded-3xl bg-white p-6 md:p-8 shadow-xl space-y-5">
         <div className="flex items-center justify-between">
-          <span className="text-lg font-semibold tracking-tight">Collyo</span>
+          <Logo />
           <div className="relative">
             <LanguageButton open={langOpen} onToggle={() => setLangOpen((o) => !o)} />
             {langOpen && <LanguageSelect onPick={() => setLangOpen(false)} placement="down" />}

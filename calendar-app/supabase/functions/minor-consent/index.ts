@@ -7,6 +7,7 @@
 // Secrets: RESEND_API_KEY, INVITE_FROM, INVITE_REPLY_TO, APP_URL. Provided: SUPABASE_* keys.
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { sha256Hex, consentRequired, validEmail, maskEmail } from '../_shared/access.ts'
+import { brandHeader } from '../_shared/brand.ts'
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -78,6 +79,7 @@ async function requestConsent(req: Request, admin: any, body: any): Promise<Resp
       from, to: [guardianEmail], ...(replyTo ? { reply_to: replyTo } : {}),
       subject: `Your consent is needed: ${prof.first_name} in "${prof.calendars?.name}"`,
       html: `<div style="font-family:system-ui,sans-serif;color:#171717;line-height:1.5">
+  ${brandHeader()}
   <p>${escapeHtml(ownerName)} wants to add <strong>${escapeHtml(prof.first_name)}</strong> to the team calendar <strong>${escapeHtml(prof.calendars?.name ?? '')}</strong> on Collyo.</p>
   <p>You are asked to give your consent as the person responsible for this child. Please read before you decide:</p>
   <ul>
@@ -135,6 +137,7 @@ async function inviteGuardian(req: Request, admin: any, body: any): Promise<Resp
     ? '<p>You were added to the team. Sign in with this address to see the team calendar and the chat, and to sign the declaration if one is waiting.</p>'
     : `<p>Create an account with <strong>${escapeHtml(email)}</strong>. Collyo then sends you a confirmation e-mail: open it to confirm your address (check your spam folder if you do not see it). Once your address is confirmed you are added to the team automatically.</p>`
   const html = `<div style="font-family:system-ui,sans-serif;color:#171717;line-height:1.5">
+  ${brandHeader()}
   <p>${escapeHtml(ownerName)} named you as an adult responsible for <strong>${escapeHtml(prof.first_name)}</strong> in the team <strong>${escapeHtml(team)}</strong> on Collyo.</p>
   ${body1}
   <p><a href="${link}" style="display:inline-block;padding:10px 18px;border-radius:12px;background:#171717;color:#fff;text-decoration:none">${existingId ? 'Open Collyo' : 'Create my account'}</a></p>

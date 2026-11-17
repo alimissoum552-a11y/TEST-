@@ -56,6 +56,8 @@ See `docs/OPERATIONS.md` for deploy and secrets, and `docs/AI.md` for the AI rul
 - [x] Team calendars created from the menu (family, sports team, class), visible to their members only
 - [x] Minor access: access ID, login with the owner's e-mail, reduced app (calendar read-only and chat), guardian consent by e-mail under 13 (`docs/MINOR_APP.md`)
 - [x] Landing page with live demos in six languages, including well-being and the three group types
+- [x] Landing page: sharing tags and image, a primary sign-up button in the hero, a "Who is it for?" section, a trust section and a short FAQ, in six languages
+- [x] Brand identity: the "C" logo in the landing header, sign-in, minor login and consent pages, plus favicon, home-screen icon, web manifest and the sharing image
 
 ### Partly shipped (differs from the plan below)
 
