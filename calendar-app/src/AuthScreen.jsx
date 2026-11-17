@@ -51,7 +51,8 @@ export default function AuthScreen({ initialError = null }) {
     setMessage(null)
     const address = email.trim().toLowerCase()
     if (!address) { setMessage({ type: 'error', text: t('passkeyNeedEmail') }); return }
-    const redirectTo = `${window.location.origin}/#/reset-password`
+    // No '#' in the redirect: Supabase appends its tokens as a fragment, and a second '#' would hide them from the client.
+    const redirectTo = `${window.location.origin}/?reset=1`;
     const { error } = await supabase.auth.resetPasswordForEmail(address, { redirectTo })
     setMessage(error ? { type: 'error', text: error.message } : { type: 'ok', text: t('resetLinkSent') })
     setResetStep(null)

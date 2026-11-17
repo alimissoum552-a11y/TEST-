@@ -81,7 +81,11 @@ export default function Root() {
   useEffect(() => {
     if (!supabaseConfigured) { setSession(null); return }
     supabase.auth.getSession().then(({ data }) => setSession(data.session))
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setSession(s))
+    // The client emits PASSWORD_RECOVERY when it handles a reset link, whatever the timing of the page load.
+    const { data: sub } = supabase.auth.onAuthStateChange((event, s) => {
+      if (event === 'PASSWORD_RECOVERY') setRecovery(true)
+      setSession(s)
+    })
     return () => sub.subscription.unsubscribe()
   }, [])
 
