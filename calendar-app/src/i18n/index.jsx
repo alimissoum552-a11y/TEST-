@@ -167,6 +167,7 @@ const DICT = {
     passkeyCancelled: "Passkey check cancelled.",
     passkeyDevice: "This device",
     passkeyRemove: "Remove passkey",
+    passkeyWaiting: "Waiting for your device…",
   },
   fr: {
     aiGuide: "Guide de l’IA",
@@ -323,6 +324,7 @@ const DICT = {
     passkeyCancelled: "Vérification de la passkey annulée.",
     passkeyDevice: "Cet appareil",
     passkeyRemove: "Supprimer la passkey",
+    passkeyWaiting: "En attente de votre appareil…",
   },
   es: {
     aiGuide: "Guía de la IA",
@@ -479,6 +481,7 @@ const DICT = {
     passkeyCancelled: "Verificación de la passkey cancelada.",
     passkeyDevice: "Este dispositivo",
     passkeyRemove: "Eliminar la passkey",
+    passkeyWaiting: "Esperando a tu dispositivo…",
   },
   de: {
     aiGuide: "KI-Anleitung",
@@ -635,6 +638,7 @@ const DICT = {
     passkeyCancelled: "Passkey-Prüfung abgebrochen.",
     passkeyDevice: "Dieses Gerät",
     passkeyRemove: "Passkey entfernen",
+    passkeyWaiting: "Warte auf dein Gerät…",
   },
   ar: {
     aiGuide: "دليل الذكاء الاصطناعي",
@@ -791,6 +795,7 @@ const DICT = {
     passkeyCancelled: "تم إلغاء التحقق من مفتاح المرور.",
     passkeyDevice: "هذا الجهاز",
     passkeyRemove: "إزالة مفتاح المرور",
+    passkeyWaiting: "في انتظار جهازك…",
   },
   pt: {
     aiGuide: "Guia da IA",
@@ -972,6 +977,7 @@ const DICT = {
     passkeyCancelled: "Verificação da passkey cancelada.",
     passkeyDevice: "Este dispositivo",
     passkeyRemove: "Remover a passkey",
+    passkeyWaiting: "A aguardar o seu dispositivo…",
   },
 }
 

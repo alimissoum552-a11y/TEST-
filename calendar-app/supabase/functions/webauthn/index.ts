@@ -123,6 +123,7 @@ Deno.serve(async (req) => {
           rpID: rpID(),
           allowCredentials: creds.map((c: any) => ({ id: c.credential_id, transports: c.transports })),
           userVerification: 'required',
+          timeout: 30_000,
         })
         return json({ options, challengeToken: await signToken({ c: options.challenge, u: user.id, k: 'stepup' }) })
       }

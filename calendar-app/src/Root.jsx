@@ -8,6 +8,7 @@ import JoinPage from './JoinPage.jsx'
 import AiGuidePage from './AiGuidePage.jsx'
 import OAuthConsentPage from './OAuthConsentPage.jsx'
 import Landing from './Landing.jsx'
+import { useI18n } from './i18n/index.jsx'
 import { listPasskeys, verifyWithPasskey, isPasskeyVerified, markPasskeyVerified, clearPasskeyVerifications } from './passkeys.js'
 
 // A pending invitation is kept in this browser until it is answered or dismissed.
@@ -93,6 +94,23 @@ export default function Root() {
         onJoined={setJoinedCalendarId} onDone={finishInvite} />
     )
   }
-  if (passkeyGate === 'checking') return <div className="min-h-screen bg-neutral-200" />
+  if (passkeyGate === 'checking') return <PasskeyWaiting />
   return <App user={session.user} initialCalendarId={joinedCalendarId} />
+}
+
+// Shown while the device is asking for its unlock, instead of a blank page.
+function PasskeyWaiting() {
+  const { t } = useI18n()
+  return (
+    <div className="min-h-screen bg-neutral-200 flex items-center justify-center p-6">
+      <div className="text-center space-y-3">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+          className="mx-auto h-10 w-10 text-neutral-900 motion-safe:animate-pulse" aria-hidden="true">
+          <rect x="4.5" y="10.5" width="15" height="10" rx="2.5" />
+          <path d="M8 10.5V8a4 4 0 0 1 7.5-2" />
+        </svg>
+        <p className="text-sm text-neutral-600">{t('passkeyWaiting')}</p>
+      </div>
+    </div>
+  )
 }
