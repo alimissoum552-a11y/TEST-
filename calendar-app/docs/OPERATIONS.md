@@ -152,10 +152,18 @@ Do not rewrite history to change an author.
 
 ### Deploy command
 
+Run from the **repository root**, not from `calendar-app/`. The Vercel project has the root directory `calendar-app`;
+a CLI deploy started inside that folder fails with "The specified Root Directory \"calendar-app\" does not exist".
+Keep the project settings as they are (root directory `calendar-app`, framework Vite, build `npm run build`, output
+`dist`, Node 26.x, production domain `collyo.app`, `www` redirects to the apex).
+
 ```bash
-cd calendar-app
-npx -y vercel@latest deploy --prod --yes --token "$VERCEL_ACCESS_TOKEN" --scope team_p1LFz3tqncsv4Z8uFhwc99Ob
+cd /workspaces/TEST-
+npx -y vercel@latest deploy --prod --yes --name calendar-app --token "$VERCEL_ACCESS_TOKEN" --scope team_p1LFz3tqncsv4Z8uFhwc99Ob
 ```
+
+A failed attempt from `calendar-app/` creates a deployment in state `ERROR`. It does not change `collyo.app`, which
+keeps the last `READY` deployment, but check the list of deployments and remove nothing else.
 
 Expected output: `status: ok`, `readyState: READY`, production URL `https://collyo.app`. Then check that production
 serves the new bundle (the hash in `index-*.js` changes with each build):
