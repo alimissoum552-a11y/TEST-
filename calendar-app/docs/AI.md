@@ -72,9 +72,10 @@ Described in `docs/WELLBEING.md`. In short:
 
 ### 1.5 Calendars with minors
 
-For family, sports team and class calendars (`docs/FAMILY_TEAM.md`), AI is allowed only if `minor_ai_allowed(calendar)` is true:
-a legal approval is recorded in `ai_legal_approvals` **and** every active minor is covered by a signed declaration that includes
-AI. Otherwise `chat-ai` answers 409, the assistant hides the calendar, and `wellbeing-team` skips it.
+For family, sports team and class calendars (`docs/FAMILY_TEAM.md`, `docs/MINOR_APP.md`), AI is allowed only if `minor_ai_allowed(calendar)`
+is true: every active minor is covered by a signed declaration that includes AI. The adult owner is responsible for that choice;
+no operator approval is needed any more. Otherwise `chat-ai` answers 409, the assistant hides the calendar, and `wellbeing-team`
+skips it. A minor account cannot trigger the chat AI and cannot use the assistant, the connector or the well-being mode.
 
 ## 2. Who can do what
 
@@ -206,7 +207,7 @@ Automated end-to-end tests are not in the repository yet. They belong to step S6
 | G9 | Two test OAuth clients created during the tests remain in the `auth` schema (`oauth_clients`). | Delete them from the Supabase dashboard (OAuth apps), not by SQL. |
 | G10 | The MCP endpoint accepts any OAuth client that the user approves, not a fixed list. | Review registered clients, or add an allow-list, before listing the connector publicly. |
 | G11 | Well-being check-ins have no automatic retention (the 12 months planned in `docs/WELLBEING.md` is not implemented). | Add a retention job, or keep "until the account is deleted" in the Privacy Policy. |
-| G12 | The legal approval for AI on calendars with minors is inserted by an operator, without a screen. | Add an operator tool after the legal review. |
+| G12 | Closed: AI for calendars with minors no longer needs an operator approval (`docs/MINOR_APP.md`, section 7). | Done. |
 | G13 | Distress detection relies on a model and has not been validated by a mental-health professional. | Clinical review before a wide release. |
 
 ---

@@ -203,6 +203,9 @@ async function runTool(name: string, input: any, supa: SupabaseClient): Promise<
 async function accessibleCalendars(supa: SupabaseClient): Promise<Cal[]> {
   const { data: { user } } = await supa.auth.getUser()
   if (!user) throw new Error('not signed in')
+  // A minor account cannot use the connector.
+  const { data: me } = await supa.from('profiles').select('account_type').eq('id', user.id).maybeSingle()
+  if (me?.account_type === 'minor') throw new Error('not allowed')
   const { data: cals, error } = await supa.from('calendars').select('id, name, owner_id')
   if (error) throw error
   const { data: memberships } = await supa.from('calendar_members').select('calendar_id, role').eq('user_id', user.id)

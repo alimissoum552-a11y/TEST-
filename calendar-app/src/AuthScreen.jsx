@@ -141,6 +141,8 @@ export default function AuthScreen({ initialError = null }) {
           className="w-full text-sm text-neutral-500 hover:text-neutral-800">
           {mode === 'signin' ? t('noAccount') : t('haveAccount')}
         </button>
+        <button type="button" onClick={() => { window.location.hash = '/minor' }}
+          className="w-full text-sm text-neutral-500 underline underline-offset-2 hover:text-neutral-800">{t('mlLink')}</button>
         <div className="relative flex justify-center pt-2">
           <LanguageButton open={langOpen} onToggle={() => setLangOpen((o) => !o)} />
           {langOpen && <LanguageSelect onPick={() => setLangOpen(false)} placement="down" />}

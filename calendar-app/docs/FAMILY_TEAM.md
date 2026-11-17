@@ -241,8 +241,8 @@ La signature et la mise en revue passent avant les profils mineurs (section 12, 
 - Onze cas de test de la base joués dans une transaction annulée ; un défaut de récursion des règles de sécurité a été corrigé (migration 018).
 
 **Non livré**
-- Compte propre du mineur à 16 ans et vue du mineur.
-- Écran d'enregistrement de l'approbation juridique de l'IA (insertion par un opérateur dans `ai_legal_approvals`).
+- Passage à un compte adulte à 16 ans. L'accès du mineur (calendrier et discussion, sans modification) est conçu dans `docs/MINOR_APP.md` ; le code est prêt, la mise en production attend l'approbation.
+- ~~Approbation juridique de l'IA~~ : plus exigée (`docs/MINOR_APP.md`, section 7). La déclaration signée qui couvre l'IA suffit.
 - Badge visible par les autres membres du calendrier.
 - Relecture juridique (sections 13 et 14).
 

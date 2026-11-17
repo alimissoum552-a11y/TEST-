@@ -11,3 +11,13 @@ select cron.schedule(
   '40 3 * * *',
   $$ select public.purge_stale_pending_profiles() $$
 );
+
+-- Minor login attempts are only kept for the 15-minute limit window; delete them after one day.
+select cron.unschedule('minor-attempts-purge')
+  where exists (select 1 from cron.job where jobname = 'minor-attempts-purge');
+
+select cron.schedule(
+  'minor-attempts-purge',
+  '50 3 * * *',
+  $$ delete from public.minor_login_attempts where created_at < now() - interval '1 day' $$
+);

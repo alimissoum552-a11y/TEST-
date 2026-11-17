@@ -7,7 +7,7 @@ import { TeamWellbeingInfo } from './TeamWellbeing.jsx'
 import { supabase } from './lib/supabase.js'
 import {
   listMembers, listMessages, sendMessage, deleteMessage, getNamesByIds,
-  getChatAi, setChatAi, askChatAi, getChatNotes,
+  getChatAi, setChatAi, askChatAi, getChatNotes, getTeamDirectory,
 } from './lib/api.js'
 
 // Team chat for one calendar: history from the database, new messages by Realtime (Postgres Changes),
@@ -18,7 +18,7 @@ const TYPING_HIDE_MS = 3000
 const MENTION = /@(ai|ia|ki)\b/i
 const AI_ERRORS = { ai_disabled: 'chatAiDisabled', daily_limit: 'assistantLimit', assistant_not_configured: 'assistantNotConfigured' }
 
-export default function ChatPanel({ calendarId, user, myHandle, canWrite, isOwner, onClose, onApplied }) {
+export default function ChatPanel({ calendarId, user, myHandle, canWrite, isOwner, onClose, onApplied, minor = false }) {
   const { t, locale } = useI18n()
   const myLabel = user.user_metadata?.display_name || user.email || ''
   const [messages, setMessages] = useState([])
@@ -53,6 +53,7 @@ export default function ChatPanel({ calendarId, user, myHandle, canWrite, isOwne
 
   // 2. Names of authors not yet known
   useEffect(() => {
+    if (minor) return
     const missing = [...new Set(messages.filter((m) => !m.is_ai).map((m) => m.user_id))].filter((id) => !names[id])
     if (!missing.length) return
     getNamesByIds(missing)
@@ -65,6 +66,7 @@ export default function ChatPanel({ calendarId, user, myHandle, canWrite, isOwne
 
   // Members who can be mentioned with @handle (autocomplete).
   useEffect(() => {
+    if (minor) return undefined
     let cancelled = false
     listMembers(calendarId).then((rows) => {
       if (cancelled) return
@@ -73,6 +75,19 @@ export default function ChatPanel({ calendarId, user, myHandle, canWrite, isOwne
     }).catch(() => {})
     return () => { cancelled = true }
   }, [calendarId])
+
+  // A minor reads names from the directory, which has no e-mail addresses.
+  useEffect(() => {
+    if (!minor) return undefined
+    let cancelled = false
+    getTeamDirectory(calendarId).then((rows) => {
+      if (cancelled) return
+      setNames((prev) => ({ ...prev, ...Object.fromEntries(rows.map((r) => [r.id, r.display_name])) }))
+      setHandles((prev) => ({ ...prev, ...Object.fromEntries(rows.filter((r) => r.handle).map((r) => [r.id, r.handle])) }))
+      setCandidates(rows.filter((r) => r.handle && r.id !== user.id).map((r) => ({ id: r.id, handle: r.handle })))
+    }).catch(() => {})
+    return () => { cancelled = true }
+  }, [calendarId, minor, user.id])
 
   // 3. Realtime: messages, presence, typing, the AI switch and the shared notes
   useEffect(() => {
@@ -196,8 +211,8 @@ export default function ChatPanel({ calendarId, user, myHandle, canWrite, isOwne
           )}
         </div>
         <div className="flex items-center gap-3 shrink-0">
-          <button type="button" onClick={() => setInfoOpen((o) => !o)} aria-expanded={infoOpen} aria-label={t('chatInfo')} title={t('chatInfo')}
-            className={`h-7 w-7 rounded-full border text-sm font-semibold transition-colors ${infoOpen ? 'bg-neutral-900 text-white border-neutral-900' : 'border-neutral-300 text-neutral-700 hover:text-neutral-900'}`}>i</button>
+          {!minor && <button type="button" onClick={() => setInfoOpen((o) => !o)} aria-expanded={infoOpen} aria-label={t('chatInfo')} title={t('chatInfo')}
+            className={`h-7 w-7 rounded-full border text-sm font-semibold transition-colors ${infoOpen ? 'bg-neutral-900 text-white border-neutral-900' : 'border-neutral-300 text-neutral-700 hover:text-neutral-900'}`}>i</button>}
           {isOwner && (
             <button type="button" onClick={toggleAi} aria-pressed={aiOn}
               aria-label={aiOn ? t('chatAiOn') : t('chatAiOff')} title={aiOn ? t('chatAiOn') : t('chatAiOff')}

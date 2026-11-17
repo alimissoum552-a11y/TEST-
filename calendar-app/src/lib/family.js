@@ -55,3 +55,9 @@ export function functionsNeedingDeclaration(profile) {
 
 // Pending profiles are removed after this many days if nobody signs (section 14.4).
 export const PENDING_RETENTION_DAYS = 30
+
+// Guardian consent by e-mail. Same rule as the database (sign_managed_profile): with only the birth year known,
+// the child may be under 13 when the year difference is 13 or less.
+export function consentRequired(year, now = new Date()) {
+  return now.getUTCFullYear() - Number(year) <= 13
+}

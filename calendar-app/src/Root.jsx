@@ -9,6 +9,9 @@ import AiGuidePage from './AiGuidePage.jsx'
 import OAuthConsentPage from './OAuthConsentPage.jsx'
 import Landing from './Landing.jsx'
 import ResetPasswordPage from './ResetPasswordPage.jsx'
+import ConsentPage from './ConsentPage.jsx'
+import MinorLogin from './MinorLogin.jsx'
+import { getMyProfile } from './lib/api.js'
 import { useI18n } from './i18n/index.jsx'
 import { listPasskeys, verifyWithPasskey, isPasskeyVerified, markPasskeyVerified, clearPasskeyVerifications } from './passkeys.js'
 
@@ -37,13 +40,19 @@ export default function Root() {
     return () => window.removeEventListener('hashchange', f)
   }, [])
 
-  const { invite: routeInvite, consent, auth, guide, reset } = parseRoute(hash)
+  const { invite: routeInvite, consent, auth, guide, reset, consentToken, minor } = parseRoute(hash)
   const [pending, setPending] = useState(() => routeInvite || readPendingInvite())
   const [joinedCalendarId, setJoinedCalendarId] = useState(null)
   const [session, setSession] = useState(undefined) // undefined = loading
   // loading: the passkey list is not known yet (nothing is shown); checking: a passkey must be confirmed; ok: open.
   const [passkeyGate, setPasskeyGate] = useState('loading') // loading | checking | ok
   const [authError, setAuthError] = useState(null)
+  // adult | minor | loading. A minor account opens a reduced app (calendar in read-only mode and the team chat).
+  const [accountType, setAccountType] = useState('loading')
+  useEffect(() => {
+    if (!session) { setAccountType('loading'); return }
+    getMyProfile(session.user.id).then((p) => setAccountType(p?.account_type === 'minor' ? 'minor' : 'adult')).catch(() => setAccountType('adult'))
+  }, [session])
 
   // A passkey account must confirm with the device before the calendar opens.
   // No extra screen: the device shows its own prompt; meanwhile the app stays blank.
@@ -99,10 +108,13 @@ export default function Root() {
 
   if (legal) return <LegalPage kind={legal} onBack={goBackFromLegal} />
   if (guide) return <AiGuidePage onBack={() => { window.location.hash = '' }} />
+  // The guardian consent page needs no sign-in.
+  if (consentToken) return <ConsentPage token={consentToken} />
   if (session === undefined) return <div className="min-h-screen bg-neutral-200" />
   if (!supabaseConfigured) return <App user={null} />
   // Visitors who are not signed in see the landing page at the root; sign-in and sign-up routes open the form.
   if (!session && linkExpired) return <AuthScreen initialError="resetLinkExpired" />
+  if (!session && minor) return <MinorLogin />
   if (!session) return (routeInvite || consent || auth) ? <AuthScreen initialError={authError} /> : <Landing />
   if (consent) return <OAuthConsentPage key={consent} authorizationId={consent} />
   if (pending) {
@@ -114,7 +126,8 @@ export default function Root() {
   if ((reset || recovery) && session) return <ResetPasswordPage byEmail={recovery} />
   if (passkeyGate === 'loading') return <div className="min-h-screen bg-neutral-200" />
   if (passkeyGate === 'checking') return <PasskeyWaiting />
-  return <App user={session.user} initialCalendarId={joinedCalendarId} />
+  if (accountType === 'loading') return <div className="min-h-screen bg-neutral-200" />
+  return <App user={session.user} initialCalendarId={joinedCalendarId} minorMode={accountType === 'minor'} />
 }
 
 // Shown while the device is asking for its unlock, instead of a blank page.

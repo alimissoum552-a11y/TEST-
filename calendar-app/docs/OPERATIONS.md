@@ -35,6 +35,8 @@ project. Each file is written to be safe to re-run (`if not exists`, `drop polic
 | `migrations_016_family_team.sql` | `calendars.kind`, `identity_verifications`, `managed_profiles`, `profile_guardians`, `declarations`, `sign_managed_profile()`, creator check trigger |
 | `migrations_017_family_ai.sql` | `ai_legal_approvals`, `minor_ai_allowed()`, `add_guardian_by_email()` |
 | `migrations_018_family_rls_fix.sql` | Fix: infinite recursion between the row policies of `managed_profiles` and `profile_guardians` |
+| `migrations_019_name_match.sql` | `name_key()` (names compared in any order, without accents), clearer signing errors |
+| `migrations_020_minor_access.sql` | `profiles.account_type`, role `minor`, minor restrictions, `team_member_names()`, access and consent columns, `minor_consents`, `minor_login_attempts`, AI rule without operator approval |
 
 Apply one migration (example with the Supabase Management API or the SQL editor). Then check the objects it creates.
 Do not edit an applied migration: add a new numbered file.
@@ -63,6 +65,8 @@ happened once with `chat_ai_notes` (fixed in migration 011).
 | `webauthn` | App, passkey sign-in and management | User JWT or signed challenge | Passkeys (WebAuthn). Deployed with `--no-verify-jwt`. |
 | `wellbeing-team` | pg_cron, every hour | `x-cron-secret` header | Team well-being analysis: meeting load per day, message review, private distress alerts, group message at most every 12 hours, analysis journal. Deployed with `--no-verify-jwt`. |
 | `identity` | App (start) and Stripe (webhook) | User session for the start; Stripe signature for the webhook | Identity verification of the creators of family, sports team and class calendars. Deployed with `--no-verify-jwt`. |
+| `minor-access` | App (adult owner) and the minor login page | User session for create, regenerate, disable; none for login (limited attempts) | Access identifier of a minor and login. Deployed with `--no-verify-jwt`. |
+| `minor-consent` | App (adult owner) and the consent page | User session for the request; a one-time token for info and approve | Guardian consent by e-mail for a child who may be under 13. Deployed with `--no-verify-jwt`. |
 
 Deploy one function (the CLI asks for confirmation in agent mode; `--yes` confirms that one deploy):
 
@@ -92,6 +96,7 @@ Secrets are set on the project, not on GitHub, and their values are never printe
 | `MCP_PUBLIC_URL` | `mcp` | Public base address announced to clients. |
 | `STRIPE_API_KEY` | `identity` | Secret key of the **dedicated Collyo Stripe account**. Its mode (test or live) is the mode of the key. |
 | `STRIPE_WEBHOOK_SECRET` | `identity` | Signing secret of the Collyo webhook endpoint, same mode as the key. |
+| `MINOR_ID_SECRET` | `minor-access` | Key used to hash the access identifiers and the login attempt keys. Long random value (`openssl rand -hex 32`). Changing it invalidates every identifier. |
 
 List secret names (never values):
 
@@ -166,6 +171,7 @@ change. Otherwise the job gets 403 until both match.
 | `wellbeing-team` | `17 * * * *` | `supabase/wellbeing_cron.sql` | Calls the `wellbeing-team` function with the Vault secret |
 | `wellbeing-log-retention` | `30 3 * * *` | `supabase/wellbeing_cron.sql` | Deletes analysis journal rows older than 90 days |
 | `family-purge-pending` | `40 3 * * *` | `supabase/family_cron.sql` | Deletes minor profiles still pending after 30 days |
+| `minor-attempts-purge` | `50 3 * * *` | `supabase/family_cron.sql` | Deletes minor login attempts older than one day |
 
 Check them: `select jobname, schedule, active from cron.job order by jobname;`
 
@@ -269,4 +275,5 @@ token limited to `Zone → DNS → Edit`, then revoked.
 | Webhook secret and key in different modes | Verification results are rejected (400) and the creator stays pending. Keep both in the same mode. |
 | The restricted key of the previous, shared Stripe account is still valid | Revoke it in the Stripe dashboard of that account. Change nothing else on that account. |
 | Well-being check-ins are not purged automatically | There is no retention job for `wellbeing_checkins`. Add one, or keep the Privacy Policy wording ("until you delete your account"). |
-| AI legal approvals are inserted by hand | `ai_legal_approvals` has no screen: an operator records the reference after the legal review. |
+| `MINOR_ID_SECRET` lost or changed | Every access identifier stops working; the adults must issue new ones. Keep it with the other secrets. |
+| Minor accounts are not deleted with their profile | Deleting a managed profile removes the profile, not the technical account of the minor. Add a cleanup before the public launch. |

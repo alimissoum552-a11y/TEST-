@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url'
 // Every t('...') key used by the new screens must exist in all six language dictionaries.
 const here = dirname(fileURLToPath(import.meta.url))
 const dict = readFileSync(join(here, 'index.jsx'), 'utf8')
-const screens = ['../FamilyPanel.jsx', '../TeamWellbeing.jsx', '../WellbeingPanel.jsx', '../ChatPanel.jsx', '../TeamPanel.jsx', '../ProfilePanel.jsx', '../VerifiedBadge.jsx']
+const screens = ['../FamilyPanel.jsx', '../TeamWellbeing.jsx', '../WellbeingPanel.jsx', '../ChatPanel.jsx', '../TeamPanel.jsx', '../ProfilePanel.jsx', '../VerifiedBadge.jsx', '../NewTeamPanel.jsx', '../ConsentPage.jsx', '../MinorLogin.jsx', '../AuthScreen.jsx']
 
 describe('translation keys used by the new screens', () => {
   for (const file of screens) {

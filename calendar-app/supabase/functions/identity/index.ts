@@ -34,6 +34,8 @@ async function handleStart(req: Request, admin: any): Promise<Response> {
   })
   const { data: { user } } = await supa.auth.getUser()
   if (!user) return json({ error: 'unauthorized' }, 401)
+  const { data: me } = await admin.from('profiles').select('account_type').eq('id', user.id).maybeSingle()
+  if (me?.account_type === 'minor') return json({ error: 'not_allowed' }, 403)
 
   // Stripe secret key of the dedicated Collyo account (test or live mode, decided by the key itself).
   const secret = Deno.env.get('STRIPE_API_KEY')

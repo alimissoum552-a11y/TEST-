@@ -3,9 +3,9 @@ import { supabase } from './supabase.js'
 // Fetch the user's default calendar (created automatically by the DB trigger).
 export async function getDefaultCalendar(userId) {
   const { data, error } = await supabase
-    .from('calendars').select('*').eq('owner_id', userId).eq('is_default', true).single()
+    .from('calendars').select('*').eq('owner_id', userId).eq('is_default', true).maybeSingle()
   if (error) throw error
-  return data
+  return data // null for a minor account, which has no calendar of its own
 }
 
 export async function listEvents(calendarId) {
@@ -143,7 +143,7 @@ export async function removeAvatar(userId) {
 
 export async function getMyProfile(userId) {
   const { data, error } = await supabase
-    .from('profiles').select('display_name, email, avatar_url, handle').eq('id', userId).single()
+    .from('profiles').select('display_name, email, avatar_url, handle, account_type').eq('id', userId).single()
   if (error) throw error
   return data
 }
@@ -507,7 +507,7 @@ export async function setCalendarKind(calendarId, kind) {
 
 export async function listManagedProfiles(calendarId) {
   const { data, error } = await supabase.from('managed_profiles')
-    .select('id, first_name, birth_year, sex, category, status, created_at, activated_at')
+    .select('id, first_name, birth_year, sex, category, status, created_at, activated_at, consent_status, guardian_email, auth_user_id, access_disabled')
     .eq('calendar_id', calendarId).neq('status', 'removed').order('created_at', { ascending: true })
   if (error) throw error
   return data ?? []
@@ -551,4 +551,48 @@ export async function refreshIdentityStatus() {
 export async function updateMyName(userId, name) {
   const { error } = await supabase.from('profiles').update({ display_name: name.trim() }).eq('id', userId)
   if (error) throw error
+}
+
+// ---- Team calendars, minor access and guardian consent (docs/MINOR_APP.md) ----
+// Calls an Edge Function and throws Error(code) with the function's error code.
+async function callFunction(name, body) {
+  const { data, error } = await supabase.functions.invoke(name, { body })
+  if (error) {
+    let code = 'server_error'
+    try { code = (await error.context.json()).error || code } catch { /* no JSON body */ }
+    throw new Error(code)
+  }
+  return data
+}
+
+// A new calendar dedicated to a family, a sports team or a class. The database requires a verified creator.
+export async function createTeamCalendar(userId, name, kind) {
+  const { data, error } = await supabase.from('calendars')
+    .insert({ owner_id: userId, name, kind, is_default: false }).select('id, name, kind').single()
+  if (error) throw error
+  return data
+}
+
+export const requestMinorConsent = (profileId, guardianEmail) =>
+  callFunction('minor-consent', { action: 'request', profile_id: profileId, guardian_email: guardianEmail })
+export const getConsentInfo = (token) => callFunction('minor-consent', { action: 'info', token })
+export const approveConsent = (token) => callFunction('minor-consent', { action: 'approve', token })
+
+export const createMinorAccess = (profileId) => callFunction('minor-access', { action: 'create', profile_id: profileId })
+export const regenerateMinorAccess = (profileId) => callFunction('minor-access', { action: 'regenerate', profile_id: profileId })
+export const disableMinorAccess = (profileId) => callFunction('minor-access', { action: 'disable', profile_id: profileId })
+
+// The minor gives the e-mail of the team owner and the identifier; the function answers with a token that opens a session.
+export async function minorLogin(email, id) {
+  const res = await callFunction('minor-access', { action: 'login', email, id })
+  const { error } = await supabase.auth.verifyOtp({ token_hash: res.token_hash, type: 'magiclink' })
+  if (error) throw new Error('session_failed')
+  return res
+}
+
+// Names for the chat, without e-mail addresses (works for adults and for minors).
+export async function getTeamDirectory(calendarId) {
+  const { data, error } = await supabase.rpc('team_member_names', { p_calendar: calendarId })
+  if (error) throw error
+  return data || []
 }

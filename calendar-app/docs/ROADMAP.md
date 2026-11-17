@@ -53,6 +53,8 @@ See `docs/OPERATIONS.md` for deploy and secrets, and `docs/AI.md` for the AI rul
 - [x] Family, sports team and class calendars: verified creator (Stripe Identity), managed minors, signed declaration, AI blocked
       for minors until approval (`docs/FAMILY_TEAM.md`)
 - [x] Verified identity badge on the profile
+- [x] Team calendars created from the menu (family, sports team, class), visible to their members only
+- [x] Minor access: access ID, login with the owner's e-mail, reduced app (calendar read-only and chat), guardian consent by e-mail under 13 (`docs/MINOR_APP.md`)
 - [x] Landing page with live demos in six languages, including well-being and the three group types
 
 ### Partly shipped (differs from the plan below)
@@ -67,6 +69,7 @@ See `docs/OPERATIONS.md` for deploy and secrets, and `docs/AI.md` for the AI rul
 - [~] **Family, sports team and class modes**: live. Not built yet: the minor's own account and view (from the age of digital
       consent), a screen to record the legal approval of AI, the verified badge visible to other members. Stripe Identity runs
       with a live key while the legal review is still pending: close this gap.
+- [~] **Minor access**: coded and tested locally, production pending approval. Not built yet: the switch to an adult account at 16, and the cleanup of the technical account when a profile is deleted.
 - [~] **Well-being**: live. Not built yet: automatic purge of check-ins, clinical validation of the distress rules.
 
 ### Corrections to the previous version of this file

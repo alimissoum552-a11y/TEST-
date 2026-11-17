@@ -64,6 +64,9 @@ It combines three ideas:
 - **Family, sports team and class calendars**: the creator is verified with Stripe Identity; minors are added as managed
   profiles that stay in review until an adult responsible signs a declaration; AI is blocked for calendars with minors until
   a legal approval is recorded. A verified badge appears on the creator's profile.
+- **Team calendars and minor access**: a calendar dedicated to a family, sports team or class, visible to its members only. A
+  minor gets a limited access (team calendar read-only, team chat) with the e-mail of the team owner and an access ID; under 13, the
+  guardian approves by e-mail first.
 - **Connector** (MCP, read-only) for any compatible AI client.
 
 How these work, who can do what, and the limits are in `docs/AI.md`, `docs/WELLBEING.md` and `docs/FAMILY_TEAM.md`.

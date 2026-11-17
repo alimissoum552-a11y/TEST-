@@ -133,6 +133,9 @@ Deno.serve(async (req) => {
     })
     const { data: { user } } = await supa.auth.getUser()
     if (!user) return json({ error: 'unauthorized' }, 401)
+    // A minor account has no assistant (docs/MINOR_APP.md).
+    const { data: me } = await supa.from('profiles').select('account_type').eq('id', user.id).maybeSingle()
+    if (me?.account_type === 'minor') return json({ error: 'not_allowed' }, 403)
 
     const body = await req.json().catch(() => null)
     const messages = sanitizeMessages(body?.messages)

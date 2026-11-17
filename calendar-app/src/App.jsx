@@ -8,6 +8,7 @@ import InvitesPanel from './InvitesPanel.jsx'
 import AssistantPanel from './AssistantPanel.jsx'
 import ChatPanel from './ChatPanel.jsx'
 import WellbeingPanel from './WellbeingPanel.jsx'
+import NewTeamPanel from './NewTeamPanel.jsx'
 import ConnectorGuide from './ConnectorGuide.jsx'
 import NotificationBell from './NotificationBell.jsx'
 import Avatar from './Avatar.jsx'
@@ -143,7 +144,7 @@ function ActivityList({ eventId, onRestored }) {
   )
 }
 
-function EventDetail({ event, onClose, onDelete, onSave }) {
+function EventDetail({ event, onClose, onDelete, onSave, readOnly = false }) {
   const { t, locale } = useI18n()
   const [editing, setEditing] = useState(false)
   if (editing) {
@@ -168,11 +169,11 @@ function EventDetail({ event, onClose, onDelete, onSave }) {
         </div>
         <p className="text-sm text-neutral-600">{formatDay(new Date(event.starts_at), locale)} · {event.time}</p>
         <p className="text-xs text-neutral-400">{t('repeat')} : {t('none')} · {t('reminder')} : {event.reminder_minutes ?? 0} min</p>
-        <div className="flex gap-2">
+        {!readOnly && <div className="flex gap-2">
           <button onClick={() => setEditing(true)} className="flex-1 py-2 rounded-xl bg-neutral-100 text-neutral-900 text-sm hover:bg-neutral-200">{t('edit')}</button>
           <button onClick={() => onDelete(event)} className="flex-1 py-2 rounded-xl bg-neutral-900 text-white text-sm hover:bg-neutral-700">{t('delete')}</button>
-        </div>
-        <ActivityList eventId={event.id} onRestored={(row) => onSave(row)} />
+        </div>}
+        {!readOnly && <ActivityList eventId={event.id} onRestored={(row) => onSave(row)} />}
         <button onClick={onClose} className="w-full text-sm text-neutral-500 hover:text-neutral-800">{t('close')}</button>
       </div>
     </div>
@@ -417,7 +418,8 @@ function NewEventForm({ calendarId, userId, day, onCreated, onCancel }) {
   )
 }
 
-export default function App({ user, initialCalendarId = null }) {
+// minorMode: a minor account opens a reduced app: the team calendar in read-only mode and the team chat.
+export default function App({ user, initialCalendarId = null, minorMode = false }) {
   const { t, locale, lang } = useI18n()
   const [tab, setTab] = useState('month')
   const [selected, setSelected] = useState(() => startOfDay(new Date()))
@@ -430,6 +432,7 @@ export default function App({ user, initialCalendarId = null }) {
   const [chat, setChat] = useState(false)
   const [connector, setConnector] = useState(false)
   const [wellbeing, setWellbeing] = useState(false)
+  const [newTeam, setNewTeam] = useState(false)
   const [me, setMe] = useState(null)
   const [profileOpen, setProfileOpen] = useState(false)
   const [passkeyOpen, setPasskeyOpen] = useState(false)
@@ -466,7 +469,7 @@ export default function App({ user, initialCalendarId = null }) {
   }, [user, locale, reloadKey])
 
   const activeCalendar = calendars.find((c) => c.id === activeId) || calendar || calendars[0] || null
-  const canWrite = activeCalendar ? activeCalendar.my_role !== 'reader' : false
+  const canWrite = minorMode ? false : (activeCalendar ? activeCalendar.my_role !== 'reader' : false)
 
   const dayEvents = events.filter((e) => e.dateKey === dateKey(selected))
   // Moves the selection by one month, week or day, depending on the active view.
@@ -532,7 +535,7 @@ export default function App({ user, initialCalendarId = null }) {
           <div className="flex items-center gap-3 shrink-0">
             {user && <NotificationBell userId={user.id} onOpen={openChatFor} />}
             {user && (
-              <button type="button" onClick={() => setProfileOpen(true)} aria-label={t('profile')} className="rounded-full p-0.5 hover:opacity-80">
+              <button type="button" onClick={() => { if (!minorMode) setProfileOpen(true) }} aria-label={t('profile')} className="rounded-full p-0.5 hover:opacity-80">
                 <Avatar name={me?.display_name} email={me?.email || user.email} url={me?.avatar_url} />
               </button>
             )}
@@ -613,7 +616,7 @@ export default function App({ user, initialCalendarId = null }) {
                 </section>
               )}
 
-              {user && (
+              {user && !minorMode && (
                 <section className="space-y-1">
                   <h3 className="text-xs font-medium uppercase tracking-wide text-neutral-500 mb-2">{t('actions')}</h3>
                   {canWrite && <button onClick={() => { setAdding(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="add" /> <span>{t('newEvent')}</span></button>}
@@ -621,6 +624,7 @@ export default function App({ user, initialCalendarId = null }) {
                   {user && <button onClick={() => { setConnector(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="plug" /> <span>{t('connectorMenu')}</span></button>}
                   <button onClick={() => { setAssistant(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="ai" /> <span>{t('assistant')}</span></button>
                   {user && <button onClick={() => { setWellbeing(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="heart" /> <span>{t('wbMenu')}</span></button>}
+                  <button onClick={() => { setNewTeam(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="team" /> <span>{t('ntMenu')}</span></button>
                   {activeCalendar && <button onClick={() => { setTeam(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="team" /> <span>{t('team')}</span></button>}
                   {activeCalendar && <button onClick={() => { setSharing(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="share" /> <span>{t('sharing')}</span></button>}
                   <button onClick={() => { setMenuOpen(false); window.location.hash = '/ai-guide' }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="guide" /> <span>{t('aiGuide')}</span></button>
@@ -628,6 +632,14 @@ export default function App({ user, initialCalendarId = null }) {
                     <Icon name="passkey" /> <span>{t('passkeyTitle')}</span>
                   </button>
                   <button onClick={() => { setProfileOpen(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="profile" /> <span>{t('profile')}</span></button>
+                  <button onClick={signOut} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="logout" /> <span>{t('signOut')}</span></button>
+                </section>
+              )}
+
+              {user && minorMode && (
+                <section className="space-y-1">
+                  <h3 className="text-xs font-medium uppercase tracking-wide text-neutral-500 mb-2">{t('actions')}</h3>
+                  {activeCalendar && <button onClick={() => { setChat(true); setMenuOpen(false) }} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="chat" /> <span>{t('chat')}</span></button>}
                   <button onClick={signOut} className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-neutral-700 hover:text-neutral-900"><Icon name="logout" /> <span>{t('signOut')}</span></button>
                 </section>
               )}
@@ -646,16 +658,17 @@ export default function App({ user, initialCalendarId = null }) {
           </div>
         )}
 
-        {user && <InvitesPanel onAnswered={() => setReloadKey((k) => k + 1)} />}
+        {user && !minorMode && <InvitesPanel onAnswered={() => setReloadKey((k) => k + 1)} />}
         {passkeyOpen && user && <PasskeyPanel user={user} onClose={() => setPasskeyOpen(false)} />}
         {profileOpen && user && <ProfilePanel user={user} onClose={() => setProfileOpen(false)} onChanged={(url) => setMe((m) => ({ ...(m || {}), avatar_url: url }))} onHandleChanged={(h) => setMe((m) => ({ ...(m || {}), handle: h }))} />}
-        {chat && user && activeCalendar && <ChatPanel key={activeCalendar.id} calendarId={activeCalendar.id} user={user} myHandle={me?.handle} canWrite={canWrite} isOwner={activeCalendar.my_role === 'owner'} onClose={() => setChat(false)} onApplied={() => setReloadKey((k) => k + 1)} />}
+        {chat && user && activeCalendar && <ChatPanel key={activeCalendar.id} calendarId={activeCalendar.id} user={user} myHandle={me?.handle} minor={minorMode} canWrite={minorMode ? true : canWrite} isOwner={activeCalendar.my_role === 'owner'} onClose={() => setChat(false)} onApplied={() => setReloadKey((k) => k + 1)} />}
         {connector && user && <ConnectorGuide onClose={() => setConnector(false)} />}
         {assistant && user && <AssistantPanel user={user} onClose={() => setAssistant(false)} onApplied={() => setReloadKey((k) => k + 1)} onOpenWellbeing={() => { setAssistant(false); setWellbeing(true) }} />}
         {wellbeing && user && <WellbeingPanel user={user} onClose={() => setWellbeing(false)} />}
+        {newTeam && user && !minorMode && <NewTeamPanel user={user} onClose={() => setNewTeam(false)} onCreated={(id) => { setActiveId(id); setReloadKey((k) => k + 1) }} />}
         {team && activeCalendar && <TeamPanel calendar={activeCalendar} calendarId={activeCalendar.id} ownerId={activeCalendar.owner_id} userId={user?.id} isOwner={activeCalendar.my_role === 'owner'} onClose={() => setTeam(false)} />}
         {sharing && activeCalendar && <SharePanel calendarId={activeCalendar.id} canManage={['owner','administrator'].includes(activeCalendar.my_role)} onClose={() => setSharing(false)} />}
-        {openEvent && <EventDetail event={openEvent} onClose={() => setOpenEvent(null)} onDelete={handleDelete} onSave={handleSave} />}
+        {openEvent && <EventDetail event={openEvent} readOnly={minorMode} onClose={() => setOpenEvent(null)} onDelete={handleDelete} onSave={handleSave} />}
       </div>
     </div>
   )

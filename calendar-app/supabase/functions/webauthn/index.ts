@@ -49,6 +49,9 @@ const admin = () => createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SU
 async function signedInUser(req: Request, supa: SupabaseClient) {
   const { data: { user } } = await supa.auth.getUser()
   if (!user) throw new Error('unauthorized')
+  // A minor account has no passkeys.
+  const { data: me } = await admin().from('profiles').select('account_type').eq('id', user.id).maybeSingle()
+  if (me?.account_type === 'minor') throw new Error('not_allowed')
   return user
 }
 

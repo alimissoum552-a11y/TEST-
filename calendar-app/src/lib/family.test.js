@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   nameMatches, normalizeName, validBirthYear, ageFromBirthYear, needsResponsibleAdult,
-  functionsNeedingDeclaration, isGroupKind, CONSENT_AGE,
+  functionsNeedingDeclaration, isGroupKind, CONSENT_AGE, consentRequired,
 } from './family.js'
 
 const NOW = new Date('2026-11-17T12:00:00Z')
@@ -53,5 +53,14 @@ describe('sensitive functions and kinds', () => {
     expect(isGroupKind('class')).toBe(true)
     expect(isGroupKind('work')).toBe(false)
     expect(isGroupKind('personal')).toBe(false)
+  })
+})
+
+describe("guardian consent", () => {
+  it("is needed when the child may be under 13 and not otherwise", () => {
+    expect(consentRequired(2026 - 9, NOW)).toBe(true)
+    expect(consentRequired(2026 - 13, NOW)).toBe(true) // 12 or 13: unknown, so consent
+    expect(consentRequired(2026 - 14, NOW)).toBe(false)
+    expect(consentRequired(2005, NOW)).toBe(false)
   })
 })

@@ -20,6 +20,7 @@ responsive UI in six languages.
 | [calendar-app/docs/OPERATIONS.md](calendar-app/docs/OPERATIONS.md) | Engineering | Migrations, functions, secrets, cron job, deploys |
 | [calendar-app/docs/WELLBEING.md](calendar-app/docs/WELLBEING.md) | Product, legal | Well-being mode: design, rules, what is wired |
 | [calendar-app/docs/FAMILY_TEAM.md](calendar-app/docs/FAMILY_TEAM.md) | Product, legal | Family, sports team and class modes: roles, identity verification, minors, declarations |
+| [calendar-app/docs/MINOR_APP.md](calendar-app/docs/MINOR_APP.md) | Product, legal | Team calendars, minor access, guardian consent |
 | [calendar-app/docs/CONNECTOR.md](calendar-app/docs/CONNECTOR.md) | Users | How to add Collyo to any MCP-capable AI client as a connector, approve it, revoke it |
 | [calendar-app/docs/ROADMAP.md](calendar-app/docs/ROADMAP.md) | Everyone | Ordered steps S1 to S30 with their status |
 | [calendar-app/AGENTS.md](calendar-app/AGENTS.md), [CLAUDE.md](calendar-app/CLAUDE.md) | AI coding agents | Notes for the design file (Figma) |
@@ -57,7 +58,9 @@ a project document.
   with private distress alerts and an owner journal. See `docs/WELLBEING.md`.
 - **Family, sports team and class calendars**: the creator is verified with Stripe Identity; minors are added as
   managed profiles after an adult signs a declaration; AI stays off for calendars with minors until a legal approval
-  is recorded. A verified badge shows on the profile. See `docs/FAMILY_TEAM.md`.
+  is recorded. A verified badge shows on the profile. Team calendars are created from the menu and are visible to their
+  members only. A minor gets a limited access (team calendar read-only and team chat) with the e-mail of the team owner and an
+  access ID; under 13, the guardian approves by e-mail first. See `docs/FAMILY_TEAM.md` and `docs/MINOR_APP.md`.
 - **Languages**: English, French, Spanish, German, Arabic (right to left), Portuguese.
 - **Legal**: Terms, Privacy Policy and Cookie Policy in six languages, with the AI, chat, well-being, minors and identity
   verification clauses (drafts: a lawyer must review them before the public launch).
@@ -90,6 +93,8 @@ calendar-app/
     WellbeingPanel.jsx         Personal well-being settings and private alerts
     TeamWellbeing.jsx          Owner settings, chat information panel, analysis journal
     VerifiedBadge.jsx          "Identity verified" badge
+    NewTeamPanel.jsx           New team calendar (family, sports team, class)
+    ConsentPage.jsx, MinorLogin.jsx   Guardian consent page, minor access page
     LegalPage.jsx, legal.js    Legal content, six languages
     router.js                  Hash routes
     i18n/index.jsx             Dictionaries (six languages), RTL
@@ -98,7 +103,7 @@ calendar-app/
     lib/calendar.test.js       Unit tests for the date helpers
   supabase/
     schema.sql                 Base schema
-    migrations_001 ... 018     Numbered migrations, applied in order
+    migrations_001 ... 020     Numbered migrations, applied in order
     reminders_cron.sql         Scheduled job for reminder e-mails (run once)
     wellbeing_cron.sql         Hourly team analysis and journal retention (run once)
     family_cron.sql            Purge of unsigned minor profiles (run once)
@@ -110,6 +115,9 @@ calendar-app/
       mcp/, webauthn/          MCP connector; passkeys
       wellbeing-team/          Hourly team well-being analysis
       identity/                Stripe Identity: verification session and webhook
+      minor-access/            Access identifier and login of a minor
+      minor-consent/           Guardian consent by e-mail
+      _shared/                 Helpers shared by the minor functions, with tests
   docs/                        Product, AI, well-being, family modes, operations, roadmap
 ```
 
@@ -146,7 +154,7 @@ Every table has row-level security enabled. Roles on a calendar: `owner`,
 policies, is in [calendar-app/docs/AI.md](calendar-app/docs/AI.md), section 2.
 
 Edge Functions: `send-invite`, `send-reminders`, `assistant`, `chat-ai`, `mcp` (MCP connector, any client), `webauthn`,
-`wellbeing-team`, `identity`. The OAuth server
+`wellbeing-team`, `identity`, `minor-access`, `minor-consent`. The OAuth server
 settings and the connector are described in [calendar-app/docs/OPERATIONS.md](calendar-app/docs/OPERATIONS.md).
 
 ## Deployment
