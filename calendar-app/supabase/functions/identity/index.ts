@@ -4,7 +4,7 @@
 //   - the app (user JWT) starts a verification session and gets the Stripe-hosted page address;
 //   - Stripe (signed webhook, deployed with --no-verify-jwt) reports the result.
 // Stored: status, verified name, country, session id. Never the document, the selfie or the date of birth.
-// Secrets: STRIPE_RESTRICTED_API_KEY (restricted: Identity write only), STRIPE_WEBHOOK_SECRET. Provided: SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY.
+// Secrets: STRIPE_API_KEY (dedicated Collyo Stripe account), STRIPE_WEBHOOK_SECRET. Provided: SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY.
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { verifyStripeSignature, verifiedNameOf } from './stripe.ts'
 
@@ -33,8 +33,8 @@ async function handleStart(req: Request, admin: any): Promise<Response> {
   const { data: { user } } = await supa.auth.getUser()
   if (!user) return json({ error: 'unauthorized' }, 401)
 
-  // Restricted key: only Identity write access is needed here.
-  const secret = Deno.env.get('STRIPE_RESTRICTED_API_KEY')
+  // Stripe secret key of the dedicated Collyo account (test or live mode, decided by the key itself).
+  const secret = Deno.env.get('STRIPE_API_KEY')
   if (!secret) return json({ error: 'identity_not_configured' }, 503)
 
   // Already verified: nothing to do.
