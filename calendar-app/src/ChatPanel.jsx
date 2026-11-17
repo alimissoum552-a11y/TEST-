@@ -154,8 +154,7 @@ export default function ChatPanel({ calendarId, user, myHandle, canWrite, isOwne
       const row = await sendMessage(calendarId, user.id, content)
       setMessages((prev) => (prev.some((m) => m.id === row.id) ? prev : [...prev, row]))
       setText('')
-      // Only adults can ask the AI (docs/MINOR_APP.md, section 6): a minor gets an explanation, not a failed call.
-      if (aiOn && MENTION.test(content)) { if (minor) setErr(t('chatAiAdultsOnly')); else await requestAi() }
+      if (aiOn && MENTION.test(content)) await requestAi()
     } catch (ex) { setErr(ex.message) } finally { setBusy(false) }
   }
 
@@ -165,7 +164,11 @@ export default function ChatPanel({ calendarId, user, myHandle, canWrite, isOwne
     try {
       const res = await askChatAi(calendarId)
       if (res?.applied?.length) onApplied?.()
-    } catch (ex) { setErr(t(AI_ERRORS[ex.message] || 'chatAiFailed')) } finally { setAiThinking(false) }
+    } catch (ex) {
+      // A minor does not need the technical reason: the adult in charge decides (declaration and AI switch).
+      const unavailable = minor && ['ai_not_approved_for_minors', 'ai_disabled'].includes(ex.message)
+      setErr(t(unavailable ? 'chatAiMinorOff' : (AI_ERRORS[ex.message] || 'chatAiFailed')))
+    } finally { setAiThinking(false) }
   }
 
   async function toggleAi() {

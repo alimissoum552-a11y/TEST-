@@ -75,7 +75,7 @@ Described in `docs/WELLBEING.md`. In short:
 For family, sports team and class calendars (`docs/FAMILY_TEAM.md`, `docs/MINOR_APP.md`), AI is allowed only if `minor_ai_allowed(calendar)`
 is true: every active minor is covered by a signed declaration that includes AI. The adult owner is responsible for that choice;
 no operator approval is needed any more. Otherwise `chat-ai` answers 409, the assistant hides the calendar, and `wellbeing-team`
-skips it. A minor account cannot trigger the chat AI and cannot use the assistant, the connector or the well-being mode.
+skips it. A minor can ask the chat AI when it is on and covered by the declaration (limit of 20 requests a day, no tool that changes events, replies framed for children as soon as the team has a minor). A minor account cannot use the assistant, the connector or the well-being mode.
 
 ## 2. Who can do what
 

@@ -92,7 +92,7 @@ Ces limites sont appliquées **côté base de données** (règles de sécurité)
 
 ### Chat
 - Un mineur ne parle qu'à son équipe.
-- Il peut écrire ; il ne peut pas déclencher l'IA (seuls les adultes le peuvent).
+- Il peut écrire, et **solliciter l'IA** quand le propriétaire l'a activée et que la déclaration signée la couvre (section 7). Sinon il voit un message simple : « L'IA n'est pas encore disponible pour ce groupe. Demandez à l'adulte responsable. »
 - Les messages peuvent être supprimés par le propriétaire.
 
 ---
@@ -103,6 +103,7 @@ Ces limites sont appliquées **côté base de données** (règles de sécurité)
 - Elle ne s'applique à un calendrier avec mineur que si **chaque mineur actif est couvert par une déclaration signée incluant l'IA**.
 - L'approbation juridique enregistrée par un opérateur (`ai_legal_approvals`) n'est plus exigée. La table peut rester, sans effet sur la règle.
 - Rappel : si l'IA est active, les messages des mineurs sont envoyés au fournisseur d'IA. Cela peut changer la méthode de consentement exigée pour les moins de 13 ans (section 9).
+- **Un mineur peut solliciter l'IA** si elle est activée et couverte par la déclaration (décision du propriétaire du 17 novembre 2026). Garde-fous côté serveur : **20 demandes par jour** au plus, **aucun outil d'écriture** sur le calendrier, et un cadre de réponse adapté aux enfants dès que le groupe compte un mineur (les réponses sont lues par tous).
 
 ---
 
