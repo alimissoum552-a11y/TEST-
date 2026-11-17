@@ -28,7 +28,7 @@ export default function Root() {
     return () => window.removeEventListener('hashchange', f)
   }, [])
 
-  const { invite: routeInvite, consent, auth } = parseRoute(hash)
+  const { invite: routeInvite, consent, auth, guide } = parseRoute(hash)
   const [pending, setPending] = useState(() => routeInvite || readPendingInvite())
   const [joinedCalendarId, setJoinedCalendarId] = useState(null)
   const [session, setSession] = useState(undefined) // undefined = loading
@@ -53,7 +53,7 @@ export default function Root() {
   }
 
   if (legal) return <LegalPage kind={legal} onBack={goBackFromLegal} />
-  if (route.guide) return <AiGuidePage onBack={() => { window.location.hash = '' }} />
+  if (guide) return <AiGuidePage onBack={() => { window.location.hash = '' }} />
   if (session === undefined) return <div className="min-h-screen bg-neutral-200" />
   if (!supabaseConfigured) return <App user={null} />
   // Visitors who are not signed in see the landing page at the root; sign-in and sign-up routes open the form.
