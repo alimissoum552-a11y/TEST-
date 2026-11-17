@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { useI18n } from './i18n/index.jsx'
 import { supabase } from './lib/supabase.js'
+import { listPasskeys, removeAllPasskeys } from './passkeys.js'
 
 // Reached after a successful passkey check: the user is signed in and chooses a new password.
-export default function ResetPasswordPage() {
+export default function ResetPasswordPage({ byEmail = false }) {
   const { t } = useI18n()
+  const [dropPasskeys, setDropPasskeys] = useState(byEmail)
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [show, setShow] = useState(false)
@@ -19,8 +21,15 @@ export default function ResetPasswordPage() {
     if (password.length < 6) { setMsg({ err: true, text: t('resetTooShort') }); return }
     setBusy(true)
     const { error } = await supabase.auth.updateUser({ password })
+    if (error) { setBusy(false); setMsg({ err: true, text: error.message }); return }
+    // After an e-mail recovery the lost device's passkeys can be removed here (Supabase also notifies by e-mail).
+    if (byEmail && dropPasskeys) {
+      try {
+        const { data } = await supabase.auth.getUser()
+        if (data?.user?.id) await removeAllPasskeys(data.user.id)
+      } catch { setBusy(false); setMsg({ err: true, text: t('resetPasskeysFailed') }); return }
+    }
     setBusy(false)
-    if (error) { setMsg({ err: true, text: error.message }); return }
     window.location.hash = ''
   }
 
@@ -39,6 +48,13 @@ export default function ResetPasswordPage() {
         </div>
         <input className={input} type={show ? 'text' : 'password'} required minLength={6}
           placeholder={t('resetConfirm')} value={confirm} onChange={(e) => setConfirm(e.target.value)} />
+
+        {byEmail && (
+          <label className="flex items-start gap-3 text-sm text-neutral-800">
+            <input type="checkbox" checked={dropPasskeys} onChange={(e) => setDropPasskeys(e.target.checked)} className="mt-1" />
+            <span>{t('resetDropPasskeys')}<span className="block text-xs text-neutral-500">{t('resetDropPasskeysHint')}</span></span>
+          </label>
+        )}
 
         {msg && <p className={`text-sm ${msg.err ? 'font-medium text-neutral-900' : 'text-neutral-600'}`}>{msg.text}</p>}
 

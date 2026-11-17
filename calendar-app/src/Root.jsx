@@ -39,20 +39,25 @@ export default function Root() {
   const [pending, setPending] = useState(() => routeInvite || readPendingInvite())
   const [joinedCalendarId, setJoinedCalendarId] = useState(null)
   const [session, setSession] = useState(undefined) // undefined = loading
-  const [passkeyGate, setPasskeyGate] = useState('idle') // idle | checking | ok
+  // loading: the passkey list is not known yet (nothing is shown); checking: a passkey must be confirmed; ok: open.
+  const [passkeyGate, setPasskeyGate] = useState('loading') // loading | checking | ok
   const [authError, setAuthError] = useState(null)
 
   // A passkey account must confirm with the device before the calendar opens.
   // No extra screen: the device shows its own prompt; meanwhile the app stays blank.
   useEffect(() => {
-    if (!session) { clearPasskeyVerifications(); setPasskeyGate('idle'); return }
+    if (!session) { clearPasskeyVerifications(); setPasskeyGate('loading'); return }
     if (isPasskeyVerified(session.user.id)) { setPasskeyGate('ok'); return }
+    // After an e-mail recovery the user may have lost the device: the reset page comes first and can remove the passkeys.
+    if (recovery) { setPasskeyGate('ok'); return }
     let cancelled = false
-    setPasskeyGate('checking')
     ;(async () => {
       try {
         const keys = await listPasskeys(session.user.id)
-        if (!keys.length) { if (!cancelled) setPasskeyGate('ok'); return }
+        if (cancelled) return
+        if (!keys.length) { setPasskeyGate('ok'); return }
+        // Only now is the device needed: the waiting screen appears only for accounts that have a passkey.
+        setPasskeyGate('checking')
         await verifyWithPasskey()
         if (cancelled) return
         markPasskeyVerified(session.user.id)
@@ -62,11 +67,11 @@ export default function Root() {
         if (cancelled) return
         setAuthError(ex?.name === 'NotAllowedError' ? 'passkeyCancelled' : 'passkeyFailed')
         await supabase.auth.signOut()
-        setPasskeyGate('idle')
+        setPasskeyGate('loading')
       }
     })()
     return () => { cancelled = true }
-  }, [session])
+  }, [session, recovery])
   useEffect(() => {
     if (routeInvite) { savePendingInvite(routeInvite); setPending(routeInvite) }
   }, [routeInvite])
@@ -99,7 +104,8 @@ export default function Root() {
         onJoined={setJoinedCalendarId} onDone={finishInvite} />
     )
   }
-  if ((reset || recovery) && session) return <ResetPasswordPage />
+  if ((reset || recovery) && session) return <ResetPasswordPage byEmail={recovery} />
+  if (passkeyGate === 'loading') return <div className="min-h-screen bg-neutral-200" />
   if (passkeyGate === 'checking') return <PasskeyWaiting />
   return <App user={session.user} initialCalendarId={joinedCalendarId} />
 }
