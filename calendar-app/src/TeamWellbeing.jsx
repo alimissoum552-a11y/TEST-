@@ -110,10 +110,11 @@ export function TeamWellbeingSettings({ calendarId, userId, isOwner }) {
   )
 }
 
-// Shown in the team chat while the team analysis is on: the sources, and the member's own opt-out.
-export function TeamWellbeingNotice({ calendarId, userId }) {
+// Information about the team analysis, shown in the chat's information panel (not always on screen).
+// Sources and the member's own opt-out. Renders `fallback` when the analysis is off; nothing while loading.
+export function TeamWellbeingInfo({ calendarId, userId, fallback = null }) {
   const { t } = useI18n()
-  const [team, setTeam] = useState(null)
+  const [team, setTeam] = useState(undefined) // undefined = loading
   const [excluded, setExcluded] = useState(false)
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState(null)
@@ -123,7 +124,8 @@ export function TeamWellbeingNotice({ calendarId, userId }) {
     getMyWellbeingOptout(calendarId, userId).then(setExcluded).catch(() => {})
   }, [calendarId, userId])
 
-  if (!team?.enabled) return null
+  if (team === undefined) return null
+  if (!team?.enabled) return fallback
 
   async function toggle() {
     setBusy(true); setErr(null)
@@ -132,23 +134,25 @@ export function TeamWellbeingNotice({ calendarId, userId }) {
   }
 
   return (
-    <div className="px-5 py-3 border-b border-neutral-100 bg-neutral-50 space-y-2">
-      <p className="text-xs text-neutral-700">{t('teamWbBanner')}</p>
-      <p className="text-xs text-neutral-500">
-        {[team.use_agenda && t('teamWbAgenda'), team.use_messages && t('teamWbMessages')].filter(Boolean).join(' · ')}
-      </p>
+    <section className="space-y-3" aria-label={t('teamWb')}>
+      <p className="text-xs font-semibold text-neutral-900">{t('teamWb')}</p>
+      <p className="text-xs leading-relaxed text-neutral-700">{t('teamWbBanner')}</p>
+      <ul className="list-disc ps-4 space-y-1 text-xs text-neutral-600">
+        {team.use_agenda && <li>{t('teamWbAgenda')}</li>}
+        {team.use_messages && <li>{t('teamWbMessages')}</li>}
+      </ul>
       {team.use_messages && (
-        <label className="flex items-start gap-2 text-xs text-neutral-800">
-          <input type="checkbox" checked={excluded} disabled={busy} onChange={toggle}
-            className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-neutral-900" />
-          <span>
-            <span className="block">{t('teamWbOptOut')}</span>
-            <span className="block text-neutral-500 mt-0.5">{excluded ? t('teamWbOptOutDone') : t('teamWbOptOutHint')}</span>
-          </span>
-        </label>
+        <div className="rounded-xl bg-neutral-50 p-3 space-y-1">
+          <label className="flex items-start gap-2 text-xs font-medium text-neutral-900">
+            <input type="checkbox" checked={excluded} disabled={busy} onChange={toggle}
+              className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-neutral-900" />
+            <span>{t('teamWbOptOut')}</span>
+          </label>
+          <p className="ps-5 text-xs text-neutral-500">{excluded ? t('teamWbOptOutDone') : t('teamWbOptOutHint')}</p>
+        </div>
       )}
       {err && <p className="text-xs font-medium text-neutral-900">{err}</p>}
-    </div>
+    </section>
   )
 }
 

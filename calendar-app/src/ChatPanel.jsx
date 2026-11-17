@@ -3,7 +3,7 @@ import { useI18n } from './i18n/index.jsx'
 import Avatar from './Avatar.jsx'
 import AiAvatar from './AiAvatar.jsx'
 import SparkleIcon from './SparkleIcon.jsx'
-import { TeamWellbeingNotice } from './TeamWellbeing.jsx'
+import { TeamWellbeingInfo } from './TeamWellbeing.jsx'
 import { supabase } from './lib/supabase.js'
 import {
   listMembers, listMessages, sendMessage, deleteMessage, getNamesByIds,
@@ -33,6 +33,7 @@ export default function ChatPanel({ calendarId, user, myHandle, canWrite, isOwne
   const [aiOn, setAiOn] = useState(false)
   const [aiThinking, setAiThinking] = useState(false)
   const [confirmAi, setConfirmAi] = useState(false)
+  const [infoOpen, setInfoOpen] = useState(false)
   const [notes, setNotes] = useState(null)
   const channelRef = useRef(null)
   const lastTypingSent = useRef(0)
@@ -195,6 +196,8 @@ export default function ChatPanel({ calendarId, user, myHandle, canWrite, isOwne
           )}
         </div>
         <div className="flex items-center gap-3 shrink-0">
+          <button type="button" onClick={() => setInfoOpen((o) => !o)} aria-expanded={infoOpen} aria-label={t('chatInfo')} title={t('chatInfo')}
+            className={`h-7 w-7 rounded-full border text-sm font-semibold transition-colors ${infoOpen ? 'bg-neutral-900 text-white border-neutral-900' : 'border-neutral-300 text-neutral-700 hover:text-neutral-900'}`}>i</button>
           {isOwner && (
             <button type="button" onClick={toggleAi} aria-pressed={aiOn}
               aria-label={aiOn ? t('chatAiOn') : t('chatAiOff')} title={aiOn ? t('chatAiOn') : t('chatAiOff')}
@@ -206,17 +209,29 @@ export default function ChatPanel({ calendarId, user, myHandle, canWrite, isOwne
         </div>
       </header>
 
-      <TeamWellbeingNotice calendarId={calendarId} userId={user.id} />
+      {infoOpen && (
+        <div role="dialog" aria-label={t('chatInfo')}
+          className="absolute right-3 top-16 z-20 w-80 max-w-[calc(100%-1.5rem)] max-h-[70%] overflow-y-auto rounded-2xl bg-white p-5 shadow-xl ring-1 ring-neutral-200 space-y-5">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-semibold text-neutral-900">{t('chatInfo')}</p>
+            <button type="button" onClick={() => setInfoOpen(false)} className="text-xs text-neutral-500 hover:text-neutral-900">{t('close')}</button>
+          </div>
 
-      {aiOn && (
-        <div className="px-5 py-3 border-b border-neutral-100 space-y-2 bg-neutral-50">
-          <p className="text-xs text-neutral-600">{t('chatAiBanner')}</p>
-          <details>
-            <summary className="cursor-pointer text-xs font-medium text-neutral-800">{t('chatAiNotes')}</summary>
-            <p className="mt-2 text-xs text-neutral-700 whitespace-pre-wrap break-words max-h-40 overflow-y-auto">
-              {notes?.content || t('chatAiNoNotes')}
-            </p>
-          </details>
+          <TeamWellbeingInfo calendarId={calendarId} userId={user.id}
+            fallback={aiOn ? null : <p className="text-xs text-neutral-500">{t('chatInfoNone')}</p>} />
+
+          {aiOn && (
+            <section className="space-y-3" aria-label={t('chatInfoAi')}>
+              <p className="text-xs font-semibold text-neutral-900">{t('chatInfoAi')}</p>
+              <p className="text-xs leading-relaxed text-neutral-700">{t('chatAiBanner')}</p>
+              <details className="rounded-xl bg-neutral-50 p-3">
+                <summary className="cursor-pointer text-xs font-medium text-neutral-800">{t('chatAiNotes')}</summary>
+                <p className="mt-2 text-xs text-neutral-700 whitespace-pre-wrap break-words max-h-40 overflow-y-auto">
+                  {notes?.content || t('chatAiNoNotes')}
+                </p>
+              </details>
+            </section>
+          )}
         </div>
       )}
 
