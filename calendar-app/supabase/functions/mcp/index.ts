@@ -10,6 +10,7 @@
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2'
 import { findFreeSlots, type Interval } from './slots.ts'
 import { reportError } from '../_shared/ops.ts'
+import { ADMIN_TOOLS, isAdmin, runAdminTool } from './admin.ts'
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -122,7 +123,9 @@ Deno.serve(async (req) => {
           protocolVersion: PROTOCOL_VERSION,
           capabilities: { tools: { listChanged: false } },
           serverInfo: SERVER_INFO,
-          instructions: 'Read-only access to the user\'s calendars. Use find_free_slots for scheduling.',
+          instructions: isAdmin(user.id)
+            ? 'Read-only access to the user\'s calendars, plus the founder\'s campaign tools (metrics, plans, founding-club codes, education requests). Ask the founder before creating a code or deciding a request.'
+            : 'Read-only access to the user\'s calendars. Use find_free_slots for scheduling.',
         })
       case 'notifications/initialized':
       case 'notifications/cancelled':
@@ -130,12 +133,17 @@ Deno.serve(async (req) => {
       case 'ping':
         return rpcResult(id, {})
       case 'tools/list':
-        return rpcResult(id, { tools: TOOLS })
+        // The founder's account also gets the campaign tools (admin.ts); everyone else, the calendar tools only.
+        return rpcResult(id, { tools: isAdmin(user.id) ? [...TOOLS, ...ADMIN_TOOLS] : TOOLS })
       case 'tools/call': {
         const name = msg.params?.name
         const args = msg.params?.arguments ?? {}
-        if (!TOOLS.some((t) => t.name === name)) return rpcError(id, -32602, `Unknown tool: ${name}`)
-        const out = await runTool(name, args, supa)
+        const adminTool = ADMIN_TOOLS.some((t) => t.name === name)
+        if (adminTool && !isAdmin(user.id)) return rpcError(id, -32602, `Unknown tool: ${name}`)
+        if (!adminTool && !TOOLS.some((t) => t.name === name)) return rpcError(id, -32602, `Unknown tool: ${name}`)
+        const out = adminTool
+          ? await runAdminTool(name, args, createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)).catch((e) => ({ error: (e as Error).message }))
+          : await runTool(name, args, supa)
         return rpcResult(id, {
           content: [{ type: 'text', text: JSON.stringify(out) }],
           isError: Boolean((out as any)?.error),

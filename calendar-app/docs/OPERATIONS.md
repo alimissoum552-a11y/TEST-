@@ -49,6 +49,7 @@ project. Each file is written to be safe to re-run (`if not exists`, `drop polic
 | `migrations_032_education.sql` | `education_requests` (one per account; read by its owner, written by the `education` function) |
 | `migrations_033_free_sharing.sql` | Free and Starter: 1 shared calendar with up to 5 members |
 | `migrations_034_growth_report.sql` | `growth_report()` (service role only), see `docs/GROWTH.md` |
+| `migrations_035_growth_daily.sql` | `growth_daily()` (service role only), day-by-day campaign counts |
 | `migrations_022_sex_two_values.sql` | The sex of a managed profile is female, male or empty |
 | `migrations_021_minor_no_calendars.sql` | Fix found by the end-to-end test: a minor could create a calendar. Restrictive policies on `calendars`, invitations, members, usage and AI notes |
 

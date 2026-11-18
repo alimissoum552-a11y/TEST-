@@ -32,6 +32,22 @@ A digest is e-mailed every Monday at 07:00 UTC to `OPS_ALERT_TO` (function `grow
 
 **Goals for the first two months:** activated / sign-ups above 40 %, came back above 30 %, 5 clubs with 10 or more members. If activation is low, fix onboarding before spending on anything else.
 
+## Running a campaign from Claude (MCP)
+
+The Collyo connector (`https://collyo.app/mcp`) gives the founder's account extra campaign tools; every other account only gets the read-only calendar tools. Who is the founder: the Supabase secret `ADMIN_USER_IDS` (comma-separated user ids; today the founder's main account only).
+
+**Connect it in the Claude app**: Settings > Connectors > Add custom connector, name "Collyo", URL `https://collyo.app/mcp`, then Connect: sign in with the founder's Collyo account and approve. Turn the connector on in the conversation or project of the campaign.
+
+| Tool | What it does |
+|---|---|
+| `campaign_metrics` | weekly numbers of `growth_report()` |
+| `campaign_daily` | day-by-day sign-ups, shared calendars, invitations, events, new paid subscriptions (`growth_daily()`, migration 035) |
+| `plans_and_prices` | the grid and the offers |
+| `list_founder_codes` / `create_founder_code` | founding-club codes (creating one needs `confirm: true`, after the founder agreed) |
+| `list_education_requests` / `decide_education_request` | teacher requests waiting for a manual check |
+
+Counts only, no name or address, except the education requests support must review. Tested over a real OAuth connection: an ordinary account sees the 4 calendar tools and is refused a campaign tool; an admin sees and can call all 11.
+
 ## Next steps (not done yet)
 
 1. Pages per use case that Google can index (real paths and pre-rendering; the `#/` routes are not indexed separately), in French, Portuguese and Spanish first.
