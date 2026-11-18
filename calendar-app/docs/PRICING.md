@@ -23,7 +23,7 @@
 
 1. **One real purchase** (Starter monthly, 3 EUR) to check the live card payment and the live webhook end to end, then refund and cancel it in the Stripe dashboard. Not done: the live payment page cannot be driven by a script.
 2. In the Stripe dashboard, check that the customer portal lets subscribers switch between the four Collyo products (the API does not echo the list back).
-3. ~~Plan limits~~ — done 18 November 2026 (migration 030): the database refuses a shared calendar beyond the plan (Free and Starter: none, Pro: 1, Team groups: 10), a member or invitation beyond the plan (Free and Starter: no members, Pro: 20, Team groups: 50 per calendar, invitations pending included), and turning on the team well-being analysis outside Team (work) and the launch plan; the hourly analysis skips calendars whose owner's plan no longer includes it. Nothing already there is removed after a downgrade: the limit only stops adding more. The app explains the refusal with a link to the plans. Test: `supabase/tests/plan_limits_test.sql` (rolled back; every line must say ok).
+3. ~~Plan limits~~ — done 18 November 2026 (migration 030): the database refuses a shared calendar beyond the plan (Free and Starter: 1 since migration 033, Pro: 1, Team groups: 10), a member or invitation beyond the plan (Free and Starter: 5 since migration 033, Pro: 20, Team groups: 50 per calendar, invitations pending included), and turning on the team well-being analysis outside Team (work) and the launch plan; the hourly analysis skips calendars whose owner's plan no longer includes it. Nothing already there is removed after a downgrade: the limit only stops adding more. The app explains the refusal with a link to the plans. Test: `supabase/tests/plan_limits_test.sql` (rolled back; every line must say ok).
 4. ~~Education~~ — done 18 November 2026 (migration 032, function `education`): see "Education" below.
 5. Telling the nine launch accounts, in writing and with notice, when they move to the grid.
 6. Legal review of the terms and privacy sections on payment.
@@ -42,8 +42,8 @@ Decisions taken on 18 November 2026 follow.
 
 | Plan | Price | Content |
 |---|---|---|
-| Free | 0 | Personal calendar, join any team calendar as a member, chat, e-mail reminders. **No AI.** |
-| Starter | 3 EUR / month, 29 EUR / year, VAT incl. | Free + personal AI assistant (50 requests / month), personal well-being, connector. |
+| Free | 0 | Personal calendar, **1 shared calendar with up to 5 members** (since 18 November 2026, migration 033, so invited families and small groups can try Collyo together), join any team calendar as a member, chat, e-mail reminders. **No AI.** |
+| Starter | 3 EUR / month, 29 EUR / year, VAT incl. | Free (including its shared calendar of 5) + personal AI assistant (50 requests / month), personal well-being, connector. |
 | Pro | 7 EUR / month, 69 EUR / year, VAT incl. | Starter + 1 shared calendar (family, club, class or small team, 20 members), minors, verified creator, 150 requests / month for the person and their calendar. |
 | Team, groups | 15 EUR / month, 149 EUR / year, VAT incl. | Families, clubs, classes: 10 shared calendars of 50 members, 400 requests / month shared. |
 | Team, work | 9 EUR / seat / month, 90 EUR / seat / year, excl. VAT, 3 seats minimum | Roles, team well-being analysis, 300 requests per seat pooled, priority support. |

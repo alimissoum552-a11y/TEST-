@@ -12,12 +12,15 @@ begin
   update subscriptions set plan_code = 'pro', source = 'manual' where user_id = u_pro;
   update subscriptions set plan_code = 'launch', source = 'launch' where user_id = u_launch;
   update plans set max_members_per_calendar = 2 where code = 'pro'; -- small limit for the test (rolled back)
-  select id into c_free from calendars where owner_id = u_free and is_default;
 
-  begin insert into calendars(owner_id, name) values (u_free, 'x'); out := out || 'free creates a shared calendar: NOT BLOCKED | ';
-  exception when others then out := out || format('free creates a shared calendar: %s | ', case when sqlerrm = 'plan_limit_calendars' then 'ok' else sqlerrm end); end;
-  begin insert into calendar_members(calendar_id, user_id, role) values (c_free, m1, 'reader'); out := out || 'free adds a member: NOT BLOCKED | ';
-  exception when others then out := out || format('free adds a member: %s | ', case when sqlerrm = 'plan_limit_members' then 'ok' else sqlerrm end); end;
+  -- Free (migration 033): 1 shared calendar; members limited (5, set to 1 here to keep the test short).
+  update plans set max_members_per_calendar = 1 where code = 'free';
+  insert into calendars(owner_id, name) values (u_free, 'Free team') returning id into c_free; out := out || 'free creates 1 shared calendar: ok | ';
+  begin insert into calendars(owner_id, name) values (u_free, 'x'); out := out || 'free creates a 2nd: NOT BLOCKED | ';
+  exception when others then out := out || format('free creates a 2nd: %s | ', case when sqlerrm = 'plan_limit_calendars' then 'ok' else sqlerrm end); end;
+  insert into calendar_members(calendar_id, user_id, role) values (c_free, m1, 'reader'); out := out || 'free adds a member within the limit: ok | ';
+  begin insert into calendar_members(calendar_id, user_id, role) values (c_free, m2, 'reader'); out := out || 'free adds one too many: NOT BLOCKED | ';
+  exception when others then out := out || format('free adds one too many: %s | ', case when sqlerrm = 'plan_limit_members' then 'ok' else sqlerrm end); end;
 
   insert into calendars(owner_id, name) values (u_pro, 'Pro team') returning id into c_pro; out := out || 'pro creates 1 shared calendar: ok | ';
   begin insert into calendars(owner_id, name) values (u_pro, 'second') returning id into c_pro2; out := out || 'pro creates a 2nd: NOT BLOCKED | ';

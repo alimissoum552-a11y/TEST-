@@ -30,6 +30,7 @@ export const PRICING = {
         "tag": "To start",
         "items": [
           "Personal calendar with e-mail reminders",
+          "1 shared calendar with up to 5 members (family, friends, a small team)",
           "Join any number of team calendars as a member",
           "Team chat",
           "No AI"
@@ -153,6 +154,7 @@ export const PRICING = {
         "tag": "Pour commencer",
         "items": [
           "Calendrier personnel avec rappels par e-mail",
+          "1 calendrier partagé jusqu’à 5 membres (famille, amis, petite équipe)",
           "Rejoindre autant de calendriers d’équipe que vous voulez, comme membre",
           "Discussion d’équipe",
           "Sans AI"
@@ -276,6 +278,7 @@ export const PRICING = {
         "tag": "Para empezar",
         "items": [
           "Calendario personal con recordatorios por e-mail",
+          "1 calendario compartido de hasta 5 miembros (familia, amigos, equipo pequeño)",
           "Unirte a todos los calendarios de equipo que quieras, como miembro",
           "Chat de equipo",
           "Sin AI"
@@ -399,6 +402,7 @@ export const PRICING = {
         "tag": "Zum Start",
         "items": [
           "Persönlicher Kalender mit E-Mail-Erinnerungen",
+          "1 geteilter Kalender mit bis zu 5 Mitgliedern (Familie, Freunde, kleines Team)",
           "Beliebig vielen Teamkalendern als Mitglied beitreten",
           "Team-Chat",
           "Keine AI"
@@ -522,6 +526,7 @@ export const PRICING = {
         "tag": "للبدء",
         "items": [
           "تقويم شخصي مع تذكيرات بالبريد الإلكتروني",
+          "تقويم مشترك واحد حتى 5 أعضاء (العائلة أو الأصدقاء أو فريق صغير)",
           "الانضمام إلى أي عدد من تقويمات الفرق كعضو",
           "دردشة الفريق",
           "بدون ذكاء اصطناعي"
@@ -645,6 +650,7 @@ export const PRICING = {
         "tag": "Para começar",
         "items": [
           "Calendário pessoal com lembretes por e-mail",
+          "1 calendário partilhado até 5 membros (família, amigos, equipa pequena)",
           "Juntar-se a quantos calendários de equipa quiser, como membro",
           "Chat de equipa",
           "Sem AI"

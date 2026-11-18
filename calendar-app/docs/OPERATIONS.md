@@ -47,6 +47,8 @@ project. Each file is written to be safe to re-run (`if not exists`, `drop polic
 | `migrations_030_plan_limits.sql` | Plan limits enforced by triggers: shared calendars, members and pending invitations per calendar, team well-being analysis (`plan_of()`, `team_wellbeing_allowed()`). Test: `supabase/tests/plan_limits_test.sql` |
 | `migrations_031_profile_columns.sql` | A user may only change `display_name`, `avatar_url`, `handle`, `ai_accepted_at`, `timezone` in their profile; no insert or delete through the API. Test: `supabase/tests/profile_columns_test.sql` |
 | `migrations_032_education.sql` | `education_requests` (one per account; read by its owner, written by the `education` function) |
+| `migrations_033_free_sharing.sql` | Free and Starter: 1 shared calendar with up to 5 members |
+| `migrations_034_growth_report.sql` | `growth_report()` (service role only), see `docs/GROWTH.md` |
 | `migrations_022_sex_two_values.sql` | The sex of a managed profile is female, male or empty |
 | `migrations_021_minor_no_calendars.sql` | Fix found by the end-to-end test: a minor could create a calendar. Restrictive policies on `calendars`, invitations, members, usage and AI notes |
 
@@ -83,6 +85,7 @@ happened once with `chat_ai_notes` (fixed in migration 011).
 | `delete-account` | App (profile panel, "Delete my account") | User session; the account's own e-mail typed as confirmation; refuses minors | Cancels the caller's paid Stripe subscription (live or test), then deletes their calendars (database cascade), the technical accounts of their minors, their avatar files and their sign-in account. |
 | `billing` | App (later), Stripe webhook | `checkout` and `portal`: user session; webhook: Stripe signature (`STRIPE_BILLING_WEBHOOK_SECRET`). Deployed with `--no-verify-jwt` | Stripe Billing: Checkout session, customer portal, self-service refund (14 days, 30 for work teams) and the webhook that writes `subscriptions` and restores the previous plan when a subscription ends. Test and live keys side by side (`STRIPE_BILLING_API_KEY`, `STRIPE_BILLING_LIVE_API_KEY`), mode chosen by `BILLING_MODE` (unset = test); see `docs/PRICING.md`. |
 | `education` | Pricing page, e-mail link, support | `request`/`status`: user session; `confirm`: the one-time link; `decide`: `x-cron-secret`. Deployed with `--no-verify-jwt` | Education price requests (see below) |
+| `growth-report` | pg_cron, Monday 07:00 UTC | `x-cron-secret`. Deployed with `--no-verify-jwt` | Weekly growth e-mail (`docs/GROWTH.md`) |
 
 Deploy one function (the CLI asks for confirmation in agent mode; `--yes` confirms that one deploy):
 
