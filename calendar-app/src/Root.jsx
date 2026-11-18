@@ -1,20 +1,25 @@
 import { useEffect, useState } from 'react'
-import App from './App.jsx'
 import AuthScreen from './AuthScreen.jsx'
 import { supabase, supabaseConfigured } from './lib/supabase.js'
-import LegalPage from './LegalPage.jsx'
 import { useLegalRoute, goBackFromLegal, parseRoute } from './router.js'
-import JoinPage from './JoinPage.jsx'
-import AiGuidePage from './AiGuidePage.jsx'
-import OAuthConsentPage from './OAuthConsentPage.jsx'
-import Landing from './Landing.jsx'
-import ResetPasswordPage from './ResetPasswordPage.jsx'
-import ConsentPage from './ConsentPage.jsx'
-import MinorLogin from './MinorLogin.jsx'
 import { getMyProfile } from './lib/api.js'
 import { useI18n } from './i18n/index.jsx'
 import { listPasskeys, verifyWithPasskey, isPasskeyVerified, markPasskeyVerified, clearPasskeyVerifications } from './passkeys.js'
-import PricingPage from './PricingPage.jsx'
+import lazyPanel from './lazyPanel.jsx'
+
+// Pages are loaded when they are opened: a visitor of the landing page does not download the app, and the reverse.
+const blank = <div className="min-h-screen bg-neutral-100" />
+const App = lazyPanel(() => import('./App.jsx'), blank)
+const LegalPage = lazyPanel(() => import('./LegalPage.jsx'), blank)
+const JoinPage = lazyPanel(() => import('./JoinPage.jsx'), blank)
+const AiGuidePage = lazyPanel(() => import('./AiGuidePage.jsx'), blank)
+const OAuthConsentPage = lazyPanel(() => import('./OAuthConsentPage.jsx'), blank)
+const Landing = lazyPanel(() => import('./Landing.jsx'), blank)
+const ResetPasswordPage = lazyPanel(() => import('./ResetPasswordPage.jsx'), blank)
+const ConsentPage = lazyPanel(() => import('./ConsentPage.jsx'), blank)
+const MinorLogin = lazyPanel(() => import('./MinorLogin.jsx'), blank)
+const PricingPage = lazyPanel(() => import('./PricingPage.jsx'), blank)
+
 
 // A pending invitation is kept in this browser until it is answered or dismissed.
 // That way it survives sign-out, sign-in, and the e-mail confirmation step of a new account.

@@ -1,21 +1,25 @@
 import { useEffect, useState } from 'react'
 import { useI18n, LanguageSelect } from './i18n/index.jsx'
-import SharePanel from './SharePanel.jsx'
-import TeamPanel from './TeamPanel.jsx'
-import ProfilePanel from './ProfilePanel.jsx'
-import PasskeyPanel from './PasskeyPanel.jsx'
-import InvitesPanel from './InvitesPanel.jsx'
-import AssistantPanel from './AssistantPanel.jsx'
-import ChatPanel from './ChatPanel.jsx'
-import WellbeingPanel from './WellbeingPanel.jsx'
-import NewTeamPanel from './NewTeamPanel.jsx'
-import ConnectorGuide from './ConnectorGuide.jsx'
 import NotificationBell from './NotificationBell.jsx'
 import Avatar from './Avatar.jsx'
 import { getMyProfile } from './lib/api.js'
 import { supabase } from './lib/supabase.js'
 import { getDefaultCalendar, listAccessibleCalendars, listEventsForCalendars, createEvent, updateEvent, deleteEvent, subscribeToEvents, listHistory, restoreVersion } from './lib/api.js'
 import { dateKey, addDays, addMonths, weekDays, monthGrid, isSameMonth, isSameDay, startOfDay, formatMonth, formatDay, formatWeekRange, formatTime } from './lib/calendar.js'
+import lazyPanel from './lazyPanel.jsx'
+
+// Panels are loaded the first time they open.
+const SharePanel = lazyPanel(() => import('./SharePanel.jsx'))
+const TeamPanel = lazyPanel(() => import('./TeamPanel.jsx'))
+const ProfilePanel = lazyPanel(() => import('./ProfilePanel.jsx'))
+const PasskeyPanel = lazyPanel(() => import('./PasskeyPanel.jsx'))
+const InvitesPanel = lazyPanel(() => import('./InvitesPanel.jsx'))
+const AssistantPanel = lazyPanel(() => import('./AssistantPanel.jsx'))
+const ChatPanel = lazyPanel(() => import('./ChatPanel.jsx'))
+const WellbeingPanel = lazyPanel(() => import('./WellbeingPanel.jsx'))
+const NewTeamPanel = lazyPanel(() => import('./NewTeamPanel.jsx'))
+const ConnectorGuide = lazyPanel(() => import('./ConnectorGuide.jsx'))
+
 
 // Maps a DB row to the shape the UI uses (dateKey = 'YYYY-MM-DD' local, time = "HH:MM – HH:MM").
 
