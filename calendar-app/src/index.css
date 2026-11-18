@@ -24,3 +24,15 @@
 @media (prefers-reduced-motion: reduce) {
   .ai-sparkle-live { animation: none; opacity: 1; filter: none; }
 }
+
+/* Social account names on the landing page scroll slowly right to left (SocialLinks.jsx).
+   The track holds the row twice, so moving it by half its width loops without a jump. */
+@keyframes socialMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.social-marquee-track { animation: socialMarquee 40s linear infinite; }
+.social-marquee:hover .social-marquee-track,
+.social-marquee:focus-within .social-marquee-track { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .social-marquee-track { animation: none; width: 100%; justify-content: center; }
+  .social-marquee-track > [aria-hidden] { display: none; }
+  .social-marquee-row { flex-wrap: wrap; justify-content: center; padding-right: 0; row-gap: 0.5rem; }
+}
