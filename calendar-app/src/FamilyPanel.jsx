@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useI18n } from './i18n/index.jsx'
 import {
   getIdentityStatus, refreshIdentityStatus, listManagedProfiles, addManagedProfile, signManagedProfile,
-  inviteGuardian, requestMinorConsent, createMinorAccess, regenerateMinorAccess, disableMinorAccess, removeManagedProfile,
+  inviteGuardian, requestMinorConsent, createMinorAccess, regenerateMinorAccess, disableMinorAccess, removeManagedProfile, graduateMinor,
 } from './lib/api.js'
 import { isGroupKind, validBirthYear, needsResponsibleAdult, consentRequired } from './lib/family.js'
 
@@ -28,6 +28,7 @@ export default function FamilyPanel({ calendar, userId, isOwner }) {
   const [consentEmail, setConsentEmail] = useState({})
   const [issued, setIssued] = useState(null) // { name, id }: shown once
   const [removingId, setRemovingId] = useState(null)
+  const [grad, setGrad] = useState(null) // { id, email, role, confirmed } while the adult-account form is open
 
   // The owner's verified name is needed to sign. If Stripe's name was not stored yet, read it again.
   useEffect(() => {
@@ -53,6 +54,9 @@ export default function FamilyPanel({ calendar, userId, isOwner }) {
       is_owner: 'fmErrGuardianOwner',
       email_failed: 'fmErrEmailSend',
       plan_limit_members: 'planLimitMembers',
+      too_young: 'fmErrTooYoung',
+      age_not_confirmed: 'fmErrAgeConfirm',
+      email_in_use: 'fmErrEmailInUse',
     })[message] || 'famErrGeneric'
   }
 
@@ -112,6 +116,18 @@ export default function FamilyPanel({ calendar, userId, isOwner }) {
         const res = await (action === 'create' ? createMinorAccess(p.id) : regenerateMinorAccess(p.id))
         setIssued({ name: p.first_name, id: res.access_id })
       }
+      await reload()
+    } catch (ex) { setErr(t(errorKey(ex.message))) } finally { setBusy(false) }
+  }
+
+  // At 16, the owner turns the minor's access into the teenager's own account (minor-access, action graduate).
+  async function graduate(p) {
+    if (!grad?.confirmed) { setErr(t('fmErrAgeConfirm')); return }
+    setBusy(true); setErr(null); setNotice(null)
+    try {
+      await graduateMinor(p.id, grad.email.trim(), grad.role)
+      setGrad(null)
+      setNotice(t('fmGradDone').replace('{name}', p.first_name))
       await reload()
     } catch (ex) { setErr(t(errorKey(ex.message))) } finally { setBusy(false) }
   }
@@ -263,9 +279,36 @@ export default function FamilyPanel({ calendar, userId, isOwner }) {
                         <span>{p.access_disabled ? t('fmAccessDisabled') : t('fmAccessActive')}</span>
                         <button type="button" onClick={() => access(p, 'regenerate')} disabled={busy} className={small}>{t('fmAccessRegen')}</button>
                         {!p.access_disabled && <button type="button" onClick={() => access(p, 'disable')} disabled={busy} className={small}>{t('fmAccessDisable')}</button>}
+                        {new Date().getFullYear() - Number(p.birth_year) >= 16 && grad?.id !== p.id && (
+                          <button type="button" onClick={() => setGrad({ id: p.id, email: '', role: 'reader', confirmed: false })} disabled={busy} className={small} data-graduate={p.id}>{t('fmGradButton')}</button>
+                        )}
                       </>
                     )}
                   </div>
+                )}
+
+                {isOwner && grad?.id === p.id && (
+                  <form className="mt-2 space-y-2 rounded-2xl ring-1 ring-neutral-300 p-3" onSubmit={(e) => { e.preventDefault(); graduate(p) }} data-graduate-form>
+                    <p className="text-xs text-neutral-700">{t('fmGradIntro').replace('{name}', p.first_name)}</p>
+                    <label className="block text-xs text-neutral-700">{t('fmGradEmail')}
+                      <input type="email" required value={grad.email} onChange={(e) => setGrad({ ...grad, email: e.target.value })}
+                        className="mt-1 w-full rounded-xl border border-neutral-200 px-3 py-1.5 text-sm" />
+                    </label>
+                    <label className="block text-xs text-neutral-700">{t('fmGradRole')}
+                      <select value={grad.role} onChange={(e) => setGrad({ ...grad, role: e.target.value })} className="mt-1 w-full rounded-xl border border-neutral-200 px-3 py-1.5 text-sm">
+                        <option value="reader">{t('reader')}</option>
+                        <option value="contributor">{t('contributor')}</option>
+                      </select>
+                    </label>
+                    <label className="flex items-start gap-2 text-xs text-neutral-700">
+                      <input type="checkbox" checked={grad.confirmed} onChange={(e) => setGrad({ ...grad, confirmed: e.target.checked })} />
+                      <span>{t('fmGradConfirm').replace('{name}', p.first_name)}</span>
+                    </label>
+                    <div className="flex gap-2">
+                      <button type="button" onClick={() => setGrad(null)} disabled={busy} className="flex-1 py-1.5 rounded-xl bg-neutral-100 text-xs">{t('cancel')}</button>
+                      <button type="submit" disabled={busy || !grad.confirmed || !grad.email.trim()} className="flex-1 py-1.5 rounded-xl bg-neutral-900 text-white text-xs disabled:opacity-40">{t('fmGradSubmit')}</button>
+                    </div>
+                  </form>
                 )}
               </li>
             )

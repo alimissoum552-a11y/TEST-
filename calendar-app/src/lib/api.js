@@ -581,6 +581,9 @@ export const approveConsent = (token) => callFunction('minor-consent', { action:
 export const createMinorAccess = (profileId) => callFunction('minor-access', { action: 'create', profile_id: profileId })
 export const regenerateMinorAccess = (profileId) => callFunction('minor-access', { action: 'regenerate', profile_id: profileId })
 export const disableMinorAccess = (profileId) => callFunction('minor-access', { action: 'disable', profile_id: profileId })
+// At 16: the minor's access becomes the teenager's own adult account (same account, chat and calendar kept).
+export const graduateMinor = (profileId, email, role) =>
+  callFunction('minor-access', { action: 'graduate', profile_id: profileId, email, role, confirm_age: true })
 
 // The minor gives the e-mail of the team owner and the identifier; the function answers with a token that opens a session.
 export async function minorLogin(email, id) {

@@ -45,6 +45,7 @@ project. Each file is written to be safe to re-run (`if not exists`, `drop polic
 | `migrations_028_cancel_and_refund.sql` | `subscriptions.plan_before_stripe`, `cancel_at`, `started_at`: the plan restored when a subscription ends, the scheduled end date, the start of the refund window |
 | `migrations_029_ops_monitoring.sql` | `ops_errors`, `ops_state`, `ops_cron_failures()` (see Monitoring) |
 | `migrations_030_plan_limits.sql` | Plan limits enforced by triggers: shared calendars, members and pending invitations per calendar, team well-being analysis (`plan_of()`, `team_wellbeing_allowed()`). Test: `supabase/tests/plan_limits_test.sql` |
+| `migrations_031_profile_columns.sql` | A user may only change `display_name`, `avatar_url`, `handle`, `ai_accepted_at`, `timezone` in their profile; no insert or delete through the API. Test: `supabase/tests/profile_columns_test.sql` |
 | `migrations_022_sex_two_values.sql` | The sex of a managed profile is female, male or empty |
 | `migrations_021_minor_no_calendars.sql` | Fix found by the end-to-end test: a minor could create a calendar. Restrictive policies on `calendars`, invitations, members, usage and AI notes |
 
@@ -342,3 +343,8 @@ State on 18 November 2026: Supabase lists **no backup and point-in-time recovery
 ## Performance (18 November 2026)
 
 The single 867 kB script was split. Pages (`src/Root.jsx`) and panels (`src/App.jsx`) are loaded the first time they open (`src/lazyPanel.jsx`), and libraries go to their own files (`vite.config.js`: `react`, `supabase`, `vendor`), which browsers keep in cache across deploys. A visitor of the landing page now loads about 600 kB (183 kB compressed, was 263 kB); the legal texts (98 kB), the AI guide, the pricing page and every panel come only when opened. Checked in a browser with the CSP enforced: landing, sign-in, profile, team chat, connector, AI, well-being, new group, team, pricing and terms all open without error. The rest of the first load is mostly the Supabase client (223 kB) and the six-language dictionary in `src/i18n/index.jsx`; loading only the visitor's language would be the next step.
+
+## Browser and load tests (18 November 2026)
+
+- **Browsers**, on the live site with a temporary account (official Playwright image `mcr.microsoft.com/playwright:v1.65.1-noble`, which has the WebKit and Firefox system libraries): Safari (WebKit) desktop, Safari on iPhone 14, Firefox desktop and Chrome on Android (Pixel 7). Landing, pricing, terms, sign-in, profile panel and team chat opened in all four with no page error, no CSP violation and no horizontal scroll on the phones.
+- **Load**, on production with temporary data (one team calendar, 40 members, 200 events, 300 messages; deleted afterwards): 240 reads (events, last 50 messages, member names, my calendars) by 20 members in parallel took 2.7 s (88 requests/s), median about 100 ms per request, no error, and every member saw all 200 events. The slowest 5 % (about 0.7 s) are mostly new TLS connections from the test tool. Realtime fan-out to many open chats was not load-tested.

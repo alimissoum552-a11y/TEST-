@@ -147,7 +147,7 @@ Ces limites sont appliquées **côté base de données** (règles de sécurité)
 ## 11. Décisions finales
 
 1. Les deux lectures de la section 1 sont confirmées.
-2. **À 16 ans**, le mineur peut passer à un compte adulte (voir section 12, non livré).
+2. **À 16 ans**, le propriétaire peut transformer l'accès du mineur en compte adulte (livré le 18 novembre 2026, voir « Passage à 16 ans » ci-dessous).
 3. **Un identifiant par équipe** : un même mineur dans deux équipes a deux identifiants.
 4. **Nom de l'équipe** : option A, nom libre avec suggestion tirée du nom vérifié, adresse masquée sur la page de consentement.
 
@@ -163,6 +163,15 @@ Ces limites sont appliquées **côté base de données** (règles de sécurité)
 - Tests : 14 cas de base de données (transaction annulée), fonctions utilitaires, 22 vérifications dans un navigateur, et **39 vérifications de bout en bout en production** avec des comptes temporaires supprimés ensuite. Ce test a trouvé une faille (un mineur pouvait créer un calendrier), corrigée par la migration 021.
 
 **Non livré**
-- Passage d'un mineur à un compte adulte à 16 ans.
 - ~~Suppression du compte technique d'un mineur retiré~~ : faite par la fonction `team-admin` (retrait d'un profil et suppression d'un calendrier), réservée au propriétaire.
 - Relecture juridique (section 9).
+
+
+## Passage à 16 ans (livré le 18 novembre 2026)
+
+- **Qui** : le propriétaire du calendrier, depuis le panneau Équipe, pour un mineur dont l'accès existe et dont l'année de naissance indique au moins 16 ans. Comme seule l'année est connue, le propriétaire confirme l'âge (case à cocher, refus `age_not_confirmed` sinon, `too_young` si l'année indique moins de 16 ans).
+- **Quoi** (fonction `minor-access`, action `graduate`) : le même compte est conservé, donc les messages et l'appartenance restent. Son adresse technique `m-…@minor.collyo.app` est remplacée par l'adresse de l'adolescent ; le compte devient adulte (`account_type = adult`, les règles des mineurs ne s'appliquent plus) ; son rôle passe de `minor` à lecteur ou contributeur, au choix ; le profil géré est supprimé (détaché d'abord du compte, sinon la migration 025 supprimerait le compte). L'identifiant d'accès cesse de fonctionner.
+- **E-mail** : l'adolescent reçoit un lien pour choisir son mot de passe (valable une heure ; ensuite « Mot de passe oublié » avec la même adresse).
+- **Refus** : adresse déjà utilisée par un compte (`email_in_use` : l'inviter plutôt comme membre), adresse invalide, profil sans accès, appelant qui n'est pas le propriétaire.
+- **À trancher juridiquement** : les déclarations signées du profil géré sont supprimées avec lui (cascade). Si elles doivent être conservées comme preuve, il faut une règle de conservation avant ce passage.
+- **Testé** en production avec des comptes temporaires (supprimés) : refus `too_young`, `age_not_confirmed`, `email_in_use` ; passage réussi (même compte, nouvelle adresse, type adulte, rôle contributeur, profil géré supprimé, message conservé, l'autre mineur inchangé, e-mail envoyé) ; et dans l'interface réelle, le bouton n'apparaît que pour l'adolescent de 17 ans, pas pour l'enfant de 12 ans.

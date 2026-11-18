@@ -6,9 +6,10 @@
 // Secrets: MINOR_ID_SECRET. Provided: SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY.
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import {
-  generateAccessId, formatAccessId, normalizeAccessId, isValidAccessIdShape, hmacHex, tooManyAttempts, WINDOW_MINUTES,
+  generateAccessId, formatAccessId, normalizeAccessId, isValidAccessIdShape, hmacHex, tooManyAttempts, WINDOW_MINUTES, validEmail,
 } from '../_shared/access.ts'
 import { reportError } from '../_shared/ops.ts'
+import { brandHeader } from '../_shared/brand.ts'
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -25,6 +26,7 @@ Deno.serve(async (req) => {
 
     if (body?.action === 'login') return await login(req, admin, secret, body)
     if (['create', 'regenerate', 'disable'].includes(body?.action)) return await manage(req, admin, secret, body)
+    if (body?.action === 'graduate') return await graduate(req, admin, body)
     return json({ error: 'unknown_action' }, 400)
   } catch (e) {
     await reportError('minor-access', e)
@@ -142,4 +144,71 @@ async function login(req: Request, admin: any, secret: string, body: any): Promi
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: { ...cors, 'Content-Type': 'application/json' } })
+}
+
+
+// ---------- at 16: the minor's access becomes the teenager's own adult account ----------
+// The owner gives the teenager's e-mail. The same account is kept (messages and membership stay): its technical
+// address is replaced by the real one, it becomes an adult account with the chosen role, the managed profile is
+// removed, and the teenager receives a link to choose a password. Rule on the age: birth year at least 16 years ago,
+// confirmed by the owner (only the year of birth is known).
+export const GRADUATE_MIN_AGE = 16
+
+async function graduate(req: Request, admin: any, body: any): Promise<Response> {
+  const supa = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!, {
+    global: { headers: { Authorization: req.headers.get('Authorization') ?? '' } },
+  })
+  const { data: { user } } = await supa.auth.getUser()
+  if (!user) return json({ error: 'unauthorized' }, 401)
+
+  const profileId = typeof body.profile_id === 'string' ? body.profile_id : ''
+  if (!/^[0-9a-f-]{36}$/i.test(profileId)) return json({ error: 'invalid_profile' }, 400)
+  const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : ''
+  if (!validEmail(email)) return json({ error: 'invalid_email' }, 400)
+  const role = body.role === 'contributor' ? 'contributor' : 'reader'
+  if (body.confirm_age !== true) return json({ error: 'age_not_confirmed' }, 400)
+
+  const { data: prof } = await admin.from('managed_profiles')
+    .select('id, calendar_id, first_name, birth_year, status, auth_user_id, calendars(owner_id, name)').eq('id', profileId).maybeSingle()
+  if (!prof || prof.calendars?.owner_id !== user.id) return json({ error: 'not_allowed' }, 403)
+  if (prof.status !== 'active' || !prof.auth_user_id) return json({ error: 'no_access' }, 409)
+  if (new Date().getUTCFullYear() - Number(prof.birth_year) < GRADUATE_MIN_AGE) return json({ error: 'too_young' }, 409)
+
+  const { data: existing } = await admin.rpc('find_user_id_by_email', { p_email: email })
+  if (existing) return json({ error: 'email_in_use' }, 409)
+
+  const accountId = prof.auth_user_id
+  const { error: uErr } = await admin.auth.admin.updateUserById(accountId, {
+    email, email_confirm: true, ban_duration: 'none',
+    user_metadata: { account_type: 'adult', display_name: prof.first_name },
+  })
+  if (uErr) return json({ error: 'server_error' }, 500)
+  await admin.from('profiles').update({ account_type: 'adult', email }).eq('id', accountId)
+  await admin.from('calendar_members').update({ role }).eq('calendar_id', prof.calendar_id).eq('user_id', accountId)
+  // Detach the account first: deleting a managed profile otherwise deletes its account (migration 025).
+  await admin.from('managed_profiles').update({ auth_user_id: null, access_id_hash: null }).eq('id', profileId)
+  await admin.from('managed_profiles').delete().eq('id', profileId)
+
+  const appUrl = (Deno.env.get('APP_URL') ?? 'https://collyo.app').replace(/\/+$/, '')
+  const { data: link } = await admin.auth.admin.generateLink({ type: 'recovery', email, options: { redirectTo: `${appUrl}/?reset=1` } })
+  const ownerName = user.user_metadata?.display_name || user.email || 'The owner'
+  const team = prof.calendars?.name ?? ''
+  const html = `<div style="font-family:system-ui,sans-serif;color:#171717;line-height:1.5">
+  ${brandHeader()}
+  <p>${escapeHtml(ownerName)} turned your access to the team <strong>${escapeHtml(team)}</strong> into your own Collyo account.</p>
+  <p>You keep the team calendar and the chat. Choose your password to sign in with <strong>${escapeHtml(email)}</strong>.</p>
+  ${link?.properties?.action_link ? `<p><a href="${link.properties.action_link}" style="display:inline-block;padding:10px 18px;border-radius:12px;background:#171717;color:#fff;text-decoration:none">Choose my password</a></p>` : ''}
+  <p style="font-size:13px;color:#525252">The link works once and expires in one hour. After that, use "Forgot your password?" on the sign-in page with this address.</p>
+</div>`
+  const from = Deno.env.get('INVITE_FROM') ?? 'Collyo <onboarding@resend.dev>'
+  const sent = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${Deno.env.get('RESEND_API_KEY')}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ from, to: [email], subject: `Your own Collyo account for "${team}"`, html }),
+  }).then((r) => r.ok).catch(() => false)
+  return json({ ok: true, emailed: sent })
+}
+
+function escapeHtml(s: string): string {
+  return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!))
 }

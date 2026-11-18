@@ -50,3 +50,8 @@ Still to decide: signed declarations are deleted with the guardian's account (da
 - Four helper functions have no fixed `search_path` (`touch_updated_at`, `reset_reminder_on_change`, `normalize_name`, `name_key`); `pg_net` is in the `public` schema.
 - Shared AI notes can be written by any member who talks to the AI, and they are read back on the next request (a stored instruction could persist). The AI treats them as data, but they are worth a periodic look.
 - Not yet tested: revoking an OAuth grant of the connector from the app, backup restore, other browsers, load.
+
+
+## Found on 18 November 2026 (while building the switch at 16)
+
+- **Profile columns were all writable by their owner**, including `email` (used to find people by address and for passkey sign-in) and `account_type`, and the row could be deleted outside the account deletion. Fixed by migration 031 (column privileges); test `supabase/tests/profile_columns_test.sql`.
