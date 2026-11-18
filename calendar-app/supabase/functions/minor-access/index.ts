@@ -8,6 +8,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2'
 import {
   generateAccessId, formatAccessId, normalizeAccessId, isValidAccessIdShape, hmacHex, tooManyAttempts, WINDOW_MINUTES,
 } from '../_shared/access.ts'
+import { reportError } from '../_shared/ops.ts'
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -25,7 +26,8 @@ Deno.serve(async (req) => {
     if (body?.action === 'login') return await login(req, admin, secret, body)
     if (['create', 'regenerate', 'disable'].includes(body?.action)) return await manage(req, admin, secret, body)
     return json({ error: 'unknown_action' }, 400)
-  } catch (_e) {
+  } catch (e) {
+    await reportError('minor-access', e)
     return json({ error: 'server_error' }, 500)
   }
 })

@@ -309,3 +309,24 @@ Every e-mail starts with the Collyo "C" mark and the name.
 
 - E-mails sent by the Edge functions (send-invite, send-reminders, minor-consent) use `brandHeader()` from `supabase/functions/_shared/brand.ts`. The image is `https://collyo.app/logo-192.png`, served from `public/logo-192.png`: do not rename or remove that file.
 - The Supabase Auth e-mails (confirmation, password reset, magic link, invitation, e-mail change) are project settings, not code. They carry the same header, set with the Management API (`PATCH /v1/projects/{ref}/config/auth`, fields `mailer_templates_*_content`). Re-apply the header if the templates are ever reset.
+
+## Monitoring
+
+Unexpected errors are collected and an e-mail digest is sent when something needs a look (set up 18 November 2026).
+
+- **Where errors go**: table `ops_errors` (migration 029; only the service role can read it). Every Edge function reports its unexpected errors with `reportError()` (`supabase/functions/_shared/ops.ts`); the web app reports `window` errors and unhandled promise rejections to the public function `report-error` (`src/lib/errorReporter.js`, at most 10 per page load, 30 per address per hour). Text is scrubbed before it is stored (`_shared/scrub.ts`): e-mail addresses, tokens, keys and card numbers are removed.
+- **Alerts**: the function `ops-alert` runs every 15 minutes (`supabase/ops_cron.sql`) and e-mails one digest to `OPS_ALERT_TO` (secret, default `support@collyo.app`) when it finds: new errors, scheduled jobs that failed (`ops_cron_failures()`), live Stripe events not delivered to a webhook, or the site not answering (and again when it answers). Nothing is sent when all is well.
+- **Retention**: `ops_errors` rows are deleted after 90 days (`ops-errors-retention` job).
+- **Checked**: a test error sent by a browser was stored with the address and token masked, and the job sent its digest (`sent: true`).
+- Stripe also e-mails the account owner when a webhook endpoint keeps failing.
+
+## Backups
+
+State on 18 November 2026: Supabase lists **no backup and point-in-time recovery is off** for the project (the free plan keeps none that can be restored). Two measures:
+
+1. **Nightly encrypted dump** (`.github/workflows/db-backup.yml`, 02:20 UTC, can also be started by hand): the Supabase CLI dumps roles, schema and data (accounts included), checks the dump, encrypts it with `BACKUP_PASSPHRASE` (AES-256, gpg) and keeps it 30 days as a GitHub artifact. **To switch it on, add two repository secrets: `SUPABASE_ACCESS_TOKEN` and `BACKUP_PASSPHRASE`** (keep the passphrase somewhere outside GitHub too).
+2. **Recommended: the Supabase Pro plan** (daily backups kept 7 days, point-in-time recovery as an option), so a restore is one click.
+
+**Restore test (18 November 2026)**: a dump taken with the same commands was restored into a throwaway local Postgres (Supabase image 17.11): schema without error, and every application table came back with the same row counts as production (profiles 9, calendars 9, events 2, messages 55, members 6, managed profiles 8, declarations 7, subscriptions 9). The `auth` tables need the auth service of a real Supabase project, so the accounts are restored by restoring into a new Supabase project. The dump files and the container were deleted after the test.
+
+**How to restore** (into a new Supabase project, or the same one after a disaster): download the artifact, `gpg -d collyo-db-<date>.tar.gz.gpg | tar xzf -`, then with the new project's connection string: `psql "$DB_URL" -f backup/roles.sql -f backup/schema.sql`, then `psql "$DB_URL" -c "SET session_replication_role = replica" -f backup/data.sql`. Redeploy the Edge functions and the secrets (list in this file), the cron jobs (`*_cron.sql`) and update `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` in Vercel if the project changed.

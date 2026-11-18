@@ -5,6 +5,7 @@
 //   accounts of its minors first. The personal (default) calendar cannot be deleted.
 // Both check that the caller owns the calendar. Deployed with the user's JWT checked inside the function.
 import { createClient } from 'npm:@supabase/supabase-js@2'
+import { reportError } from '../_shared/ops.ts'
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -26,7 +27,8 @@ Deno.serve(async (req) => {
     if (body?.action === 'remove_profile') return await removeProfile(admin, user.id, String(body.profile_id ?? ''))
     if (body?.action === 'delete_calendar') return await deleteCalendar(admin, user.id, String(body.calendar_id ?? ''))
     return json({ error: 'unknown_action' }, 400)
-  } catch (_e) {
+  } catch (e) {
+    await reportError('team-admin', e)
     return json({ error: 'server_error' }, 500)
   }
 })

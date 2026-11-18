@@ -7,6 +7,7 @@
 // Secrets: CRON_SECRET, ANTHROPIC_API_KEY. Provided by Supabase: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY.
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2'
 import { overloadedDays, clampThreshold, parseReview, MIN_MESSAGES_TO_REVIEW, type Review } from './analysis.ts'
+import { reportError } from '../_shared/ops.ts'
 
 const MODEL = 'claude-sonnet-5-5'
 const LOOKAHEAD_DAYS = 7
@@ -26,7 +27,7 @@ Deno.serve(async (req) => {
 
   let processed = 0
   for (const team of teams ?? []) {
-    try { await analyseCalendar(admin, apiKey, team); processed++ } catch (e) { console.error('calendar', team.calendar_id, e) }
+    try { await analyseCalendar(admin, apiKey, team); processed++ } catch (e) { console.error('calendar', team.calendar_id, e); await reportError('wellbeing-team', e, { calendar: team.calendar_id }) }
   }
   return json({ ok: true, processed })
 })

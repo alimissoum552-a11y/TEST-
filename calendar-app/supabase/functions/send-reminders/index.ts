@@ -3,6 +3,7 @@
 // SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are provided by Supabase.
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { brandHeader } from '../_shared/brand.ts'
+import { reportError } from '../_shared/ops.ts'
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -57,7 +58,8 @@ Deno.serve(async (req) => {
     }
     return json({ sent, failed })
   } catch (e) {
-    return json({ error: String(e) }, 500)
+    await reportError('send-reminders', e)
+    return json({ error: 'server_error' }, 500)
   }
 })
 

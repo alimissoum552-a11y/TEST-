@@ -4,6 +4,7 @@
 // Secrets: ANTHROPIC_API_KEY. Provided by Supabase: SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY.
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2'
 import { checkAiQuota } from '../_shared/plans.ts'
+import { reportError } from '../_shared/ops.ts'
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -262,7 +263,8 @@ Deno.serve(async (req) => {
     })
     if (insErr) throw insErr
     return json({ ok: true, applied })
-  } catch (_e) {
+  } catch (e) {
+    await reportError('chat-ai', e)
     return json({ error: 'server_error' }, 500)
   }
 })

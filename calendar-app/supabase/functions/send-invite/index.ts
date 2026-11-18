@@ -2,6 +2,7 @@
 // Deployed as a Supabase Edge Function. Secrets: RESEND_API_KEY, INVITE_FROM, INVITE_REPLY_TO, APP_URL.
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { brandHeader } from '../_shared/brand.ts'
+import { reportError } from '../_shared/ops.ts'
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -63,7 +64,8 @@ Deno.serve(async (req) => {
     if (!res.ok) return json({ error: await res.text() }, 502)
     return json({ ok: true })
   } catch (e) {
-    return json({ error: String(e) }, 500)
+    await reportError('send-invite', e)
+    return json({ error: 'server_error' }, 500)
   }
 })
 

@@ -9,6 +9,7 @@
 // Secrets: none. Provided by Supabase: SUPABASE_URL, SUPABASE_ANON_KEY.
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2'
 import { findFreeSlots, type Interval } from './slots.ts'
+import { reportError } from '../_shared/ops.ts'
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -144,7 +145,8 @@ Deno.serve(async (req) => {
         if (isNotification) return new Response(null, { status: 202, headers: cors })
         return rpcError(id, -32601, `Method not found: ${msg.method}`)
     }
-  } catch (_e) {
+  } catch (e) {
+    await reportError('mcp', e)
     return rpcError(id, -32603, 'Internal error')
   }
 })

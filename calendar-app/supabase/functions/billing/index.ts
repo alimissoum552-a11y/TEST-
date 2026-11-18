@@ -12,6 +12,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { verifyStripeSignature } from '../identity/stripe.ts'
 import { validateCheckout, subscriptionRow, nextSubscriptionRow, refundAllowed, lookupKey, formEncode, MAX_SEATS } from '../_shared/billing.ts'
+import { reportError } from '../_shared/ops.ts'
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -39,7 +40,8 @@ Deno.serve(async (req) => {
     if (body?.action === 'portal') return await portal(admin, user, key)
     if (body?.action === 'refund') return await refund(admin, user)
     return json({ error: 'unknown_action' }, 400)
-  } catch (_e) {
+  } catch (e) {
+    await reportError('billing', e)
     return json({ error: 'server_error' }, 500)
   }
 })
@@ -188,7 +190,7 @@ async function webhook(req: Request, admin: any, signature: string): Promise<Res
   const { error } = await admin.from('subscriptions').upsert({
     user_id: userId, ...nextSubscriptionRow(existing, row), updated_at: new Date().toISOString(),
   }, { onConflict: 'user_id' })
-  if (error) return json({ error: 'db_error' }, 500) // Stripe retries
+  if (error) { await reportError('billing-webhook', error, { event: event?.type }); return json({ error: 'db_error' }, 500) } // Stripe retries
   return json({ ok: true })
 }
 

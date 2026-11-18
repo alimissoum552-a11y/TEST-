@@ -7,6 +7,7 @@
 // A minor cannot delete their account here: the adult who owns the team removes the profile (team-admin).
 // The confirmation must be the account's own e-mail address, typed by the user. The user's JWT is checked inside the function.
 import { createClient } from 'npm:@supabase/supabase-js@2'
+import { reportError } from '../_shared/ops.ts'
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -59,7 +60,8 @@ Deno.serve(async (req) => {
     for (const id of minorIds) await admin.auth.admin.deleteUser(id)
 
     return json({ ok: true })
-  } catch (_e) {
+  } catch (e) {
+    await reportError('delete-account', e)
     return json({ error: 'server_error' }, 500)
   }
 })

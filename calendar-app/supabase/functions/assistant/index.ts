@@ -5,6 +5,7 @@
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2'
 import { findFreeSlots, type Interval } from './slots.ts'
 import { checkAiQuota } from '../_shared/plans.ts'
+import { reportError } from '../_shared/ops.ts'
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -227,6 +228,7 @@ Deno.serve(async (req) => {
     }
     return json({ error: 'too_many_steps' }, 500)
   } catch (e) {
+    await reportError('assistant', e)
     return json({ error: 'server_error' }, 500)
   }
 })

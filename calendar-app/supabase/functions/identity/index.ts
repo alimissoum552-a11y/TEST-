@@ -7,6 +7,7 @@
 // Secrets: STRIPE_API_KEY (dedicated Collyo Stripe account), STRIPE_WEBHOOK_SECRET. Provided: SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY.
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { verifyStripeSignature, verifiedNameOf } from './stripe.ts'
+import { reportError } from '../_shared/ops.ts'
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -23,7 +24,8 @@ Deno.serve(async (req) => {
     const body = await req.clone().json().catch(() => ({}))
     if (body?.action === 'refresh') return await handleRefresh(req, admin)
     return await handleStart(req, admin)
-  } catch (_e) {
+  } catch (e) {
+    await reportError('identity', e)
     return json({ error: 'server_error' }, 500)
   }
 })

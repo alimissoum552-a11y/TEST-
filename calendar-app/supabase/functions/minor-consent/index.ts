@@ -8,6 +8,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { sha256Hex, consentRequired, validEmail, maskEmail } from '../_shared/access.ts'
 import { brandHeader } from '../_shared/brand.ts'
+import { reportError } from '../_shared/ops.ts'
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -24,7 +25,8 @@ Deno.serve(async (req) => {
     if (body?.action === 'invite_guardian') return await inviteGuardian(req, admin, body)
     if (body?.action === 'info' || body?.action === 'approve') return await useToken(admin, body)
     return json({ error: 'unknown_action' }, 400)
-  } catch (_e) {
+  } catch (e) {
+    await reportError('minor-consent', e)
     return json({ error: 'server_error' }, 500)
   }
 })

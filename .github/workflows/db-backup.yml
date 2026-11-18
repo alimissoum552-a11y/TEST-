@@ -1,0 +1,51 @@
+# Nightly encrypted backup of the Supabase database (docs/OPERATIONS.md, "Backups").
+# Needs two repository secrets: SUPABASE_ACCESS_TOKEN (Supabase personal access token) and BACKUP_PASSPHRASE
+# (a long random passphrase kept outside GitHub too: without it the backups cannot be read).
+name: Database backup
+on:
+  schedule:
+    - cron: '20 2 * * *'
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      PROJECT_REF: oybvllumenwbzekgxjtz
+    steps:
+      - name: Check the secrets are set
+        run: |
+          test -n "$SUPABASE_ACCESS_TOKEN" || { echo "SUPABASE_ACCESS_TOKEN is missing"; exit 1; }
+          test -n "${{ secrets.BACKUP_PASSPHRASE }}" || { echo "BACKUP_PASSPHRASE is missing"; exit 1; }
+      - name: Dump roles, schema and data
+        run: |
+          mkdir backup && cd backup
+          npx -y supabase@latest link --project-ref "$PROJECT_REF"
+          npx -y supabase@latest db dump --linked --role-only -f roles.sql
+          npx -y supabase@latest db dump --linked -f schema.sql
+          npx -y supabase@latest db dump --linked --data-only --use-copy -f data.sql
+      - name: Check the dump is complete
+        run: |
+          cd backup
+          for f in roles.sql schema.sql data.sql; do test -s "$f" || { echo "$f is empty"; exit 1; }; done
+          grep -q 'COPY "public"."profiles"' data.sql
+          grep -q 'COPY "auth"."users"' data.sql
+          grep -c '^COPY' data.sql
+      - name: Encrypt
+        env:
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          stamp=$(date -u +%Y-%m-%dT%H%MZ)
+          tar czf - backup | gpg --batch --yes --symmetric --cipher-algo AES256 --passphrase "$BACKUP_PASSPHRASE" -o "collyo-db-$stamp.tar.gz.gpg"
+          rm -rf backup
+          echo "FILE=collyo-db-$stamp.tar.gz.gpg" >> "$GITHUB_ENV"
+      - name: Keep the encrypted file for 30 days
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.FILE }}
+          path: ${{ env.FILE }}
+          retention-days: 30
+          if-no-files-found: error
