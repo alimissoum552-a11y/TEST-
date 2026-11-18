@@ -98,10 +98,7 @@ async function checkout(admin: any, user: any, body: any, key: string): Promise<
     subscription_data: { metadata: { user_id: user.id, plan_code: v.plan } },
     metadata: { user_id: user.id, plan_code: v.plan },
     allow_promotion_codes: true,
-    // Collyo is the seller, not Stripe: Managed Payments (Stripe as merchant of record, +3.5 %) is switched off for these sessions,
-    // and prices are charged in euros as on the pricing page. docs/PRICING.md, "Who sells".
-    managed_payments: { enabled: false },
-    adaptive_pricing: { enabled: false },
+    // Managed Payments stays on (account default): Stripe is the merchant of record and handles VAT. docs/PRICING.md, "Who sells".
     // VAT: computed by Stripe Tax from the customer's address. Businesses can enter their VAT number (reverse charge).
     automatic_tax: { enabled: true },
     customer_update: { address: 'auto', name: 'auto' },

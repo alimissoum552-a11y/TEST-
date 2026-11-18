@@ -3,7 +3,7 @@ export const PRICING = {
   "en": {
     "title": "Plans and prices",
     "intro": "Free to start. Pay only for the AI and for the calendars you create. People you invite never pay.",
-    "banner": "Preview. No payment is open yet: everything is free during the launch, and these plans are the ones announced. Nothing is charged until you are told, in writing, and you accept.",
+    "banner": "Payments are handled by Stripe, which sells the subscription as reseller (merchant of record) and takes care of VAT. The payment page may show the price in your currency. You can cancel at any time from your profile.",
     "monthly": "Monthly",
     "yearly": "Yearly",
     "perMonth": "/ month",
@@ -98,7 +98,7 @@ export const PRICING = {
   "fr": {
     "title": "Formules et tarifs",
     "intro": "Gratuit pour commencer. Vous ne payez que l’AI et les calendriers que vous créez. Les personnes que vous invitez ne paient jamais.",
-    "banner": "Aperçu. Aucun paiement n’est ouvert : tout est gratuit pendant le lancement, et ces formules sont celles annoncées. Rien n’est facturé avant que vous en soyez informé par écrit et que vous acceptiez.",
+    "banner": "Les paiements sont gérés par Stripe, qui vend l’abonnement en tant que revendeur (marchand officiel) et s’occupe de la TVA. La page de paiement peut afficher le prix dans votre devise. Vous pouvez résilier à tout moment depuis votre profil.",
     "monthly": "Mensuel",
     "yearly": "Annuel",
     "perMonth": "/ mois",
@@ -193,7 +193,7 @@ export const PRICING = {
   "es": {
     "title": "Planes y precios",
     "intro": "Gratis para empezar. Solo pagas la AI y los calendarios que creas. Las personas que invitas nunca pagan.",
-    "banner": "Vista previa. Todavía no hay pagos: todo es gratis durante el lanzamiento y estos son los planes anunciados. No se cobrará nada hasta que se te avise por escrito y lo aceptes.",
+    "banner": "Los pagos los gestiona Stripe, que vende la suscripción como revendedor (comerciante registrado) y se ocupa del IVA. La página de pago puede mostrar el precio en tu moneda. Puedes cancelar en cualquier momento desde tu perfil.",
     "monthly": "Mensual",
     "yearly": "Anual",
     "perMonth": "/ mes",
@@ -288,7 +288,7 @@ export const PRICING = {
   "de": {
     "title": "Tarife und Preise",
     "intro": "Kostenlos zum Start. Du zahlst nur für die AI und für die Kalender, die du erstellst. Eingeladene Personen zahlen nie.",
-    "banner": "Vorschau. Noch ist keine Zahlung möglich: Während des Starts ist alles kostenlos, und dies sind die angekündigten Tarife. Es wird nichts berechnet, bis du schriftlich informiert wurdest und zustimmst.",
+    "banner": "Zahlungen werden von Stripe abgewickelt, das das Abonnement als Wiederverkäufer (Merchant of Record) verkauft und sich um die MwSt. kümmert. Die Zahlungsseite kann den Preis in deiner Währung anzeigen. Du kannst jederzeit in deinem Profil kündigen.",
     "monthly": "Monatlich",
     "yearly": "Jährlich",
     "perMonth": "/ Monat",
@@ -383,7 +383,7 @@ export const PRICING = {
   "ar": {
     "title": "الباقات والأسعار",
     "intro": "مجاني للبدء. تدفع فقط مقابل الذكاء الاصطناعي والتقويمات التي تنشئها. الأشخاص الذين تدعوهم لا يدفعون أبدًا.",
-    "banner": "معاينة. لم يُفتح أي دفع بعد: كل شيء مجاني خلال الإطلاق، وهذه هي الباقات المعلنة. لن يُخصم أي مبلغ حتى يتم إبلاغك كتابيًا وتوافق.",
+    "banner": "تتولى Stripe المدفوعات، وهي تبيع الاشتراك بصفتها موزعًا (التاجر المسجّل) وتتكفل بضريبة القيمة المضافة. قد تعرض صفحة الدفع السعر بعملتك. يمكنك الإلغاء في أي وقت من ملفك الشخصي.",
     "monthly": "شهري",
     "yearly": "سنوي",
     "perMonth": "/ شهر",
@@ -478,7 +478,7 @@ export const PRICING = {
   "pt": {
     "title": "Planos e preços",
     "intro": "Grátis para começar. Só paga a AI e os calendários que criar. As pessoas que convidar nunca pagam.",
-    "banner": "Pré-visualização. Ainda não há pagamentos: tudo é grátis durante o lançamento e estes são os planos anunciados. Nada será cobrado até ser informado por escrito e aceitar.",
+    "banner": "Os pagamentos são geridos pela Stripe, que vende a subscrição como revendedor (comerciante registado) e trata do IVA. A página de pagamento pode mostrar o preço na sua moeda. Pode cancelar a qualquer momento a partir do seu perfil.",
     "monthly": "Mensal",
     "yearly": "Anual",
     "perMonth": "/ mês",

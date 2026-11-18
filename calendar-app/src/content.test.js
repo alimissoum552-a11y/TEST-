@@ -68,7 +68,7 @@ describe('pricing copy', () => {
       expect(PRICING[lang].notes, lang).toHaveLength(PRICING.en.notes.length)
     }
   })
-  it('tells visitors that nothing is charged yet', () => {
-    expect(PRICING.en.banner).toMatch(/No payment is open yet/)
+  it('tells buyers that Stripe sells the subscription and handles VAT', () => {
+    for (const lang of LANGS) expect(PRICING[lang].banner, lang).toMatch(/Stripe/)
   })
 })

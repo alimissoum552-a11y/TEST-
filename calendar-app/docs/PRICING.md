@@ -64,7 +64,13 @@ Found while configuring the live account:
 - **Plan switching in the portal**: the plan list was sent to Stripe for both modes, but the API does not echo it back. Open Settings > Billing > Customer portal in the dashboard and check that "Customers can switch plans" lists the four Collyo products; if not, add them there.
 - Managed Payments is still on at account level; the app turns it off on each session. Turn it off in the dashboard too.
 
-### Who sells: Collyo (decided 18 November 2026)
+### Who sells: Stripe, with Managed Payments (decided 19 November 2026; replaces the 18 November decision below)
+
+The owner chose to keep **Managed Payments**: Stripe (Link) is the merchant of record, handles VAT and is named on the payment page; Collyo is the provider. The `billing` function no longer turns it off, adaptive pricing is on (local currency on the payment page). No Stripe Tax registration is needed for the sales Stripe makes as merchant of record. The pricing page says so in six languages. The terms must still say who sells and how to cancel.
+
+**Live since 19 November 2026:** `BILLING_MODE=live` (Supabase secret) and `VITE_BILLING_OPEN=true` (Vercel). Checked with a temporary account: the app creates a live Checkout session (`cs_live_`, Managed Payments on, 3 EUR for Starter) and a live portal session; the session was expired and the live customer deleted. **Not checked: a real card payment and the live webhook**, which need a real purchase (buy Starter, check the profile shows it, then refund and cancel in the dashboard). Existing accounts stay on the launch plan (unlimited AI); new accounts too, until `default_plan()` is switched to `free`.
+
+### Earlier decision: Collyo sells (18 November 2026, reversed)
 
 The Stripe account has **Managed Payments** on by default: Stripe's entity ("Onelink") becomes the merchant of record, the buyer sees "Sold through Onelink", Collyo only appears as the provider, prices are converted to the buyer's currency, and Stripe adds about 3.5 % per transaction (Stripe's marketing page; check the dashboard). **Decision: Collyo sells, in its own name.** Every Checkout session sent by the `billing` function therefore passes `managed_payments[enabled]=false` and `adaptive_pricing[enabled]=false` (prices charged in euros, as on the pricing page). Checked on test sessions: `managed_payments = false`, currency EUR, Stripe Tax on, VAT numbers accepted.
 
