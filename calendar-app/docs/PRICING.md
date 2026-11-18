@@ -1,6 +1,27 @@
 # Plans and pricing
 
-Decisions taken on 18 November 2026. **Nothing is charged yet.** Every account is on the `launch` plan, which behaves like the app does today. This file is the reference for what is built, what is announced and what is still missing.
+**Status on 19 November 2026: paid plans are on sale, live.** Stripe sells them as merchant of record (Managed Payments). New accounts start on the free plan (no AI); the nine accounts created before keep the `launch` plan (unlimited AI) until they are told otherwise in writing. This file is the reference for what is built and what is left.
+
+## What is live
+
+- Pricing page `#/pricing`, linked from the landing page (header and footer) and from the profile; its payment buttons open Stripe Checkout (`VITE_BILLING_OPEN=true` in Vercel).
+- `billing` function in live mode (`BILLING_MODE=live`); webhooks from both modes are accepted and verified.
+- Profile, "My plan": plan, status, renewal date, AI meter, "Manage my subscription" (Stripe portal).
+- The AI refuses with a clear message and a "See the plans" link when the plan has no AI or the month's quota is used up (not shown to minors).
+- New accounts: `default_plan()` = `free` (migration 027).
+- Deleting an account cancels its Stripe subscription first (tested: a test-mode subscription was canceled when its account was deleted).
+- Terms section 12 "Subscriptions and payment" and privacy section 16 "Payments" (six languages, dated 19 November 2026). Drafts: to be reviewed by a lawyer.
+
+## Still to do
+
+1. **One real purchase** (Starter monthly, 3 EUR) to check the live card payment and the live webhook end to end, then refund and cancel it in the Stripe dashboard. Not done: the live payment page cannot be driven by a script.
+2. In the Stripe dashboard, check that the customer portal lets subscribers switch between the four Collyo products (the API does not echo the list back).
+3. Shared-calendar and member limits per plan are stored but not enforced; team well-being analysis is not gated by plan.
+4. Education: check teachers by school e-mail or a document, then give a promotion code on the coupon `edu_50`.
+5. Telling the nine launch accounts, in writing and with notice, when they move to the grid.
+6. Legal review of the terms and privacy sections on payment.
+
+Decisions taken on 18 November 2026 follow.
 
 ## Principles
 
@@ -80,11 +101,19 @@ Consequences, to settle before launch (with an accountant):
 - **Turn Managed Payments off in the dashboard** as well (Settings > Payments), so that no other flow (payment links, a future change) uses it by mistake. The per-session setting is enough for the app.
 - Selling outside the EU (United States sales tax, United Kingdom VAT) adds registrations; start with the EU and decide later.
 
-## What is still missing before anyone can pay
+## Opened on 19 November 2026
 
-1. **A manual Checkout test** in a normal browser (test card 4242 4242 4242 4242), then opening the buttons by setting `VITE_BILLING_OPEN=true` in Vercel at launch.
-2. **Switching the grid on**: `default_plan()` returns `free`, accounts move from `launch` to their plan, with a notice period for the people already using the AI; create the live Stripe objects with the script and the live key; a live webhook endpoint; store the live key as `STRIPE_BILLING_API_KEY`.
-3. **Limits other than the AI**: the number of shared calendars and members per calendar are stored in `plans` but **not enforced yet** (database triggers, to be tested carefully because personal and team calendars share one table). Team well-being analysis (`wellbeing-team`) is not metered or gated yet.
-4. **Education**: Stripe Identity proves who a person is, not that they teach. Verify the teacher status with a school e-mail domain or a manual check of a document to start; then give the teacher a promotion code on the coupon `edu_50`. Schools need a contract and a data-processing agreement, and the AI for pupils stays off by default.
-5. **Legal**: terms (price change and notice, refunds, 14-day withdrawal for consumers, cancellation, who the seller is under Managed Payments), privacy (payment processor), invoices. The pricing page wording must be reviewed with the terms.
-6. **The upgrade path in the message at the limit** (the meter and the plans link exist; the limit message could link to the plans page).
+- `BILLING_MODE=live` (Supabase) and `VITE_BILLING_OPEN=true` (Vercel): the pricing page buttons open the live Stripe payment page; the profile shows the plan, the AI meter and "Manage my subscription".
+- Pricing page linked from the landing page (header and footer). When the AI is refused because of the plan or the monthly quota, the assistant and the team chat show a link to the plans.
+- New accounts: free plan (migration 027). Existing accounts: launch plan.
+- Terms: section 12 "Subscriptions and payment" (Stripe sells as reseller and collects VAT, automatic renewal, cancellation from the profile, 14-day withdrawal for EU consumers, 30-day refund on request for work teams, 30 days' notice of price changes, deleting the account cancels the subscription). Privacy: section 16 "Payments" and Stripe added to the processors. Updated 19 November 2026, in six languages. **A lawyer must review them.**
+- Deleting an account cancels its Stripe subscription first (live or test); tested with a test subscription.
+
+## What is still missing
+
+1. **One real purchase** to check the live payment and the live webhook (buy Starter monthly, check the profile, then refund and cancel in the Stripe dashboard).
+2. **Plan switching in the portal**: check in the dashboard (Settings > Billing > Customer portal) that the four Collyo products are listed.
+3. **Limits other than the AI**: shared calendars and members per calendar are stored in `plans` but not enforced; team well-being analysis (`wellbeing-team`) is not metered or gated.
+4. **Education**: verify teachers (school e-mail domain or manual check), then give a promotion code on the coupon `edu_50`. Schools: contract and data-processing agreement.
+5. **Legal review** of the new terms and privacy sections.
+6. **Moving launch accounts** to the grid later, with 30 days' notice as the terms say.

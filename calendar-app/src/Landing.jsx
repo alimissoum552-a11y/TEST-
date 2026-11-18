@@ -417,7 +417,8 @@ export default function Landing() {
     <div className="min-h-screen bg-neutral-100 text-neutral-900 overflow-x-hidden">
       <header className="flex items-center justify-between px-6 md:px-10 py-5 max-w-6xl mx-auto">
         <Logo />
-        <div className="relative">
+        <div className="relative flex items-center gap-4">
+          <a href="#/pricing" data-pricing-link className="text-sm font-medium text-neutral-700 hover:text-neutral-900 underline-offset-4 hover:underline">{L.pricing}</a>
           <LanguageButton open={langOpen} onToggle={() => setLangOpen((o) => !o)} />
           {langOpen && <LanguageSelect onPick={() => setLangOpen(false)} placement="down" />}
         </div>
@@ -508,6 +509,7 @@ export default function Landing() {
       <footer className="px-6 md:px-10 pb-10 max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-x-6 gap-y-3 text-xs text-neutral-500">
         <span>{L.footer}</span>
         <nav className="flex flex-wrap gap-x-5 gap-y-2" aria-label="Legal">
+          <a href="#/pricing" className="hover:text-neutral-900 underline-offset-2 hover:underline">{L.pricing}</a>
           <a href="#/ai-guide" className="hover:text-neutral-900 underline-offset-2 hover:underline">{cap(t('aiGuide'))}</a>
           <a href="#/terms?from=landing" className="hover:text-neutral-900 underline-offset-2 hover:underline">{cap(t('termsLink'))}</a>
           <a href="#/privacy?from=landing" className="hover:text-neutral-900 underline-offset-2 hover:underline">{cap(t('privacyLink'))}</a>

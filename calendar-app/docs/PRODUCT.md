@@ -71,9 +71,17 @@ It combines three ideas:
 
 How these work, who can do what, and the limits are in `docs/AI.md`, `docs/WELLBEING.md` and `docs/FAMILY_TEAM.md`.
 
+## Plans
+
+Free (no AI), Starter, Pro, Team (groups) and Team (work), on sale through Stripe since 19 November 2026; education at half price. The AI follows the calendar: requests made in a team calendar count on the owner's plan. Details in `docs/PRICING.md`.
+
+## Plans and billing
+
+Free (no AI), Starter, Pro, Team (groups) and Team (work) are sold through Stripe, which acts as reseller (Managed Payments) and handles VAT. The AI quota follows the calendar owner's plan. Accounts created before 19 November 2026 keep the launch plan (unlimited AI). See `docs/PRICING.md`.
+
 ## Not yet delivered
 
 Automatic planning (tasks, focus blocks, scheduling engine), project
 decomposition, universal inbox, team orchestrator, external calendar sync,
-plans and billing, the minor's own account and view, a screen to record the legal approval of AI for calendars with minors,
+the limits on shared calendars and members per plan, the minor's own account and view, a screen to record the legal approval of AI for calendars with minors,
 an automatic purge of well-being check-ins. These are listed in `docs/ROADMAP.md` and in the design documents.

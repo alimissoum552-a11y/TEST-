@@ -1,6 +1,7 @@
 // Self-service account deletion (GDPR erasure). The signed-in adult deletes their own account:
 // - their calendars, with events, chat, members and managed minor profiles (the database cascades),
 // - the technical sign-in accounts of the minors of those calendars,
+// - their paid subscription at Stripe (canceled first),
 // - their profile photo files,
 // - their sign-in account, which removes the rest of their data (profile, messages, memberships, passkeys, verification).
 // A minor cannot delete their account here: the adult who owns the team removes the profile (team-admin).
@@ -39,6 +40,14 @@ Deno.serve(async (req) => {
       minorIds = (profs ?? []).map((p: any) => p.auth_user_id)
     }
 
+    // A paid subscription is canceled at Stripe first, so nothing is charged after the account is gone.
+    const { data: sub } = await admin.from('subscriptions')
+      .select('source, status, stripe_subscription_id').eq('user_id', user.id).maybeSingle()
+    if (sub?.source === 'stripe' && sub.stripe_subscription_id && sub.status !== 'canceled') {
+      const canceled = await cancelStripeSubscription(sub.stripe_subscription_id)
+      if (!canceled) return json({ error: 'subscription_cancel_failed' }, 502)
+    }
+
     // Profile photos: avatars/<uid>/...
     const { data: files } = await admin.storage.from('avatars').list(user.id, { limit: 1000 })
     if (files?.length) await admin.storage.from('avatars').remove(files.map((f: any) => `${user.id}/${f.name}`))
@@ -54,6 +63,26 @@ Deno.serve(async (req) => {
     return json({ error: 'server_error' }, 500)
   }
 })
+
+// The subscription lives in the live or the test Stripe mode: try the mode in use first, then the other one.
+async function cancelStripeSubscription(id: string): Promise<boolean> {
+  const live = Deno.env.get('STRIPE_BILLING_LIVE_API_KEY') ?? ''
+  const test = Deno.env.get('STRIPE_BILLING_API_KEY') ?? ''
+  const keys = (Deno.env.get('BILLING_MODE') === 'live' ? [live, test] : [test, live]).filter(Boolean)
+  let missing = 0
+  for (const key of keys) {
+    const res = await fetch(`https://api.stripe.com/v1/subscriptions/${encodeURIComponent(id)}`, {
+      method: 'DELETE', headers: { Authorization: `Bearer ${key}` },
+    })
+    if (res.ok) return true
+    const body = await res.json().catch(() => ({}))
+    if (body?.error?.code === 'resource_missing') { missing++; continue } // not in this mode
+    if (/canceled/i.test(String(body?.error?.message ?? ''))) return true // already canceled
+    return false
+  }
+  // Unknown in every mode: there is nothing left to charge.
+  return keys.length > 0 && missing === keys.length
+}
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: { ...cors, 'Content-Type': 'application/json' } })

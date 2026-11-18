@@ -2,264 +2,930 @@
 // Operator identity and contact used by the legal pages.
 
 export const OPERATOR = {
-  name: 'AI Solution Hub®',
-  address: 'Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal',
-  email: 'support@collyo.app',
-  updated: '17 November 2026',
+  "name": "AI Solution Hub®",
+  "address": "Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal",
+  "email": "support@collyo.app",
+  "updated": "19 November 2026"
 }
 
 // Content per language, falling back to English when a language is missing.
 export const PAGES = {
-  en: {
-    title: {"terms": "Terms of Use", "privacy": "Privacy Policy", "cookies": "Cookie Policy"},
-    terms: [
-      { h: "1. Purpose", p: "Calendar App is a web calendar that lets you create, edit and delete events, organise them into calendars, and share calendars with other people through invitations." },
-      { h: "2. Accounts", p: "You create an account with an e-mail address and a password. You are responsible for keeping your credentials confidential and for all activity under your account. You must provide accurate information and be at least 16 years old, or the age of digital consent in your country." },
-      { h: "3. Your content", p: "You own the events, titles, descriptions, locations and photos you add. You grant the operator only the rights needed to store and display them to you and to the people you share with." },
-      { h: "4. Sharing and roles", p: "When you invite someone to a calendar, they receive an e-mail and can accept or decline. Access is granted only after acceptance. Roles (Administrator, Contributor, Reader) define what each member can do. Do not share calendars with people who have not agreed to receive them." },
-      { h: "5. Acceptable use", p: "You must not use the service to store unlawful content, to harass others, to send unsolicited messages through invitations, to attempt unauthorised access to other accounts or data, or to disrupt the service." },
-      { h: "6. Availability", p: "The service is provided \"as is\". We aim for continuous availability but do not guarantee it. Features may change over time." },
-      { h: "7. Termination", p: "You may delete your account at any time. We may suspend accounts that breach these terms." },
-      { h: "8. Liability", p: "To the extent permitted by law, the operator is not liable for indirect losses, including missed events or losses resulting from a shared calendar being changed by another member." },
-      { h: "9. Governing law", p: "These terms are governed by Portuguese law. The courts of Porto have jurisdiction, without prejudice to the mandatory consumer rights of your country of residence." },
-      { h: "10. AI assistant", p: "The AI assistant is optional. It answers questions about your calendars and suggests free times. It reads your own events and, for shared calendars, only the busy times of their members. You must accept this policy before first use. Do not use the assistant to monitor or pressure other people. Its suggestions are not binding and may contain errors: check them before you act. Members of a shared calendar are informed of this possibility. If the owner turns AI on in a team chat, the AI reads that chat when a member mentions it, and members are told so in the chat. Only the owner can turn it on or off. If you allow it in the AI settings, the assistant can also create, move or delete events in your calendars, and it tells you what it changed." },
-      { h: "11. Well-being, groups and minors", p: "The well-being mode is optional and is not a medical service: it gives general suggestions and does not diagnose or treat anything. In an emergency, call your local emergency number. Family, sports team and class calendars can include members under 16 (or under the age of digital consent). They can only be created by an adult whose identity has been verified, and a minor is added only after an adult responsible signs a declaration with their first and last name. By signing, you confirm that you hold parental authority or the role of team or class manager, and that the details you enter are accurate. A false declaration is a breach of these terms. The responsible adult can withdraw their agreement at any time. The adult who adds a minor is responsible for the access given to that minor, for what the minor writes in the team chat, and for deciding whether the team chat AI may be used." },
-      { h: "12. Contact", p: "Questions: support@collyo.app." },
+  "en": {
+    "title": {
+      "terms": "Terms of Use",
+      "privacy": "Privacy Policy",
+      "cookies": "Cookie Policy"
+    },
+    "terms": [
+      {
+        "h": "1. Purpose",
+        "p": "Calendar App is a web calendar that lets you create, edit and delete events, organise them into calendars, and share calendars with other people through invitations."
+      },
+      {
+        "h": "2. Accounts",
+        "p": "You create an account with an e-mail address and a password. You are responsible for keeping your credentials confidential and for all activity under your account. You must provide accurate information and be at least 16 years old, or the age of digital consent in your country."
+      },
+      {
+        "h": "3. Your content",
+        "p": "You own the events, titles, descriptions, locations and photos you add. You grant the operator only the rights needed to store and display them to you and to the people you share with."
+      },
+      {
+        "h": "4. Sharing and roles",
+        "p": "When you invite someone to a calendar, they receive an e-mail and can accept or decline. Access is granted only after acceptance. Roles (Administrator, Contributor, Reader) define what each member can do. Do not share calendars with people who have not agreed to receive them."
+      },
+      {
+        "h": "5. Acceptable use",
+        "p": "You must not use the service to store unlawful content, to harass others, to send unsolicited messages through invitations, to attempt unauthorised access to other accounts or data, or to disrupt the service."
+      },
+      {
+        "h": "6. Availability",
+        "p": "The service is provided \"as is\". We aim for continuous availability but do not guarantee it. Features may change over time."
+      },
+      {
+        "h": "7. Termination",
+        "p": "You may delete your account at any time. We may suspend accounts that breach these terms."
+      },
+      {
+        "h": "8. Liability",
+        "p": "To the extent permitted by law, the operator is not liable for indirect losses, including missed events or losses resulting from a shared calendar being changed by another member."
+      },
+      {
+        "h": "9. Governing law",
+        "p": "These terms are governed by Portuguese law. The courts of Porto have jurisdiction, without prejudice to the mandatory consumer rights of your country of residence."
+      },
+      {
+        "h": "10. AI assistant",
+        "p": "The AI assistant is optional. It answers questions about your calendars and suggests free times. It reads your own events and, for shared calendars, only the busy times of their members. You must accept this policy before first use. Do not use the assistant to monitor or pressure other people. Its suggestions are not binding and may contain errors: check them before you act. Members of a shared calendar are informed of this possibility. If the owner turns AI on in a team chat, the AI reads that chat when a member mentions it, and members are told so in the chat. Only the owner can turn it on or off. If you allow it in the AI settings, the assistant can also create, move or delete events in your calendars, and it tells you what it changed."
+      },
+      {
+        "h": "11. Well-being, groups and minors",
+        "p": "The well-being mode is optional and is not a medical service: it gives general suggestions and does not diagnose or treat anything. In an emergency, call your local emergency number. Family, sports team and class calendars can include members under 16 (or under the age of digital consent). They can only be created by an adult whose identity has been verified, and a minor is added only after an adult responsible signs a declaration with their first and last name. By signing, you confirm that you hold parental authority or the role of team or class manager, and that the details you enter are accurate. A false declaration is a breach of these terms. The responsible adult can withdraw their agreement at any time. The adult who adds a minor is responsible for the access given to that minor, for what the minor writes in the team chat, and for deciding whether the team chat AI may be used."
+      },
+      {
+        "h": "12. Subscriptions and payment",
+        "p": "Collyo can be used for free, without AI. Paid plans (Starter, Pro, Team) are monthly or yearly subscriptions. They are sold and billed by Stripe as reseller (merchant of record), which also collects VAT; the payment page names it and may show the price in your currency. The price on the pricing page applies. A subscription renews automatically until you cancel it from your profile (\"Manage my subscription\"); it then stays active until the end of the period already paid. Consumers in the European Union have a 14-day right of withdrawal under the conditions set by law; work-team plans can ask for a refund within 30 days of the first payment at support@collyo.app. We announce any price change at least 30 days in advance by e-mail, and you can cancel before it applies. Deleting your account cancels your subscription. Guardian consent, the protection of minors and account deletion are part of every plan."
+      },
+      {
+        "h": "13. Contact",
+        "p": "Questions: support@collyo.app."
+      }
     ],
-    privacy: [
-      { h: "1. Who we are", p: "Data controller: AI Solution Hub®, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal. Contact: support@collyo.app." },
-      { h: "2. Data we collect", p: "Account data: e-mail address and password (stored as a hash by our authentication provider). Profile data: display name and optional profile photo. Calendar data: calendars, events (title, description, location, start and end times, reminder), and the history of changes made to events. Sharing data: members, roles and invitations. Technical data: language preference stored in your browser." },
-      { h: "3. Why we process it", p: "To provide the service you requested (creating and sharing calendars), to send invitation e-mails you trigger, to keep an activity history so changes can be reviewed and restored, and to keep the service secure. Legal basis under the GDPR: performance of a contract (Art. 6(1)(b)); legitimate interests in security (Art. 6(1)(f)); consent where you upload a photo (Art. 6(1)(a))." },
-      { h: "4. Who can see your data", p: "Your own data is private by default. Calendar content is visible to the members of that calendar according to their role. Other members can see your display name and photo on a calendar you share. The history of a shared event is visible to the members of that calendar." },
-      { h: "5. Service providers", p: "We use the following processors: Supabase (database, authentication and avatar storage; European Union, eu-west-1 Ireland); Resend (invitation e-mails; European Union, eu-west-1); Vercel (web application hosting; global network). Any transfer outside the EU/EEA relies on adequacy decisions or the Standard Contractual Clauses. Identity verification of calendar creators is provided by Stripe (see section 15)." },
-      { h: "6. Retention", p: "We keep your data while your account is active. Deleting your account deletes your personal data, except where the law requires us to keep it. Event history is deleted with the event it describes. Backups are kept only as long as necessary for recovery." },
-      { h: "7. Your rights", p: "Under the GDPR and similar laws you can access, correct, delete, restrict or port your data, object to processing, and withdraw consent at any time. You can edit your profile and events in the app, and contact us to exercise other rights. You may lodge a complaint with your national data protection authority." },
-      { h: "8. Security", p: "Data is encrypted in transit (HTTPS). Access to data is restricted by row-level security rules so that each user only reaches the calendars they own or were invited to. No system is perfectly secure; we will notify you of any breach as required by law." },
-      { h: "9. Children", p: "The service is not directed at children under 16 (or the national digital consent age), who cannot create their own account. A person under that age can appear in a family, sports team or class calendar only as a profile managed by a responsible adult, and can have a limited access to the team calendar and chat created by that adult, as described in section 14." },
-      { h: "10. International transfers", p: "Transfers outside the EU/EEA rely on adequacy decisions or the Standard Contractual Clauses." },
-      { h: "11. AI assistant", p: "If you use the assistant, your question and the calendar information needed to answer it (your events with titles, and the busy times of shared calendars) are sent to Anthropic, our AI model provider, which processes them on our behalf. Processing may take place outside the EU/EEA under Standard Contractual Clauses. We do not store the content of your questions, only the number of requests and tokens, to run the service and set prices. Legal basis: your consent, given when you accept the assistant policy (Art. 6(1)(a)); you can withdraw it at any time. The busy times of a shared calendar may be used by the assistant of anyone who can access that calendar, and its members are informed of this. In a team chat where the owner has turned AI on, the recent messages of that chat (up to 40) and the shared notes are sent to our AI provider each time a member mentions the AI. Replies and notes are stored in the chat." },
-      { h: "12. Connected apps", p: "You can connect Collyo to an AI app, such as Claude, as a connector. You approve each connection on a consent screen, and you can revoke it at any time from your profile. A connected app can read only: your calendars and events with their titles, and the busy times of shared calendars without titles. The connector is read-only and does not give access to team chat messages. Collyo does not send your data to the app by itself: the data reaches the app only when you use the connector in your own account, under that app’s terms." },
-      { h: "13. Well-being", p: "The well-being mode is optional. If you turn it on, you can give an age range, a profession and a family situation, and record a daily energy check-in (and mood, if you choose). This data is stored separately, is visible only to you, and is used only to adapt the suggestions of the AI assistant; it is sent to Anthropic, our AI provider, when you use the assistant with the mode on. Legal basis: your explicit consent (Art. 6(1)(a) and 9(2)(a) where the data concerns health), which you can withdraw at any time by switching the mode off or by asking us to delete your entries. We keep it until you delete your account or ask us to delete it. In a team where the owner turns on the team analysis, the calendar's busy times and, if the owner chooses, the chat messages of the last hour are analysed by Anthropic to spot workload, tension or distress, without sending names. Members can exclude their own messages from this analysis. A distress signal is shown only to the person concerned, in private. The team receives only general messages that name nobody. A log of the analyses (dates, sources and counts, never message text) is kept for 90 days and is visible to the owner. This is not medical advice." },
-      { h: "14. Family, sports team and class calendars", p: "These calendars are created by an adult whose identity was verified (section 15). The creator can add members under 16 as managed profiles: first name, year of birth, optional sex and optional category. This data is visible only to the creator and to the adults responsible for that profile. A profile stays pending, and is deleted after 30 days if nobody signs, until an adult responsible signs a declaration with their first and last name; we keep the record of the signature (name typed, date, version of the text and functions covered). Sex is stored only if the declaration covers it. The AI is switched off for any calendar that includes a minor, unless a legal approval is recorded and each minor is covered by a signed declaration for AI. Legal basis: the consent of the holder of parental responsibility (Art. 6(1)(a) and 8 GDPR; parental consent for children under 13 in the United States). The responsible adult can withdraw it and ask for deletion at any time at support@collyo.app. A minor can have a limited access to the team calendar (read only) and the team chat, created by the adult owner: the minor signs in with the e-mail of the team owner and an access ID generated when the adult signs. We keep only a hash of the ID. The minor account has no e-mail address of its own, cannot change events, and cannot use the assistant, the connector, well-being or passkeys. For a child who may be under 13, the person responsible must first approve by e-mail, through a link sent to the address the owner enters; we keep the record of the approval (date, address, version of the text). The adult owner can cut the access or issue a new ID at any time. The messages of a minor are visible to the members of the team. If the owner switches on the team chat AI and the signed declaration covers it, a minor can ask the AI: the recent messages of the chat, including those of the minor, are then sent to our AI provider. A minor can make at most 20 requests a day, and the AI cannot change events for them." },
-      { h: "15. Identity verification", p: "To create a family, sports team or class calendar, the creator verifies their identity through Stripe, our verification provider. Stripe collects and processes the identity document and a selfie on its own page, including a biometric comparison, under its own terms and privacy policy; Collyo does not receive or store the document or the selfie. Collyo keeps only the result (verified or not), the verified name, the country of the document, the date and the verification session identifier. A verified badge is shown on your own profile. Legal basis: your consent (Art. 6(1)(a) and 9(2)(a)). Processing may take place outside the EU/EEA under Standard Contractual Clauses. You can ask us to delete your verification record at support@collyo.app; the calendar types that require it will then no longer be available to you." },
-      { h: "16. Changes", p: "We update this policy when our practices change. Last updated: 17 November 2026." },
+    "privacy": [
+      {
+        "h": "1. Who we are",
+        "p": "Data controller: AI Solution Hub®, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal. Contact: support@collyo.app."
+      },
+      {
+        "h": "2. Data we collect",
+        "p": "Account data: e-mail address and password (stored as a hash by our authentication provider). Profile data: display name and optional profile photo. Calendar data: calendars, events (title, description, location, start and end times, reminder), and the history of changes made to events. Sharing data: members, roles and invitations. Technical data: language preference stored in your browser."
+      },
+      {
+        "h": "3. Why we process it",
+        "p": "To provide the service you requested (creating and sharing calendars), to send invitation e-mails you trigger, to keep an activity history so changes can be reviewed and restored, and to keep the service secure. Legal basis under the GDPR: performance of a contract (Art. 6(1)(b)); legitimate interests in security (Art. 6(1)(f)); consent where you upload a photo (Art. 6(1)(a))."
+      },
+      {
+        "h": "4. Who can see your data",
+        "p": "Your own data is private by default. Calendar content is visible to the members of that calendar according to their role. Other members can see your display name and photo on a calendar you share. The history of a shared event is visible to the members of that calendar."
+      },
+      {
+        "h": "5. Service providers",
+        "p": "We use the following processors: Supabase (database, authentication and avatar storage; European Union, eu-west-1 Ireland); Resend (invitation e-mails; European Union, eu-west-1); Vercel (web application hosting; global network). Any transfer outside the EU/EEA relies on adequacy decisions or the Standard Contractual Clauses. Identity verification of calendar creators is provided by Stripe (see section 15). Paid plans are sold by Stripe as reseller (see section 16)."
+      },
+      {
+        "h": "6. Retention",
+        "p": "We keep your data while your account is active. Deleting your account deletes your personal data, except where the law requires us to keep it. Event history is deleted with the event it describes. Backups are kept only as long as necessary for recovery."
+      },
+      {
+        "h": "7. Your rights",
+        "p": "Under the GDPR and similar laws you can access, correct, delete, restrict or port your data, object to processing, and withdraw consent at any time. You can edit your profile and events in the app, and contact us to exercise other rights. You may lodge a complaint with your national data protection authority."
+      },
+      {
+        "h": "8. Security",
+        "p": "Data is encrypted in transit (HTTPS). Access to data is restricted by row-level security rules so that each user only reaches the calendars they own or were invited to. No system is perfectly secure; we will notify you of any breach as required by law."
+      },
+      {
+        "h": "9. Children",
+        "p": "The service is not directed at children under 16 (or the national digital consent age), who cannot create their own account. A person under that age can appear in a family, sports team or class calendar only as a profile managed by a responsible adult, and can have a limited access to the team calendar and chat created by that adult, as described in section 14."
+      },
+      {
+        "h": "10. International transfers",
+        "p": "Transfers outside the EU/EEA rely on adequacy decisions or the Standard Contractual Clauses."
+      },
+      {
+        "h": "11. AI assistant",
+        "p": "If you use the assistant, your question and the calendar information needed to answer it (your events with titles, and the busy times of shared calendars) are sent to Anthropic, our AI model provider, which processes them on our behalf. Processing may take place outside the EU/EEA under Standard Contractual Clauses. We do not store the content of your questions, only the number of requests and tokens, to run the service and set prices. Legal basis: your consent, given when you accept the assistant policy (Art. 6(1)(a)); you can withdraw it at any time. The busy times of a shared calendar may be used by the assistant of anyone who can access that calendar, and its members are informed of this. In a team chat where the owner has turned AI on, the recent messages of that chat (up to 40) and the shared notes are sent to our AI provider each time a member mentions the AI. Replies and notes are stored in the chat."
+      },
+      {
+        "h": "12. Connected apps",
+        "p": "You can connect Collyo to an AI app, such as Claude, as a connector. You approve each connection on a consent screen, and you can revoke it at any time from your profile. A connected app can read only: your calendars and events with their titles, and the busy times of shared calendars without titles. The connector is read-only and does not give access to team chat messages. Collyo does not send your data to the app by itself: the data reaches the app only when you use the connector in your own account, under that app’s terms."
+      },
+      {
+        "h": "13. Well-being",
+        "p": "The well-being mode is optional. If you turn it on, you can give an age range, a profession and a family situation, and record a daily energy check-in (and mood, if you choose). This data is stored separately, is visible only to you, and is used only to adapt the suggestions of the AI assistant; it is sent to Anthropic, our AI provider, when you use the assistant with the mode on. Legal basis: your explicit consent (Art. 6(1)(a) and 9(2)(a) where the data concerns health), which you can withdraw at any time by switching the mode off or by asking us to delete your entries. We keep it until you delete your account or ask us to delete it. In a team where the owner turns on the team analysis, the calendar's busy times and, if the owner chooses, the chat messages of the last hour are analysed by Anthropic to spot workload, tension or distress, without sending names. Members can exclude their own messages from this analysis. A distress signal is shown only to the person concerned, in private. The team receives only general messages that name nobody. A log of the analyses (dates, sources and counts, never message text) is kept for 90 days and is visible to the owner. This is not medical advice."
+      },
+      {
+        "h": "14. Family, sports team and class calendars",
+        "p": "These calendars are created by an adult whose identity was verified (section 15). The creator can add members under 16 as managed profiles: first name, year of birth, optional sex and optional category. This data is visible only to the creator and to the adults responsible for that profile. A profile stays pending, and is deleted after 30 days if nobody signs, until an adult responsible signs a declaration with their first and last name; we keep the record of the signature (name typed, date, version of the text and functions covered). Sex is stored only if the declaration covers it. The AI is switched off for any calendar that includes a minor, unless a legal approval is recorded and each minor is covered by a signed declaration for AI. Legal basis: the consent of the holder of parental responsibility (Art. 6(1)(a) and 8 GDPR; parental consent for children under 13 in the United States). The responsible adult can withdraw it and ask for deletion at any time at support@collyo.app. A minor can have a limited access to the team calendar (read only) and the team chat, created by the adult owner: the minor signs in with the e-mail of the team owner and an access ID generated when the adult signs. We keep only a hash of the ID. The minor account has no e-mail address of its own, cannot change events, and cannot use the assistant, the connector, well-being or passkeys. For a child who may be under 13, the person responsible must first approve by e-mail, through a link sent to the address the owner enters; we keep the record of the approval (date, address, version of the text). The adult owner can cut the access or issue a new ID at any time. The messages of a minor are visible to the members of the team. If the owner switches on the team chat AI and the signed declaration covers it, a minor can ask the AI: the recent messages of the chat, including those of the minor, are then sent to our AI provider. A minor can make at most 20 requests a day, and the AI cannot change events for them."
+      },
+      {
+        "h": "15. Identity verification",
+        "p": "To create a family, sports team or class calendar, the creator verifies their identity through Stripe, our verification provider. Stripe collects and processes the identity document and a selfie on its own page, including a biometric comparison, under its own terms and privacy policy; Collyo does not receive or store the document or the selfie. Collyo keeps only the result (verified or not), the verified name, the country of the document, the date and the verification session identifier. A verified badge is shown on your own profile. Legal basis: your consent (Art. 6(1)(a) and 9(2)(a)). Processing may take place outside the EU/EEA under Standard Contractual Clauses. You can ask us to delete your verification record at support@collyo.app; the calendar types that require it will then no longer be available to you."
+      },
+      {
+        "h": "16. Payments",
+        "p": "When you subscribe, Stripe processes the payment as reseller (merchant of record) under its own privacy policy: it receives your name, e-mail, billing address, VAT number if any, and card details. Collyo never sees your card. We keep only your plan, its status, the number of seats, the renewal date and Stripe's customer and subscription identifiers, to apply your plan (legal basis: performance of the contract), for as long as the subscription exists and as long as accounting law requires."
+      },
+      {
+        "h": "17. Changes",
+        "p": "We update this policy when our practices change. Last updated: 19 November 2026."
+      }
     ],
-    cookies: [
-      { h: "1. What we use", p: "Calendar App does not use advertising, tracking or analytics cookies. It uses browser storage (localStorage) for two purposes only." },
-      { h: "2. Strictly necessary storage", p: "Session: keeps you signed in between visits (set by our authentication provider). Language: remembers your chosen interface language. Neither requires consent under the ePrivacy rules because they are strictly necessary to provide the service you asked for." },
-      { h: "3. Third-party cookies", p: "The application does not load third-party advertising or analytics scripts. Our hosting and authentication providers may set technical cookies needed for security and delivery." },
-      { h: "4. Managing storage", p: "You can clear this storage at any time through your browser settings. Clearing the session will sign you out; clearing the language choice will reset it to English." },
-      { h: "5. Changes", p: "If we add non-essential storage in the future, we will ask for your consent first. Last updated: 17 November 2026." },
-    ],
+    "cookies": [
+      {
+        "h": "1. What we use",
+        "p": "Calendar App does not use advertising, tracking or analytics cookies. It uses browser storage (localStorage) for two purposes only."
+      },
+      {
+        "h": "2. Strictly necessary storage",
+        "p": "Session: keeps you signed in between visits (set by our authentication provider). Language: remembers your chosen interface language. Neither requires consent under the ePrivacy rules because they are strictly necessary to provide the service you asked for."
+      },
+      {
+        "h": "3. Third-party cookies",
+        "p": "The application does not load third-party advertising or analytics scripts. Our hosting and authentication providers may set technical cookies needed for security and delivery."
+      },
+      {
+        "h": "4. Managing storage",
+        "p": "You can clear this storage at any time through your browser settings. Clearing the session will sign you out; clearing the language choice will reset it to English."
+      },
+      {
+        "h": "5. Changes",
+        "p": "If we add non-essential storage in the future, we will ask for your consent first. Last updated: 19 November 2026."
+      }
+    ]
   },
-  fr: {
-    title: {"terms": "Conditions générales d’utilisation", "privacy": "Politique de confidentialité", "cookies": "Politique de cookies"},
-    terms: [
-      { h: "1. Objet", p: "Calendar App est un calendrier en ligne qui vous permet de créer, modifier et supprimer des événements, de les organiser en calendriers et de partager vos calendriers avec d’autres personnes par invitation." },
-      { h: "2. Comptes", p: "Vous créez un compte avec une adresse e-mail et un mot de passe. Vous êtes responsable de la confidentialité de vos identifiants et de toute activité sur votre compte. Vous devez fournir des informations exactes et avoir au moins 16 ans, ou l’âge du consentement numérique de votre pays." },
-      { h: "3. Vos contenus", p: "Vous restez propriétaire des événements, titres, descriptions, lieux et photos que vous ajoutez. Vous accordez à l’exploitant uniquement les droits nécessaires pour les stocker et les afficher auprès de vous et des personnes avec lesquelles vous les partagez." },
-      { h: "4. Partage et rôles", p: "Lorsque vous invitez quelqu’un à un calendrier, cette personne reçoit un e-mail et peut accepter ou refuser. L’accès n’est accordé qu’après acceptation. Les rôles (Administrateur, Contributeur, Lecteur) définissent ce que chaque membre peut faire. Ne partagez pas de calendriers avec des personnes qui n’ont pas accepté de les recevoir." },
-      { h: "5. Utilisation acceptable", p: "Vous ne devez pas utiliser le service pour stocker des contenus illicites, harceler autrui, envoyer des messages non sollicités par invitation, tenter d’accéder sans autorisation à d’autres comptes ou données, ou perturber le service." },
-      { h: "6. Disponibilité", p: "Le service est fourni « en l’état ». Nous visons une disponibilité continue sans la garantir. Les fonctionnalités peuvent évoluer." },
-      { h: "7. Résiliation", p: "Vous pouvez supprimer votre compte à tout moment. Nous pouvons suspendre les comptes qui enfreignent ces conditions." },
-      { h: "8. Responsabilité", p: "Dans la mesure permise par la loi, l’exploitant n’est pas responsable des dommages indirects, notamment des événements manqués ou des pertes résultant de la modification d’un calendrier partagé par un autre membre." },
-      { h: "9. Droit applicable", p: "Les présentes conditions sont régies par le droit portugais. Les tribunaux de Porto sont compétents, sans préjudice des droits impératifs des consommateurs de votre pays de résidence." },
-      { h: "10. Assistant IA", p: "L’assistant IA est facultatif. Il répond à vos questions sur vos calendriers et propose des créneaux libres. Il lit vos propres événements et, pour les calendriers partagés, seulement les plages occupées des membres. Vous devez accepter cette politique avant la première utilisation. Ne l’utilisez pas pour surveiller ou mettre la pression sur d’autres personnes. Ses suggestions ne sont pas contraignantes et peuvent contenir des erreurs : vérifiez-les avant d’agir. Les membres d’un calendrier partagé sont informés de cette possibilité. Si le propriétaire active l’IA dans la discussion d’une équipe, l’IA lit cette discussion lorsqu’un membre la mentionne, et les membres en sont informés dans la discussion. Seul le propriétaire peut l’activer ou la désactiver. Si vous l’autorisez dans les réglages de l’IA, l’assistant peut aussi créer, déplacer ou supprimer des événements dans vos calendriers, et il vous indique ce qu’il a modifié." },
-      { h: "11. Bien-être, groupes et mineurs", p: "Le mode bien-être est facultatif et n’est pas un service médical : il donne des suggestions générales et ne pose aucun diagnostic ni ne soigne. En cas d’urgence, appelez votre numéro d’urgence local. Les calendriers famille, équipe sportive et classe peuvent inclure des membres de moins de 16 ans (ou en dessous de l’âge du consentement numérique). Ils ne peuvent être créés que par un adulte dont l’identité a été vérifiée, et un mineur n’est ajouté qu’après la signature d’une déclaration par un adulte responsable, avec son nom et son prénom. En signant, vous confirmez détenir l’autorité parentale ou le rôle de responsable de l’équipe ou de la classe, et que les informations saisies sont exactes. Une fausse déclaration constitue une violation de ces conditions. L’adulte responsable peut retirer son accord à tout moment. L’adulte qui ajoute un mineur est responsable de l’accès donné à ce mineur, de ce que le mineur écrit dans la discussion d’équipe, et de la décision d’autoriser ou non l’IA de la discussion d’équipe." },
-      { h: "12. Contact", p: "Questions : support@collyo.app." },
+  "fr": {
+    "title": {
+      "terms": "Conditions générales d’utilisation",
+      "privacy": "Politique de confidentialité",
+      "cookies": "Politique de cookies"
+    },
+    "terms": [
+      {
+        "h": "1. Objet",
+        "p": "Calendar App est un calendrier en ligne qui vous permet de créer, modifier et supprimer des événements, de les organiser en calendriers et de partager vos calendriers avec d’autres personnes par invitation."
+      },
+      {
+        "h": "2. Comptes",
+        "p": "Vous créez un compte avec une adresse e-mail et un mot de passe. Vous êtes responsable de la confidentialité de vos identifiants et de toute activité sur votre compte. Vous devez fournir des informations exactes et avoir au moins 16 ans, ou l’âge du consentement numérique de votre pays."
+      },
+      {
+        "h": "3. Vos contenus",
+        "p": "Vous restez propriétaire des événements, titres, descriptions, lieux et photos que vous ajoutez. Vous accordez à l’exploitant uniquement les droits nécessaires pour les stocker et les afficher auprès de vous et des personnes avec lesquelles vous les partagez."
+      },
+      {
+        "h": "4. Partage et rôles",
+        "p": "Lorsque vous invitez quelqu’un à un calendrier, cette personne reçoit un e-mail et peut accepter ou refuser. L’accès n’est accordé qu’après acceptation. Les rôles (Administrateur, Contributeur, Lecteur) définissent ce que chaque membre peut faire. Ne partagez pas de calendriers avec des personnes qui n’ont pas accepté de les recevoir."
+      },
+      {
+        "h": "5. Utilisation acceptable",
+        "p": "Vous ne devez pas utiliser le service pour stocker des contenus illicites, harceler autrui, envoyer des messages non sollicités par invitation, tenter d’accéder sans autorisation à d’autres comptes ou données, ou perturber le service."
+      },
+      {
+        "h": "6. Disponibilité",
+        "p": "Le service est fourni « en l’état ». Nous visons une disponibilité continue sans la garantir. Les fonctionnalités peuvent évoluer."
+      },
+      {
+        "h": "7. Résiliation",
+        "p": "Vous pouvez supprimer votre compte à tout moment. Nous pouvons suspendre les comptes qui enfreignent ces conditions."
+      },
+      {
+        "h": "8. Responsabilité",
+        "p": "Dans la mesure permise par la loi, l’exploitant n’est pas responsable des dommages indirects, notamment des événements manqués ou des pertes résultant de la modification d’un calendrier partagé par un autre membre."
+      },
+      {
+        "h": "9. Droit applicable",
+        "p": "Les présentes conditions sont régies par le droit portugais. Les tribunaux de Porto sont compétents, sans préjudice des droits impératifs des consommateurs de votre pays de résidence."
+      },
+      {
+        "h": "10. Assistant IA",
+        "p": "L’assistant IA est facultatif. Il répond à vos questions sur vos calendriers et propose des créneaux libres. Il lit vos propres événements et, pour les calendriers partagés, seulement les plages occupées des membres. Vous devez accepter cette politique avant la première utilisation. Ne l’utilisez pas pour surveiller ou mettre la pression sur d’autres personnes. Ses suggestions ne sont pas contraignantes et peuvent contenir des erreurs : vérifiez-les avant d’agir. Les membres d’un calendrier partagé sont informés de cette possibilité. Si le propriétaire active l’IA dans la discussion d’une équipe, l’IA lit cette discussion lorsqu’un membre la mentionne, et les membres en sont informés dans la discussion. Seul le propriétaire peut l’activer ou la désactiver. Si vous l’autorisez dans les réglages de l’IA, l’assistant peut aussi créer, déplacer ou supprimer des événements dans vos calendriers, et il vous indique ce qu’il a modifié."
+      },
+      {
+        "h": "11. Bien-être, groupes et mineurs",
+        "p": "Le mode bien-être est facultatif et n’est pas un service médical : il donne des suggestions générales et ne pose aucun diagnostic ni ne soigne. En cas d’urgence, appelez votre numéro d’urgence local. Les calendriers famille, équipe sportive et classe peuvent inclure des membres de moins de 16 ans (ou en dessous de l’âge du consentement numérique). Ils ne peuvent être créés que par un adulte dont l’identité a été vérifiée, et un mineur n’est ajouté qu’après la signature d’une déclaration par un adulte responsable, avec son nom et son prénom. En signant, vous confirmez détenir l’autorité parentale ou le rôle de responsable de l’équipe ou de la classe, et que les informations saisies sont exactes. Une fausse déclaration constitue une violation de ces conditions. L’adulte responsable peut retirer son accord à tout moment. L’adulte qui ajoute un mineur est responsable de l’accès donné à ce mineur, de ce que le mineur écrit dans la discussion d’équipe, et de la décision d’autoriser ou non l’IA de la discussion d’équipe."
+      },
+      {
+        "h": "12. Abonnements et paiement",
+        "p": "Collyo s’utilise gratuitement, sans AI. Les formules payantes (Starter, Pro, Team) sont des abonnements mensuels ou annuels. Elles sont vendues et facturées par Stripe en tant que revendeur (marchand officiel), qui collecte aussi la TVA ; la page de paiement l’indique et peut afficher le prix dans votre devise. Le prix de la page des tarifs s’applique. Un abonnement se renouvelle automatiquement jusqu’à ce que vous le résiliiez depuis votre profil (« Gérer mon abonnement ») ; il reste alors actif jusqu’à la fin de la période déjà payée. Les consommateurs de l’Union européenne disposent d’un droit de rétractation de 14 jours dans les conditions prévues par la loi ; les formules pour équipes de travail peuvent demander un remboursement dans les 30 jours suivant le premier paiement à support@collyo.app. Toute modification de prix est annoncée au moins 30 jours à l’avance par e-mail, et vous pouvez résilier avant qu’elle s’applique. La suppression de votre compte résilie votre abonnement. Le consentement des parents, la protection des mineurs et la suppression du compte font partie de toutes les formules."
+      },
+      {
+        "h": "13. Contact",
+        "p": "Questions : support@collyo.app."
+      }
     ],
-    privacy: [
-      { h: "1. Qui nous sommes", p: "Responsable du traitement : AI Solution Hub®, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal. Contact : support@collyo.app." },
-      { h: "2. Données collectées", p: "Données de compte : adresse e-mail et mot de passe (stocké sous forme de hachage par notre fournisseur d’authentification). Données de profil : nom affiché et photo de profil facultative. Données de calendrier : calendriers, événements (titre, description, lieu, heures de début et de fin, rappel) et historique des modifications. Données de partage : membres, rôles et invitations. Données techniques : préférence de langue stockée dans votre navigateur." },
-      { h: "3. Finalités et bases légales", p: "Fournir le service demandé (création et partage de calendriers), envoyer les e-mails d’invitation que vous déclenchez, conserver un historique d’activité pour consulter et restaurer les modifications, et assurer la sécurité du service. Base juridique au titre du RGPD : exécution du contrat (art. 6.1.b) ; intérêts légitimes en matière de sécurité (art. 6.1.f) ; consentement pour l’envoi d’une photo (art. 6.1.a)." },
-      { h: "4. Qui peut voir vos données", p: "Vos données sont privées par défaut. Le contenu d’un calendrier est visible par ses membres selon leur rôle. Les autres membres peuvent voir votre nom et votre photo sur un calendrier partagé. L’historique d’un événement partagé est visible par les membres de ce calendrier." },
-      { h: "5. Sous-traitants", p: "Nous faisons appel aux sous-traitants suivants : Supabase (base de données, authentification et stockage des avatars ; Union européenne, eu-west-1 Irlande) ; Resend (e-mails d’invitation ; Union européenne, eu-west-1) ; Vercel (hébergement de l’application web ; réseau mondial). Tout transfert hors UE/EEE repose sur une décision d’adéquation ou sur les clauses contractuelles types. La vérification d’identité des créateurs de calendriers est assurée par Stripe (voir section 15)." },
-      { h: "6. Conservation", p: "Nous conservons vos données tant que votre compte est actif. La suppression du compte supprime vos données personnelles, sauf obligation légale de conservation. L’historique d’un événement est supprimé avec l’événement qu’il décrit. Les sauvegardes ne sont conservées que le temps nécessaire à la restauration." },
-      { h: "7. Vos droits", p: "Selon le RGPD et les lois similaires, vous pouvez accéder à vos données, les rectifier, les supprimer, en limiter le traitement ou les porter, vous opposer au traitement et retirer votre consentement à tout moment. Vous pouvez modifier votre profil et vos événements dans l’application, et nous contacter pour exercer d’autres droits. Vous pouvez introduire une réclamation auprès de votre autorité de protection des données." },
-      { h: "8. Sécurité", p: "Les données sont chiffrées en transit (HTTPS). L’accès aux données est restreint par des règles de sécurité au niveau des lignes, de sorte que chaque utilisateur n’accède qu’aux calendriers qu’il possède ou auxquels il a été invité. Aucun système n’est parfaitement sûr ; nous vous informerons de toute violation comme la loi l’exige." },
-      { h: "9. Enfants", p: "Le service ne s’adresse pas aux enfants de moins de 16 ans (ou en dessous de l’âge national du consentement numérique), qui ne peuvent pas créer leur propre compte. Une personne en dessous de cet âge ne peut figurer dans un calendrier famille, équipe sportive ou classe que sous la forme d’un profil géré par un adulte responsable, et peut recevoir de cet adulte un accès limité au calendrier et à la discussion de l’équipe, comme décrit à la section 14." },
-      { h: "10. Transferts internationaux", p: "Les transferts hors UE/EEE reposent sur des décisions d’adéquation ou sur les clauses contractuelles types." },
-      { h: "11. Assistant IA", p: "Si vous utilisez l’assistant, votre question et les informations du calendrier nécessaires à la réponse (vos événements avec leurs titres, et les plages occupées des calendriers partagés) sont envoyées à Anthropic, notre fournisseur de modèles d’IA, qui les traite pour notre compte. Le traitement peut avoir lieu hors UE/EEE, sous clauses contractuelles types. Nous ne conservons pas le contenu de vos questions, seulement le nombre de requêtes et de jetons, pour la gestion du service et la tarification. Base juridique : votre consentement, donné en acceptant la politique de l’assistant (art. 6.1.a) ; vous pouvez le retirer à tout moment. Les plages occupées d’un calendrier partagé peuvent être utilisées par l’assistant des personnes ayant accès à ce calendrier, et ses membres en sont informés. Dans une discussion d’équipe où le propriétaire a activé l’IA, les 40 derniers messages de cette discussion et les notes partagées sont envoyés à notre fournisseur d’IA à chaque mention de l’IA. Les réponses et les notes sont conservées dans la discussion." },
-      { h: "12. Applications connectées", p: "Vous pouvez connecter Collyo à une application d’IA, comme Claude, en tant que connecteur. Vous approuvez chaque connexion sur un écran de consentement, et vous pouvez la révoquer à tout moment depuis votre profil. Une application connectée peut seulement lire : vos calendriers et événements avec leurs titres, et les plages occupées des calendriers partagés sans titres. Le connecteur est en lecture seule et ne donne pas accès aux messages de la discussion d’équipe. Collyo n’envoie pas vos données à l’application de lui-même : elles ne parviennent à l’application que lorsque vous utilisez le connecteur depuis votre propre compte, selon les conditions de cette application." },
-      { h: "13. Bien-être", p: "Le mode bien-être est facultatif. Si vous l’activez, vous pouvez indiquer une tranche d’âge, une profession et une situation familiale, et enregistrer un bilan quotidien d’énergie (et l’humeur, si vous le choisissez). Ces données sont stockées séparément, ne sont visibles que par vous, et servent uniquement à adapter les suggestions de l’assistant IA ; elles sont envoyées à Anthropic, notre fournisseur d’IA, lorsque vous utilisez l’assistant avec le mode activé. Base juridique : votre consentement explicite (art. 6.1.a et 9.2.a lorsque la donnée concerne la santé), que vous pouvez retirer à tout moment en désactivant le mode ou en nous demandant de supprimer vos données. Nous les conservons jusqu’à la suppression de votre compte ou jusqu’à votre demande de suppression. Dans une équipe où le propriétaire active l’analyse d’équipe, les plages occupées du calendrier et, si le propriétaire le choisit, les messages de la discussion de la dernière heure sont analysés par Anthropic pour repérer la charge, les tensions ou une détresse, sans envoi de noms. Les membres peuvent exclure leurs propres messages de cette analyse. Un signal de détresse n’est montré qu’à la personne concernée, en privé. L’équipe ne reçoit que des messages généraux qui ne nomment personne. Un journal des analyses (dates, sources et compteurs, jamais le texte des messages) est conservé 90 jours et visible par le propriétaire. Ceci n’est pas un avis médical." },
-      { h: "14. Calendriers famille, équipe sportive et classe", p: "Ces calendriers sont créés par un adulte dont l’identité a été vérifiée (section 15). Le créateur peut ajouter des membres de moins de 16 ans sous forme de profils gérés : prénom, année de naissance, sexe facultatif et catégorie facultative. Ces données ne sont visibles que par le créateur et par les adultes responsables de ce profil. Un profil reste en attente, et il est supprimé après 30 jours si personne ne signe, jusqu’à ce qu’un adulte responsable signe une déclaration avec son nom et son prénom ; nous conservons la trace de la signature (nom saisi, date, version du texte et fonctions couvertes). Le sexe n’est enregistré que si la déclaration le couvre. L’IA est désactivée pour tout calendrier comprenant un mineur, sauf si un accord juridique est enregistré et si chaque mineur est couvert par une déclaration signée pour l’IA. Base juridique : le consentement du titulaire de l’autorité parentale (art. 6.1.a et 8 RGPD ; consentement parental pour les moins de 13 ans aux États-Unis). L’adulte responsable peut le retirer et demander la suppression à tout moment à support@collyo.app. Un mineur peut avoir un accès limité au calendrier de l’équipe (en lecture seule) et à la discussion d’équipe, créé par l’adulte propriétaire : le mineur se connecte avec l’e-mail du propriétaire de l’équipe et un identifiant d’accès généré à la signature de l’adulte. Nous ne conservons qu’une empreinte de l’identifiant. Le compte du mineur n’a pas d’adresse e-mail propre, ne peut pas modifier d’événements, et ne peut pas utiliser l’assistant, le connecteur, le bien-être ni les clés d’accès. Pour un enfant qui peut avoir moins de 13 ans, le responsable doit d’abord approuver par e-mail, via un lien envoyé à l’adresse saisie par le propriétaire ; nous conservons la trace de l’approbation (date, adresse, version du texte). L’adulte propriétaire peut couper l’accès ou émettre un nouvel identifiant à tout moment. Les messages d’un mineur sont visibles des membres de l’équipe. Si le propriétaire active l’IA de la discussion d’équipe et que la déclaration signée la couvre, un mineur peut solliciter l’IA : les derniers messages de la discussion, y compris ceux du mineur, sont alors envoyés à notre fournisseur d’IA. Un mineur peut faire au plus 20 demandes par jour, et l’IA ne peut pas modifier d’événements pour lui." },
-      { h: "15. Vérification d’identité", p: "Pour créer un calendrier famille, équipe sportive ou classe, le créateur vérifie son identité via Stripe, notre prestataire de vérification. Stripe collecte et traite la pièce d’identité et un selfie sur sa propre page, y compris une comparaison biométrique, selon ses propres conditions et sa politique de confidentialité ; Collyo ne reçoit ni ne conserve la pièce ni le selfie. Collyo ne conserve que le résultat (vérifié ou non), le nom vérifié, le pays du document, la date et l’identifiant de la session de vérification. Un badge « identité vérifiée » s’affiche sur votre propre profil. Base juridique : votre consentement (art. 6.1.a et 9.2.a). Le traitement peut avoir lieu hors UE/EEE, sous clauses contractuelles types. Vous pouvez demander la suppression de votre fiche de vérification à support@collyo.app ; les types de calendrier qui l’exigent ne vous seront alors plus accessibles." },
-      { h: "16. Modifications", p: "Nous mettons à jour cette politique lorsque nos pratiques changent. Dernière mise à jour : 17 novembre 2026." },
+    "privacy": [
+      {
+        "h": "1. Qui nous sommes",
+        "p": "Responsable du traitement : AI Solution Hub®, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal. Contact : support@collyo.app."
+      },
+      {
+        "h": "2. Données collectées",
+        "p": "Données de compte : adresse e-mail et mot de passe (stocké sous forme de hachage par notre fournisseur d’authentification). Données de profil : nom affiché et photo de profil facultative. Données de calendrier : calendriers, événements (titre, description, lieu, heures de début et de fin, rappel) et historique des modifications. Données de partage : membres, rôles et invitations. Données techniques : préférence de langue stockée dans votre navigateur."
+      },
+      {
+        "h": "3. Finalités et bases légales",
+        "p": "Fournir le service demandé (création et partage de calendriers), envoyer les e-mails d’invitation que vous déclenchez, conserver un historique d’activité pour consulter et restaurer les modifications, et assurer la sécurité du service. Base juridique au titre du RGPD : exécution du contrat (art. 6.1.b) ; intérêts légitimes en matière de sécurité (art. 6.1.f) ; consentement pour l’envoi d’une photo (art. 6.1.a)."
+      },
+      {
+        "h": "4. Qui peut voir vos données",
+        "p": "Vos données sont privées par défaut. Le contenu d’un calendrier est visible par ses membres selon leur rôle. Les autres membres peuvent voir votre nom et votre photo sur un calendrier partagé. L’historique d’un événement partagé est visible par les membres de ce calendrier."
+      },
+      {
+        "h": "5. Sous-traitants",
+        "p": "Nous faisons appel aux sous-traitants suivants : Supabase (base de données, authentification et stockage des avatars ; Union européenne, eu-west-1 Irlande) ; Resend (e-mails d’invitation ; Union européenne, eu-west-1) ; Vercel (hébergement de l’application web ; réseau mondial). Tout transfert hors UE/EEE repose sur une décision d’adéquation ou sur les clauses contractuelles types. La vérification d’identité des créateurs de calendriers est assurée par Stripe (voir section 15). Les formules payantes sont vendues par Stripe en tant que revendeur (voir section 16)."
+      },
+      {
+        "h": "6. Conservation",
+        "p": "Nous conservons vos données tant que votre compte est actif. La suppression du compte supprime vos données personnelles, sauf obligation légale de conservation. L’historique d’un événement est supprimé avec l’événement qu’il décrit. Les sauvegardes ne sont conservées que le temps nécessaire à la restauration."
+      },
+      {
+        "h": "7. Vos droits",
+        "p": "Selon le RGPD et les lois similaires, vous pouvez accéder à vos données, les rectifier, les supprimer, en limiter le traitement ou les porter, vous opposer au traitement et retirer votre consentement à tout moment. Vous pouvez modifier votre profil et vos événements dans l’application, et nous contacter pour exercer d’autres droits. Vous pouvez introduire une réclamation auprès de votre autorité de protection des données."
+      },
+      {
+        "h": "8. Sécurité",
+        "p": "Les données sont chiffrées en transit (HTTPS). L’accès aux données est restreint par des règles de sécurité au niveau des lignes, de sorte que chaque utilisateur n’accède qu’aux calendriers qu’il possède ou auxquels il a été invité. Aucun système n’est parfaitement sûr ; nous vous informerons de toute violation comme la loi l’exige."
+      },
+      {
+        "h": "9. Enfants",
+        "p": "Le service ne s’adresse pas aux enfants de moins de 16 ans (ou en dessous de l’âge national du consentement numérique), qui ne peuvent pas créer leur propre compte. Une personne en dessous de cet âge ne peut figurer dans un calendrier famille, équipe sportive ou classe que sous la forme d’un profil géré par un adulte responsable, et peut recevoir de cet adulte un accès limité au calendrier et à la discussion de l’équipe, comme décrit à la section 14."
+      },
+      {
+        "h": "10. Transferts internationaux",
+        "p": "Les transferts hors UE/EEE reposent sur des décisions d’adéquation ou sur les clauses contractuelles types."
+      },
+      {
+        "h": "11. Assistant IA",
+        "p": "Si vous utilisez l’assistant, votre question et les informations du calendrier nécessaires à la réponse (vos événements avec leurs titres, et les plages occupées des calendriers partagés) sont envoyées à Anthropic, notre fournisseur de modèles d’IA, qui les traite pour notre compte. Le traitement peut avoir lieu hors UE/EEE, sous clauses contractuelles types. Nous ne conservons pas le contenu de vos questions, seulement le nombre de requêtes et de jetons, pour la gestion du service et la tarification. Base juridique : votre consentement, donné en acceptant la politique de l’assistant (art. 6.1.a) ; vous pouvez le retirer à tout moment. Les plages occupées d’un calendrier partagé peuvent être utilisées par l’assistant des personnes ayant accès à ce calendrier, et ses membres en sont informés. Dans une discussion d’équipe où le propriétaire a activé l’IA, les 40 derniers messages de cette discussion et les notes partagées sont envoyés à notre fournisseur d’IA à chaque mention de l’IA. Les réponses et les notes sont conservées dans la discussion."
+      },
+      {
+        "h": "12. Applications connectées",
+        "p": "Vous pouvez connecter Collyo à une application d’IA, comme Claude, en tant que connecteur. Vous approuvez chaque connexion sur un écran de consentement, et vous pouvez la révoquer à tout moment depuis votre profil. Une application connectée peut seulement lire : vos calendriers et événements avec leurs titres, et les plages occupées des calendriers partagés sans titres. Le connecteur est en lecture seule et ne donne pas accès aux messages de la discussion d’équipe. Collyo n’envoie pas vos données à l’application de lui-même : elles ne parviennent à l’application que lorsque vous utilisez le connecteur depuis votre propre compte, selon les conditions de cette application."
+      },
+      {
+        "h": "13. Bien-être",
+        "p": "Le mode bien-être est facultatif. Si vous l’activez, vous pouvez indiquer une tranche d’âge, une profession et une situation familiale, et enregistrer un bilan quotidien d’énergie (et l’humeur, si vous le choisissez). Ces données sont stockées séparément, ne sont visibles que par vous, et servent uniquement à adapter les suggestions de l’assistant IA ; elles sont envoyées à Anthropic, notre fournisseur d’IA, lorsque vous utilisez l’assistant avec le mode activé. Base juridique : votre consentement explicite (art. 6.1.a et 9.2.a lorsque la donnée concerne la santé), que vous pouvez retirer à tout moment en désactivant le mode ou en nous demandant de supprimer vos données. Nous les conservons jusqu’à la suppression de votre compte ou jusqu’à votre demande de suppression. Dans une équipe où le propriétaire active l’analyse d’équipe, les plages occupées du calendrier et, si le propriétaire le choisit, les messages de la discussion de la dernière heure sont analysés par Anthropic pour repérer la charge, les tensions ou une détresse, sans envoi de noms. Les membres peuvent exclure leurs propres messages de cette analyse. Un signal de détresse n’est montré qu’à la personne concernée, en privé. L’équipe ne reçoit que des messages généraux qui ne nomment personne. Un journal des analyses (dates, sources et compteurs, jamais le texte des messages) est conservé 90 jours et visible par le propriétaire. Ceci n’est pas un avis médical."
+      },
+      {
+        "h": "14. Calendriers famille, équipe sportive et classe",
+        "p": "Ces calendriers sont créés par un adulte dont l’identité a été vérifiée (section 15). Le créateur peut ajouter des membres de moins de 16 ans sous forme de profils gérés : prénom, année de naissance, sexe facultatif et catégorie facultative. Ces données ne sont visibles que par le créateur et par les adultes responsables de ce profil. Un profil reste en attente, et il est supprimé après 30 jours si personne ne signe, jusqu’à ce qu’un adulte responsable signe une déclaration avec son nom et son prénom ; nous conservons la trace de la signature (nom saisi, date, version du texte et fonctions couvertes). Le sexe n’est enregistré que si la déclaration le couvre. L’IA est désactivée pour tout calendrier comprenant un mineur, sauf si un accord juridique est enregistré et si chaque mineur est couvert par une déclaration signée pour l’IA. Base juridique : le consentement du titulaire de l’autorité parentale (art. 6.1.a et 8 RGPD ; consentement parental pour les moins de 13 ans aux États-Unis). L’adulte responsable peut le retirer et demander la suppression à tout moment à support@collyo.app. Un mineur peut avoir un accès limité au calendrier de l’équipe (en lecture seule) et à la discussion d’équipe, créé par l’adulte propriétaire : le mineur se connecte avec l’e-mail du propriétaire de l’équipe et un identifiant d’accès généré à la signature de l’adulte. Nous ne conservons qu’une empreinte de l’identifiant. Le compte du mineur n’a pas d’adresse e-mail propre, ne peut pas modifier d’événements, et ne peut pas utiliser l’assistant, le connecteur, le bien-être ni les clés d’accès. Pour un enfant qui peut avoir moins de 13 ans, le responsable doit d’abord approuver par e-mail, via un lien envoyé à l’adresse saisie par le propriétaire ; nous conservons la trace de l’approbation (date, adresse, version du texte). L’adulte propriétaire peut couper l’accès ou émettre un nouvel identifiant à tout moment. Les messages d’un mineur sont visibles des membres de l’équipe. Si le propriétaire active l’IA de la discussion d’équipe et que la déclaration signée la couvre, un mineur peut solliciter l’IA : les derniers messages de la discussion, y compris ceux du mineur, sont alors envoyés à notre fournisseur d’IA. Un mineur peut faire au plus 20 demandes par jour, et l’IA ne peut pas modifier d’événements pour lui."
+      },
+      {
+        "h": "15. Vérification d’identité",
+        "p": "Pour créer un calendrier famille, équipe sportive ou classe, le créateur vérifie son identité via Stripe, notre prestataire de vérification. Stripe collecte et traite la pièce d’identité et un selfie sur sa propre page, y compris une comparaison biométrique, selon ses propres conditions et sa politique de confidentialité ; Collyo ne reçoit ni ne conserve la pièce ni le selfie. Collyo ne conserve que le résultat (vérifié ou non), le nom vérifié, le pays du document, la date et l’identifiant de la session de vérification. Un badge « identité vérifiée » s’affiche sur votre propre profil. Base juridique : votre consentement (art. 6.1.a et 9.2.a). Le traitement peut avoir lieu hors UE/EEE, sous clauses contractuelles types. Vous pouvez demander la suppression de votre fiche de vérification à support@collyo.app ; les types de calendrier qui l’exigent ne vous seront alors plus accessibles."
+      },
+      {
+        "h": "16. Paiements",
+        "p": "Lorsque vous vous abonnez, Stripe traite le paiement en tant que revendeur (marchand officiel), selon sa propre politique de confidentialité : il reçoit votre nom, votre e-mail, votre adresse de facturation, votre numéro de TVA le cas échéant et les données de votre carte. Collyo ne voit jamais votre carte. Nous ne conservons que votre formule, son statut, le nombre de sièges, la date de renouvellement et les identifiants client et abonnement de Stripe, pour appliquer votre formule (base juridique : exécution du contrat), tant que l’abonnement existe et aussi longtemps que la loi comptable l’exige."
+      },
+      {
+        "h": "17. Modifications",
+        "p": "Nous mettons à jour cette politique lorsque nos pratiques changent. Dernière mise à jour : 19 novembre 2026."
+      }
     ],
-    cookies: [
-      { h: "1. Ce que nous utilisons", p: "Calendar App n’utilise ni cookies publicitaires, ni cookies de suivi, ni cookies d’analyse. Il utilise le stockage du navigateur (localStorage) dans deux seuls buts." },
-      { h: "2. Stockage strictement nécessaire", p: "Session : vous maintient connecté entre deux visites (défini par notre fournisseur d’authentification). Langue : mémorise la langue d’interface choisie. Aucun de ces stockages n’exige de consentement au titre de la directive ePrivacy, car ils sont strictement nécessaires au service demandé." },
-      { h: "3. Cookies tiers", p: "L’application ne charge aucun script publicitaire ou d’analyse tiers. Nos fournisseurs d’hébergement et d’authentification peuvent définir des cookies techniques nécessaires à la sécurité et à la diffusion." },
-      { h: "4. Gestion du stockage", p: "Vous pouvez effacer ce stockage à tout moment via les paramètres de votre navigateur. Effacer la session vous déconnectera ; effacer le choix de langue le remettra en anglais." },
-      { h: "5. Modifications", p: "Si nous ajoutons à l’avenir un stockage non essentiel, nous demanderons d’abord votre consentement. Dernière mise à jour : 17 novembre 2026." },
-    ],
+    "cookies": [
+      {
+        "h": "1. Ce que nous utilisons",
+        "p": "Calendar App n’utilise ni cookies publicitaires, ni cookies de suivi, ni cookies d’analyse. Il utilise le stockage du navigateur (localStorage) dans deux seuls buts."
+      },
+      {
+        "h": "2. Stockage strictement nécessaire",
+        "p": "Session : vous maintient connecté entre deux visites (défini par notre fournisseur d’authentification). Langue : mémorise la langue d’interface choisie. Aucun de ces stockages n’exige de consentement au titre de la directive ePrivacy, car ils sont strictement nécessaires au service demandé."
+      },
+      {
+        "h": "3. Cookies tiers",
+        "p": "L’application ne charge aucun script publicitaire ou d’analyse tiers. Nos fournisseurs d’hébergement et d’authentification peuvent définir des cookies techniques nécessaires à la sécurité et à la diffusion."
+      },
+      {
+        "h": "4. Gestion du stockage",
+        "p": "Vous pouvez effacer ce stockage à tout moment via les paramètres de votre navigateur. Effacer la session vous déconnectera ; effacer le choix de langue le remettra en anglais."
+      },
+      {
+        "h": "5. Modifications",
+        "p": "Si nous ajoutons à l’avenir un stockage non essentiel, nous demanderons d’abord votre consentement. Dernière mise à jour : 19 novembre 2026."
+      }
+    ]
   },
-  es: {
-    title: {"terms": "Términos de uso", "privacy": "Política de privacidad", "cookies": "Política de cookies"},
-    terms: [
-      { h: "1. Objeto", p: "Calendar App es un calendario web que te permite crear, editar y eliminar eventos, organizarlos en calendarios y compartir calendarios con otras personas mediante invitaciones." },
-      { h: "2. Cuentas", p: "Creas una cuenta con una dirección de correo y una contraseña. Eres responsable de mantener tus credenciales en secreto y de toda la actividad en tu cuenta. Debes facilitar datos exactos y tener al menos 16 años, o la edad de consentimiento digital de tu país." },
-      { h: "3. Tus contenidos", p: "Eres propietario de los eventos, títulos, descripciones, lugares y fotos que añades. Concedes al operador solo los derechos necesarios para almacenarlos y mostrarlos a ti y a las personas con las que los compartes." },
-      { h: "4. Compartir y roles", p: "Cuando invitas a alguien a un calendario, esa persona recibe un correo y puede aceptar o rechazar. El acceso solo se concede tras la aceptación. Los roles (Administrador, Colaborador, Lector) definen lo que puede hacer cada miembro. No compartas calendarios con personas que no hayan aceptado recibirlos." },
-      { h: "5. Uso aceptable", p: "No debes usar el servicio para almacenar contenidos ilícitos, acosar a otros, enviar mensajes no solicitados mediante invitaciones, intentar acceder sin autorización a otras cuentas o datos, ni alterar el servicio." },
-      { h: "6. Disponibilidad", p: "El servicio se ofrece «tal cual». Buscamos una disponibilidad continua, pero no la garantizamos. Las funciones pueden cambiar con el tiempo." },
-      { h: "7. Terminación", p: "Puedes eliminar tu cuenta en cualquier momento. Podemos suspender las cuentas que incumplan estos términos." },
-      { h: "8. Responsabilidad", p: "En la medida que permita la ley, el operador no es responsable de pérdidas indirectas, incluidos eventos perdidos o pérdidas causadas por la modificación de un calendario compartido por otro miembro." },
-      { h: "9. Ley aplicable", p: "Estos términos se rigen por el derecho portugués. Los tribunales de Oporto son competentes, sin perjuicio de los derechos imperativos de los consumidores en tu país de residencia." },
-      { h: "10. Asistente IA", p: "El asistente IA es opcional. Responde a tus preguntas sobre tus calendarios y propone horas libres. Lee tus propios eventos y, en los calendarios compartidos, solo las horas ocupadas de los miembros. Debes aceptar esta política antes del primer uso. No utilices el asistente para vigilar o presionar a otras personas. Sus sugerencias no son vinculantes y pueden contener errores: verifícalas antes de actuar. Los miembros de un calendario compartido son informados de esta posibilidad. Si el propietario activa la IA en el chat de un equipo, la IA lee ese chat cuando un miembro la menciona, y los miembros son informados en el chat. Solo el propietario puede activarla o desactivarla. Si lo permites en los ajustes de la IA, el asistente también puede crear, mover o eliminar eventos en tus calendarios, y te indica lo que ha cambiado." },
-      { h: "11. Bienestar, grupos y menores", p: "El modo bienestar es opcional y no es un servicio médico: ofrece sugerencias generales y no diagnostica ni trata nada. En una emergencia, llama a tu número de emergencias local. Los calendarios de familia, equipo deportivo y clase pueden incluir miembros menores de 16 años (o menores de la edad de consentimiento digital). Solo pueden ser creados por un adulto cuya identidad haya sido verificada, y un menor solo se añade después de que un adulto responsable firme una declaración con su nombre y apellidos. Al firmar, confirmas que ostentas la patria potestad o el cargo de responsable del equipo o de la clase, y que los datos introducidos son exactos. Una declaración falsa incumple estas condiciones. El adulto responsable puede retirar su acuerdo en cualquier momento. El adulto que añade a un menor es responsable del acceso que se le da, de lo que el menor escribe en el chat del equipo y de decidir si se puede usar la IA del chat del equipo." },
-      { h: "12. Contacto", p: "Preguntas: support@collyo.app." },
+  "es": {
+    "title": {
+      "terms": "Términos de uso",
+      "privacy": "Política de privacidad",
+      "cookies": "Política de cookies"
+    },
+    "terms": [
+      {
+        "h": "1. Objeto",
+        "p": "Calendar App es un calendario web que te permite crear, editar y eliminar eventos, organizarlos en calendarios y compartir calendarios con otras personas mediante invitaciones."
+      },
+      {
+        "h": "2. Cuentas",
+        "p": "Creas una cuenta con una dirección de correo y una contraseña. Eres responsable de mantener tus credenciales en secreto y de toda la actividad en tu cuenta. Debes facilitar datos exactos y tener al menos 16 años, o la edad de consentimiento digital de tu país."
+      },
+      {
+        "h": "3. Tus contenidos",
+        "p": "Eres propietario de los eventos, títulos, descripciones, lugares y fotos que añades. Concedes al operador solo los derechos necesarios para almacenarlos y mostrarlos a ti y a las personas con las que los compartes."
+      },
+      {
+        "h": "4. Compartir y roles",
+        "p": "Cuando invitas a alguien a un calendario, esa persona recibe un correo y puede aceptar o rechazar. El acceso solo se concede tras la aceptación. Los roles (Administrador, Colaborador, Lector) definen lo que puede hacer cada miembro. No compartas calendarios con personas que no hayan aceptado recibirlos."
+      },
+      {
+        "h": "5. Uso aceptable",
+        "p": "No debes usar el servicio para almacenar contenidos ilícitos, acosar a otros, enviar mensajes no solicitados mediante invitaciones, intentar acceder sin autorización a otras cuentas o datos, ni alterar el servicio."
+      },
+      {
+        "h": "6. Disponibilidad",
+        "p": "El servicio se ofrece «tal cual». Buscamos una disponibilidad continua, pero no la garantizamos. Las funciones pueden cambiar con el tiempo."
+      },
+      {
+        "h": "7. Terminación",
+        "p": "Puedes eliminar tu cuenta en cualquier momento. Podemos suspender las cuentas que incumplan estos términos."
+      },
+      {
+        "h": "8. Responsabilidad",
+        "p": "En la medida que permita la ley, el operador no es responsable de pérdidas indirectas, incluidos eventos perdidos o pérdidas causadas por la modificación de un calendario compartido por otro miembro."
+      },
+      {
+        "h": "9. Ley aplicable",
+        "p": "Estos términos se rigen por el derecho portugués. Los tribunales de Oporto son competentes, sin perjuicio de los derechos imperativos de los consumidores en tu país de residencia."
+      },
+      {
+        "h": "10. Asistente IA",
+        "p": "El asistente IA es opcional. Responde a tus preguntas sobre tus calendarios y propone horas libres. Lee tus propios eventos y, en los calendarios compartidos, solo las horas ocupadas de los miembros. Debes aceptar esta política antes del primer uso. No utilices el asistente para vigilar o presionar a otras personas. Sus sugerencias no son vinculantes y pueden contener errores: verifícalas antes de actuar. Los miembros de un calendario compartido son informados de esta posibilidad. Si el propietario activa la IA en el chat de un equipo, la IA lee ese chat cuando un miembro la menciona, y los miembros son informados en el chat. Solo el propietario puede activarla o desactivarla. Si lo permites en los ajustes de la IA, el asistente también puede crear, mover o eliminar eventos en tus calendarios, y te indica lo que ha cambiado."
+      },
+      {
+        "h": "11. Bienestar, grupos y menores",
+        "p": "El modo bienestar es opcional y no es un servicio médico: ofrece sugerencias generales y no diagnostica ni trata nada. En una emergencia, llama a tu número de emergencias local. Los calendarios de familia, equipo deportivo y clase pueden incluir miembros menores de 16 años (o menores de la edad de consentimiento digital). Solo pueden ser creados por un adulto cuya identidad haya sido verificada, y un menor solo se añade después de que un adulto responsable firme una declaración con su nombre y apellidos. Al firmar, confirmas que ostentas la patria potestad o el cargo de responsable del equipo o de la clase, y que los datos introducidos son exactos. Una declaración falsa incumple estas condiciones. El adulto responsable puede retirar su acuerdo en cualquier momento. El adulto que añade a un menor es responsable del acceso que se le da, de lo que el menor escribe en el chat del equipo y de decidir si se puede usar la IA del chat del equipo."
+      },
+      {
+        "h": "12. Suscripciones y pago",
+        "p": "Collyo se puede usar gratis, sin AI. Los planes de pago (Starter, Pro, Team) son suscripciones mensuales o anuales. Los vende y factura Stripe como revendedor (comerciante registrado), que también cobra el IVA; la página de pago lo indica y puede mostrar el precio en tu moneda. Se aplica el precio de la página de precios. Una suscripción se renueva automáticamente hasta que la canceles desde tu perfil («Gestionar mi suscripción»); sigue activa hasta el final del periodo ya pagado. Los consumidores de la Unión Europea tienen un derecho de desistimiento de 14 días en las condiciones que fija la ley; los planes para equipos de trabajo pueden pedir un reembolso en los 30 días siguientes al primer pago en support@collyo.app. Anunciamos cualquier cambio de precio con al menos 30 días de antelación por e-mail, y puedes cancelar antes de que se aplique. Eliminar tu cuenta cancela tu suscripción. El consentimiento de los tutores, la protección de los menores y la eliminación de la cuenta forman parte de todos los planes."
+      },
+      {
+        "h": "13. Contacto",
+        "p": "Preguntas: support@collyo.app."
+      }
     ],
-    privacy: [
-      { h: "1. Quiénes somos", p: "Responsable del tratamiento: AI Solution Hub®, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal. Contacto: support@collyo.app." },
-      { h: "2. Datos que recopilamos", p: "Datos de cuenta: correo y contraseña (almacenada como hash por nuestro proveedor de autenticación). Datos de perfil: nombre visible y foto de perfil opcional. Datos de calendario: calendarios, eventos (título, descripción, lugar, horas de inicio y fin, recordatorio) e historial de cambios. Datos de compartición: miembros, roles e invitaciones. Datos técnicos: preferencia de idioma guardada en tu navegador." },
-      { h: "3. Finalidades y base jurídica", p: "Prestar el servicio solicitado (crear y compartir calendarios), enviar los correos de invitación que activas, mantener un historial de actividad para revisar y restaurar cambios, y garantizar la seguridad del servicio. Base jurídica según el RGPD: ejecución del contrato (art. 6.1.b); intereses legítimos en seguridad (art. 6.1.f); consentimiento al subir una foto (art. 6.1.a)." },
-      { h: "4. Quién puede ver tus datos", p: "Tus datos son privados por defecto. El contenido de un calendario es visible para sus miembros según su rol. Los demás miembros pueden ver tu nombre y tu foto en un calendario compartido. El historial de un evento compartido es visible para los miembros de ese calendario." },
-      { h: "5. Proveedores de servicios", p: "Utilizamos los siguientes encargados del tratamiento: Supabase (base de datos, autenticación y almacenamiento de avatares; Unión Europea, eu-west-1 Irlanda); Resend (correos de invitación; Unión Europea, eu-west-1); Vercel (alojamiento de la aplicación web; red global). Toda transferencia fuera del EEE se ampara en decisiones de adecuación o en las cláusulas contractuales tipo. La verificación de identidad de los creadores de calendarios la presta Stripe (véase la sección 15)." },
-      { h: "6. Conservación", p: "Conservamos tus datos mientras tu cuenta esté activa. Al eliminar la cuenta se borran tus datos personales, salvo que la ley exija conservarlos. El historial de un evento se elimina con el evento al que pertenece. Las copias de seguridad se conservan solo el tiempo necesario para la recuperación." },
-      { h: "7. Tus derechos", p: "Según el RGPD y leyes similares, puedes acceder, rectificar, suprimir, limitar o portar tus datos, oponerte al tratamiento y retirar tu consentimiento en cualquier momento. Puedes editar tu perfil y tus eventos en la aplicación y contactarnos para ejercer otros derechos. Puedes presentar una reclamación ante tu autoridad nacional de protección de datos." },
-      { h: "8. Seguridad", p: "Los datos se cifran en tránsito (HTTPS). El acceso a los datos está restringido por reglas de seguridad a nivel de fila, de modo que cada usuario solo accede a los calendarios que posee o a los que fue invitado. Ningún sistema es perfectamente seguro; te notificaremos cualquier brecha según exija la ley." },
-      { h: "9. Menores", p: "El servicio no está dirigido a menores de 16 años (o de la edad nacional de consentimiento digital), que no pueden crear su propia cuenta. Una persona menor de esa edad solo puede aparecer en un calendario de familia, equipo deportivo o clase como perfil gestionado por un adulto responsable, y puede tener un acceso limitado al calendario y al chat del equipo creado por ese adulto, según se describe en la sección 14." },
-      { h: "10. Transferencias internacionales", p: "Las transferencias fuera del EEE se amparan en decisiones de adecuación o en las cláusulas contractuales tipo." },
-      { h: "11. Asistente IA", p: "Si usas el asistente, tu pregunta y la información del calendario necesaria para responderla (tus eventos con títulos y las horas ocupadas de los calendarios compartidos) se envían a Anthropic, nuestro proveedor de modelos de IA, que los trata por nuestra cuenta. El tratamiento puede realizarse fuera del EEE, con cláusulas contractuales tipo. No almacenamos el contenido de tus preguntas, solo el número de solicitudes y de tokens, para gestionar el servicio y fijar precios. Base jurídica: tu consentimiento, dado al aceptar la política del asistente (art. 6.1.a); puedes retirarlo en cualquier momento. Las horas ocupadas de un calendario compartido pueden ser usadas por el asistente de quienes tienen acceso a ese calendario, y sus miembros son informados. En un chat de equipo donde el propietario ha activado la IA, los últimos 40 mensajes de ese chat y las notas compartidas se envían a nuestro proveedor de IA cada vez que un miembro menciona la IA. Las respuestas y las notas se guardan en el chat." },
-      { h: "12. Aplicaciones conectadas", p: "Puedes conectar Collyo a una aplicación de IA, como Claude, como conector. Apruebas cada conexión en una pantalla de consentimiento y puedes revocarla en cualquier momento desde tu perfil. Una aplicación conectada solo puede leer: tus calendarios y eventos con sus títulos, y las horas ocupadas de los calendarios compartidos sin títulos. El conector es de solo lectura y no da acceso a los mensajes del chat de equipo. Collyo no envía tus datos a la aplicación por sí mismo: los datos llegan a la aplicación solo cuando usas el conector desde tu propia cuenta, según las condiciones de esa aplicación." },
-      { h: "13. Bienestar", p: "El modo bienestar es opcional. Si lo activas, puedes indicar un rango de edad, una profesión y una situación familiar, y registrar un balance diario de energía (y el ánimo, si lo eliges). Estos datos se guardan por separado, solo los ves tú y se usan únicamente para adaptar las sugerencias del asistente de IA; se envían a Anthropic, nuestro proveedor de IA, cuando usas el asistente con el modo activado. Base jurídica: tu consentimiento explícito (art. 6.1.a y 9.2.a cuando el dato se refiere a la salud), que puedes retirar en cualquier momento desactivando el modo o pidiéndonos que borremos tus datos. Los conservamos hasta que elimines tu cuenta o pidas su eliminación. En un equipo donde el propietario activa el análisis de equipo, las horas ocupadas del calendario y, si el propietario lo elige, los mensajes del chat de la última hora son analizados por Anthropic para detectar carga, tensión o angustia, sin enviar nombres. Los miembros pueden excluir sus propios mensajes de este análisis. Una señal de angustia solo se muestra a la persona afectada, en privado. El equipo solo recibe mensajes generales que no nombran a nadie. Un registro de los análisis (fechas, fuentes y recuentos, nunca el texto de los mensajes) se conserva 90 días y lo ve el propietario. Esto no es asesoramiento médico." },
-      { h: "14. Calendarios de familia, equipo deportivo y clase", p: "Estos calendarios los crea un adulto cuya identidad ha sido verificada (sección 15). El creador puede añadir miembros menores de 16 años como perfiles gestionados: nombre, año de nacimiento, sexo opcional y categoría opcional. Estos datos solo los ven el creador y los adultos responsables de ese perfil. Un perfil permanece pendiente, y se elimina a los 30 días si nadie firma, hasta que un adulto responsable firme una declaración con su nombre y apellidos; conservamos el registro de la firma (nombre escrito, fecha, versión del texto y funciones cubiertas). El sexo solo se guarda si la declaración lo cubre. La IA queda desactivada en cualquier calendario que incluya un menor, salvo que se registre una aprobación legal y cada menor esté cubierto por una declaración firmada para la IA. Base jurídica: el consentimiento del titular de la patria potestad (art. 6.1.a y 8 RGPD; consentimiento parental para menores de 13 años en Estados Unidos). El adulto responsable puede retirarlo y pedir la eliminación en cualquier momento en support@collyo.app. Un menor puede tener un acceso limitado al calendario del equipo (solo lectura) y al chat del equipo, creado por el adulto propietario: el menor entra con el correo del propietario del equipo y un identificador de acceso generado cuando el adulto firma. Solo guardamos una huella del identificador. La cuenta del menor no tiene correo propio, no puede modificar eventos y no puede usar el asistente, el conector, el bienestar ni las claves de acceso. Para un niño que pueda tener menos de 13 años, el responsable debe aprobar primero por correo, mediante un enlace enviado a la dirección que introduce el propietario; guardamos el registro de la aprobación (fecha, dirección, versión del texto). El adulto propietario puede cortar el acceso o emitir un nuevo identificador en cualquier momento. Los mensajes de un menor son visibles para los miembros del equipo. Si el propietario activa la IA del chat del equipo y la declaración firmada la cubre, un menor puede pedir ayuda a la IA: los últimos mensajes del chat, incluidos los del menor, se envían entonces a nuestro proveedor de IA. Un menor puede hacer como máximo 20 solicitudes al día, y la IA no puede modificar eventos por él." },
-      { h: "15. Verificación de identidad", p: "Para crear un calendario de familia, equipo deportivo o clase, el creador verifica su identidad mediante Stripe, nuestro proveedor de verificación. Stripe recoge y trata el documento de identidad y un selfie en su propia página, incluida una comparación biométrica, según sus propias condiciones y su política de privacidad; Collyo no recibe ni guarda el documento ni el selfie. Collyo solo conserva el resultado (verificado o no), el nombre verificado, el país del documento, la fecha y el identificador de la sesión de verificación. En tu propio perfil se muestra una insignia de identidad verificada. Base jurídica: tu consentimiento (art. 6.1.a y 9.2.a). El tratamiento puede realizarse fuera del EEE, con cláusulas contractuales tipo. Puedes pedir que eliminemos tu registro de verificación en support@collyo.app; los tipos de calendario que lo exigen dejarán de estar disponibles para ti." },
-      { h: "16. Cambios", p: "Actualizamos esta política cuando cambian nuestras prácticas. Última actualización: 17 de noviembre de 2026." },
+    "privacy": [
+      {
+        "h": "1. Quiénes somos",
+        "p": "Responsable del tratamiento: AI Solution Hub®, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal. Contacto: support@collyo.app."
+      },
+      {
+        "h": "2. Datos que recopilamos",
+        "p": "Datos de cuenta: correo y contraseña (almacenada como hash por nuestro proveedor de autenticación). Datos de perfil: nombre visible y foto de perfil opcional. Datos de calendario: calendarios, eventos (título, descripción, lugar, horas de inicio y fin, recordatorio) e historial de cambios. Datos de compartición: miembros, roles e invitaciones. Datos técnicos: preferencia de idioma guardada en tu navegador."
+      },
+      {
+        "h": "3. Finalidades y base jurídica",
+        "p": "Prestar el servicio solicitado (crear y compartir calendarios), enviar los correos de invitación que activas, mantener un historial de actividad para revisar y restaurar cambios, y garantizar la seguridad del servicio. Base jurídica según el RGPD: ejecución del contrato (art. 6.1.b); intereses legítimos en seguridad (art. 6.1.f); consentimiento al subir una foto (art. 6.1.a)."
+      },
+      {
+        "h": "4. Quién puede ver tus datos",
+        "p": "Tus datos son privados por defecto. El contenido de un calendario es visible para sus miembros según su rol. Los demás miembros pueden ver tu nombre y tu foto en un calendario compartido. El historial de un evento compartido es visible para los miembros de ese calendario."
+      },
+      {
+        "h": "5. Proveedores de servicios",
+        "p": "Utilizamos los siguientes encargados del tratamiento: Supabase (base de datos, autenticación y almacenamiento de avatares; Unión Europea, eu-west-1 Irlanda); Resend (correos de invitación; Unión Europea, eu-west-1); Vercel (alojamiento de la aplicación web; red global). Toda transferencia fuera del EEE se ampara en decisiones de adecuación o en las cláusulas contractuales tipo. La verificación de identidad de los creadores de calendarios la presta Stripe (véase la sección 15). Los planes de pago los vende Stripe como revendedor (véase la sección 16)."
+      },
+      {
+        "h": "6. Conservación",
+        "p": "Conservamos tus datos mientras tu cuenta esté activa. Al eliminar la cuenta se borran tus datos personales, salvo que la ley exija conservarlos. El historial de un evento se elimina con el evento al que pertenece. Las copias de seguridad se conservan solo el tiempo necesario para la recuperación."
+      },
+      {
+        "h": "7. Tus derechos",
+        "p": "Según el RGPD y leyes similares, puedes acceder, rectificar, suprimir, limitar o portar tus datos, oponerte al tratamiento y retirar tu consentimiento en cualquier momento. Puedes editar tu perfil y tus eventos en la aplicación y contactarnos para ejercer otros derechos. Puedes presentar una reclamación ante tu autoridad nacional de protección de datos."
+      },
+      {
+        "h": "8. Seguridad",
+        "p": "Los datos se cifran en tránsito (HTTPS). El acceso a los datos está restringido por reglas de seguridad a nivel de fila, de modo que cada usuario solo accede a los calendarios que posee o a los que fue invitado. Ningún sistema es perfectamente seguro; te notificaremos cualquier brecha según exija la ley."
+      },
+      {
+        "h": "9. Menores",
+        "p": "El servicio no está dirigido a menores de 16 años (o de la edad nacional de consentimiento digital), que no pueden crear su propia cuenta. Una persona menor de esa edad solo puede aparecer en un calendario de familia, equipo deportivo o clase como perfil gestionado por un adulto responsable, y puede tener un acceso limitado al calendario y al chat del equipo creado por ese adulto, según se describe en la sección 14."
+      },
+      {
+        "h": "10. Transferencias internacionales",
+        "p": "Las transferencias fuera del EEE se amparan en decisiones de adecuación o en las cláusulas contractuales tipo."
+      },
+      {
+        "h": "11. Asistente IA",
+        "p": "Si usas el asistente, tu pregunta y la información del calendario necesaria para responderla (tus eventos con títulos y las horas ocupadas de los calendarios compartidos) se envían a Anthropic, nuestro proveedor de modelos de IA, que los trata por nuestra cuenta. El tratamiento puede realizarse fuera del EEE, con cláusulas contractuales tipo. No almacenamos el contenido de tus preguntas, solo el número de solicitudes y de tokens, para gestionar el servicio y fijar precios. Base jurídica: tu consentimiento, dado al aceptar la política del asistente (art. 6.1.a); puedes retirarlo en cualquier momento. Las horas ocupadas de un calendario compartido pueden ser usadas por el asistente de quienes tienen acceso a ese calendario, y sus miembros son informados. En un chat de equipo donde el propietario ha activado la IA, los últimos 40 mensajes de ese chat y las notas compartidas se envían a nuestro proveedor de IA cada vez que un miembro menciona la IA. Las respuestas y las notas se guardan en el chat."
+      },
+      {
+        "h": "12. Aplicaciones conectadas",
+        "p": "Puedes conectar Collyo a una aplicación de IA, como Claude, como conector. Apruebas cada conexión en una pantalla de consentimiento y puedes revocarla en cualquier momento desde tu perfil. Una aplicación conectada solo puede leer: tus calendarios y eventos con sus títulos, y las horas ocupadas de los calendarios compartidos sin títulos. El conector es de solo lectura y no da acceso a los mensajes del chat de equipo. Collyo no envía tus datos a la aplicación por sí mismo: los datos llegan a la aplicación solo cuando usas el conector desde tu propia cuenta, según las condiciones de esa aplicación."
+      },
+      {
+        "h": "13. Bienestar",
+        "p": "El modo bienestar es opcional. Si lo activas, puedes indicar un rango de edad, una profesión y una situación familiar, y registrar un balance diario de energía (y el ánimo, si lo eliges). Estos datos se guardan por separado, solo los ves tú y se usan únicamente para adaptar las sugerencias del asistente de IA; se envían a Anthropic, nuestro proveedor de IA, cuando usas el asistente con el modo activado. Base jurídica: tu consentimiento explícito (art. 6.1.a y 9.2.a cuando el dato se refiere a la salud), que puedes retirar en cualquier momento desactivando el modo o pidiéndonos que borremos tus datos. Los conservamos hasta que elimines tu cuenta o pidas su eliminación. En un equipo donde el propietario activa el análisis de equipo, las horas ocupadas del calendario y, si el propietario lo elige, los mensajes del chat de la última hora son analizados por Anthropic para detectar carga, tensión o angustia, sin enviar nombres. Los miembros pueden excluir sus propios mensajes de este análisis. Una señal de angustia solo se muestra a la persona afectada, en privado. El equipo solo recibe mensajes generales que no nombran a nadie. Un registro de los análisis (fechas, fuentes y recuentos, nunca el texto de los mensajes) se conserva 90 días y lo ve el propietario. Esto no es asesoramiento médico."
+      },
+      {
+        "h": "14. Calendarios de familia, equipo deportivo y clase",
+        "p": "Estos calendarios los crea un adulto cuya identidad ha sido verificada (sección 15). El creador puede añadir miembros menores de 16 años como perfiles gestionados: nombre, año de nacimiento, sexo opcional y categoría opcional. Estos datos solo los ven el creador y los adultos responsables de ese perfil. Un perfil permanece pendiente, y se elimina a los 30 días si nadie firma, hasta que un adulto responsable firme una declaración con su nombre y apellidos; conservamos el registro de la firma (nombre escrito, fecha, versión del texto y funciones cubiertas). El sexo solo se guarda si la declaración lo cubre. La IA queda desactivada en cualquier calendario que incluya un menor, salvo que se registre una aprobación legal y cada menor esté cubierto por una declaración firmada para la IA. Base jurídica: el consentimiento del titular de la patria potestad (art. 6.1.a y 8 RGPD; consentimiento parental para menores de 13 años en Estados Unidos). El adulto responsable puede retirarlo y pedir la eliminación en cualquier momento en support@collyo.app. Un menor puede tener un acceso limitado al calendario del equipo (solo lectura) y al chat del equipo, creado por el adulto propietario: el menor entra con el correo del propietario del equipo y un identificador de acceso generado cuando el adulto firma. Solo guardamos una huella del identificador. La cuenta del menor no tiene correo propio, no puede modificar eventos y no puede usar el asistente, el conector, el bienestar ni las claves de acceso. Para un niño que pueda tener menos de 13 años, el responsable debe aprobar primero por correo, mediante un enlace enviado a la dirección que introduce el propietario; guardamos el registro de la aprobación (fecha, dirección, versión del texto). El adulto propietario puede cortar el acceso o emitir un nuevo identificador en cualquier momento. Los mensajes de un menor son visibles para los miembros del equipo. Si el propietario activa la IA del chat del equipo y la declaración firmada la cubre, un menor puede pedir ayuda a la IA: los últimos mensajes del chat, incluidos los del menor, se envían entonces a nuestro proveedor de IA. Un menor puede hacer como máximo 20 solicitudes al día, y la IA no puede modificar eventos por él."
+      },
+      {
+        "h": "15. Verificación de identidad",
+        "p": "Para crear un calendario de familia, equipo deportivo o clase, el creador verifica su identidad mediante Stripe, nuestro proveedor de verificación. Stripe recoge y trata el documento de identidad y un selfie en su propia página, incluida una comparación biométrica, según sus propias condiciones y su política de privacidad; Collyo no recibe ni guarda el documento ni el selfie. Collyo solo conserva el resultado (verificado o no), el nombre verificado, el país del documento, la fecha y el identificador de la sesión de verificación. En tu propio perfil se muestra una insignia de identidad verificada. Base jurídica: tu consentimiento (art. 6.1.a y 9.2.a). El tratamiento puede realizarse fuera del EEE, con cláusulas contractuales tipo. Puedes pedir que eliminemos tu registro de verificación en support@collyo.app; los tipos de calendario que lo exigen dejarán de estar disponibles para ti."
+      },
+      {
+        "h": "16. Pagos",
+        "p": "Cuando te suscribes, Stripe procesa el pago como revendedor (comerciante registrado) según su propia política de privacidad: recibe tu nombre, e-mail, dirección de facturación, número de IVA si lo hay y los datos de tu tarjeta. Collyo nunca ve tu tarjeta. Solo conservamos tu plan, su estado, el número de puestos, la fecha de renovación y los identificadores de cliente y suscripción de Stripe, para aplicar tu plan (base legal: ejecución del contrato), mientras exista la suscripción y el tiempo que exija la ley contable."
+      },
+      {
+        "h": "17. Cambios",
+        "p": "Actualizamos esta política cuando cambian nuestras prácticas. Última actualización: 19 de noviembre de 2026."
+      }
     ],
-    cookies: [
-      { h: "1. Lo que usamos", p: "Calendar App no utiliza cookies publicitarias, de seguimiento ni de análisis. Usa el almacenamiento del navegador (localStorage) solo para dos fines." },
-      { h: "2. Almacenamiento estrictamente necesario", p: "Sesión: te mantiene conectado entre visitas (lo establece nuestro proveedor de autenticación). Idioma: recuerda el idioma de interfaz elegido. Ninguno requiere consentimiento según la normativa ePrivacy, porque son estrictamente necesarios para prestar el servicio que solicitaste." },
-      { h: "3. Cookies de terceros", p: "La aplicación no carga scripts publicitarios ni de análisis de terceros. Nuestros proveedores de alojamiento y autenticación pueden establecer cookies técnicas necesarias para la seguridad y la entrega." },
-      { h: "4. Gestión del almacenamiento", p: "Puedes borrar este almacenamiento en cualquier momento desde la configuración de tu navegador. Borrar la sesión te desconectará; borrar la elección de idioma lo restablecerá al inglés." },
-      { h: "5. Cambios", p: "Si en el futuro añadimos almacenamiento no esencial, pediremos tu consentimiento primero. Última actualización: 17 de noviembre de 2026." },
-    ],
+    "cookies": [
+      {
+        "h": "1. Lo que usamos",
+        "p": "Calendar App no utiliza cookies publicitarias, de seguimiento ni de análisis. Usa el almacenamiento del navegador (localStorage) solo para dos fines."
+      },
+      {
+        "h": "2. Almacenamiento estrictamente necesario",
+        "p": "Sesión: te mantiene conectado entre visitas (lo establece nuestro proveedor de autenticación). Idioma: recuerda el idioma de interfaz elegido. Ninguno requiere consentimiento según la normativa ePrivacy, porque son estrictamente necesarios para prestar el servicio que solicitaste."
+      },
+      {
+        "h": "3. Cookies de terceros",
+        "p": "La aplicación no carga scripts publicitarios ni de análisis de terceros. Nuestros proveedores de alojamiento y autenticación pueden establecer cookies técnicas necesarias para la seguridad y la entrega."
+      },
+      {
+        "h": "4. Gestión del almacenamiento",
+        "p": "Puedes borrar este almacenamiento en cualquier momento desde la configuración de tu navegador. Borrar la sesión te desconectará; borrar la elección de idioma lo restablecerá al inglés."
+      },
+      {
+        "h": "5. Cambios",
+        "p": "Si en el futuro añadimos almacenamiento no esencial, pediremos tu consentimiento primero. Última actualización: 19 de noviembre de 2026."
+      }
+    ]
   },
-  de: {
-    title: {"terms": "Nutzungsbedingungen", "privacy": "Datenschutzerklärung", "cookies": "Cookie-Richtlinie"},
-    terms: [
-      { h: "1. Zweck", p: "Calendar App ist ein Web-Kalender, mit dem du Termine erstellen, bearbeiten und löschen, in Kalendern organisieren und Kalender per Einladung mit anderen Personen teilen kannst." },
-      { h: "2. Konten", p: "Du erstellst ein Konto mit einer E-Mail-Adresse und einem Passwort. Du bist dafür verantwortlich, deine Zugangsdaten geheim zu halten und für alle Aktivitäten über dein Konto. Du musst richtige Angaben machen und mindestens 16 Jahre alt sein oder das digitale Mindestalter deines Landes erreicht haben." },
-      { h: "3. Deine Inhalte", p: "Du besitzt die Termine, Titel, Beschreibungen, Orte und Fotos, die du hinzufügst. Du gewährst dem Betreiber nur die Rechte, die nötig sind, um sie für dich und die Personen, mit denen du sie teilst, zu speichern und anzuzeigen." },
-      { h: "4. Teilen und Rollen", p: "Wenn du jemanden zu einem Kalender einlädst, erhält die Person eine E-Mail und kann annehmen oder ablehnen. Der Zugriff wird erst nach der Annahme gewährt. Die Rollen (Administrator, Mitwirkender, Leser) legen fest, was jedes Mitglied tun darf. Teile Kalender nicht mit Personen, die nicht zugestimmt haben, sie zu erhalten." },
-      { h: "5. Zulässige Nutzung", p: "Du darfst den Dienst nicht nutzen, um rechtswidrige Inhalte zu speichern, andere zu belästigen, unerwünschte Nachrichten per Einladung zu versenden, sich unbefugt Zugang zu anderen Konten oder Daten zu verschaffen oder den Dienst zu stören." },
-      { h: "6. Verfügbarkeit", p: "Der Dienst wird „wie besehen“ bereitgestellt. Wir streben eine durchgehende Verfügbarkeit an, garantieren sie aber nicht. Funktionen können sich im Laufe der Zeit ändern." },
-      { h: "7. Kündigung", p: "Du kannst dein Konto jederzeit löschen. Wir können Konten sperren, die gegen diese Bedingungen verstoßen." },
-      { h: "8. Haftung", p: "Soweit gesetzlich zulässig, haftet der Betreiber nicht für indirekte Schäden, einschließlich verpasster Termine oder Verluste, die daraus entstehen, dass ein geteilter Kalender von einem anderen Mitglied geändert wurde." },
-      { h: "9. Anwendbares Recht", p: "Für diese Bedingungen gilt portugiesisches Recht. Zuständig sind die Gerichte in Porto, unbeschadet zwingender Verbraucherrechte in deinem Wohnsitzland." },
-      { h: "10. KI-Assistent", p: "Der KI-Assistent ist optional. Er beantwortet Fragen zu deinen Kalendern und schlägt freie Zeiten vor. Er liest deine eigenen Termine und in geteilten Kalendern nur die belegten Zeiten der Mitglieder. Du musst diese Richtlinie vor der ersten Nutzung akzeptieren. Nutze den Assistenten nicht, um andere Personen zu überwachen oder unter Druck zu setzen. Seine Vorschläge sind unverbindlich und können Fehler enthalten: prüfe sie, bevor du handelst. Mitglieder eines geteilten Kalenders werden über diese Möglichkeit informiert. Aktiviert der Eigentümer die KI im Team-Chat, liest die KI diesen Chat, wenn ein Mitglied sie erwähnt, und die Mitglieder werden im Chat informiert. Nur der Eigentümer kann sie ein- oder ausschalten. Wenn Sie es in den KI-Einstellungen erlauben, kann der Assistent auch Termine in Ihren Kalendern erstellen, verschieben oder löschen und teilt Ihnen mit, was er geändert hat." },
-      { h: "11. Wohlbefinden, Gruppen und Minderjährige", p: "Der Wohlbefinden-Modus ist optional und kein medizinischer Dienst: Er gibt allgemeine Vorschläge und stellt keine Diagnose und behandelt nichts. Im Notfall rufen Sie die örtliche Notrufnummer an. Familien-, Sportteam- und Klassenkalender können Mitglieder unter 16 Jahren (oder unter dem Alter der digitalen Einwilligung) enthalten. Sie können nur von einem Erwachsenen erstellt werden, dessen Identität verifiziert wurde, und ein Minderjähriger wird erst hinzugefügt, nachdem ein verantwortlicher Erwachsener eine Erklärung mit Vor- und Nachnamen unterschrieben hat. Mit der Unterschrift bestätigen Sie, dass Sie die elterliche Sorge oder die Rolle der Team- oder Klassenleitung innehaben und dass Ihre Angaben richtig sind. Eine falsche Erklärung verstößt gegen diese Bedingungen. Der verantwortliche Erwachsene kann seine Zustimmung jederzeit widerrufen. Der Erwachsene, der einen Minderjährigen hinzufügt, ist verantwortlich für den Zugang, den dieser Minderjährige erhält, für das, was der Minderjährige im Team-Chat schreibt, und für die Entscheidung, ob die KI des Team-Chats genutzt werden darf." },
-      { h: "12. Kontakt", p: "Fragen: support@collyo.app." },
+  "de": {
+    "title": {
+      "terms": "Nutzungsbedingungen",
+      "privacy": "Datenschutzerklärung",
+      "cookies": "Cookie-Richtlinie"
+    },
+    "terms": [
+      {
+        "h": "1. Zweck",
+        "p": "Calendar App ist ein Web-Kalender, mit dem du Termine erstellen, bearbeiten und löschen, in Kalendern organisieren und Kalender per Einladung mit anderen Personen teilen kannst."
+      },
+      {
+        "h": "2. Konten",
+        "p": "Du erstellst ein Konto mit einer E-Mail-Adresse und einem Passwort. Du bist dafür verantwortlich, deine Zugangsdaten geheim zu halten und für alle Aktivitäten über dein Konto. Du musst richtige Angaben machen und mindestens 16 Jahre alt sein oder das digitale Mindestalter deines Landes erreicht haben."
+      },
+      {
+        "h": "3. Deine Inhalte",
+        "p": "Du besitzt die Termine, Titel, Beschreibungen, Orte und Fotos, die du hinzufügst. Du gewährst dem Betreiber nur die Rechte, die nötig sind, um sie für dich und die Personen, mit denen du sie teilst, zu speichern und anzuzeigen."
+      },
+      {
+        "h": "4. Teilen und Rollen",
+        "p": "Wenn du jemanden zu einem Kalender einlädst, erhält die Person eine E-Mail und kann annehmen oder ablehnen. Der Zugriff wird erst nach der Annahme gewährt. Die Rollen (Administrator, Mitwirkender, Leser) legen fest, was jedes Mitglied tun darf. Teile Kalender nicht mit Personen, die nicht zugestimmt haben, sie zu erhalten."
+      },
+      {
+        "h": "5. Zulässige Nutzung",
+        "p": "Du darfst den Dienst nicht nutzen, um rechtswidrige Inhalte zu speichern, andere zu belästigen, unerwünschte Nachrichten per Einladung zu versenden, sich unbefugt Zugang zu anderen Konten oder Daten zu verschaffen oder den Dienst zu stören."
+      },
+      {
+        "h": "6. Verfügbarkeit",
+        "p": "Der Dienst wird „wie besehen“ bereitgestellt. Wir streben eine durchgehende Verfügbarkeit an, garantieren sie aber nicht. Funktionen können sich im Laufe der Zeit ändern."
+      },
+      {
+        "h": "7. Kündigung",
+        "p": "Du kannst dein Konto jederzeit löschen. Wir können Konten sperren, die gegen diese Bedingungen verstoßen."
+      },
+      {
+        "h": "8. Haftung",
+        "p": "Soweit gesetzlich zulässig, haftet der Betreiber nicht für indirekte Schäden, einschließlich verpasster Termine oder Verluste, die daraus entstehen, dass ein geteilter Kalender von einem anderen Mitglied geändert wurde."
+      },
+      {
+        "h": "9. Anwendbares Recht",
+        "p": "Für diese Bedingungen gilt portugiesisches Recht. Zuständig sind die Gerichte in Porto, unbeschadet zwingender Verbraucherrechte in deinem Wohnsitzland."
+      },
+      {
+        "h": "10. KI-Assistent",
+        "p": "Der KI-Assistent ist optional. Er beantwortet Fragen zu deinen Kalendern und schlägt freie Zeiten vor. Er liest deine eigenen Termine und in geteilten Kalendern nur die belegten Zeiten der Mitglieder. Du musst diese Richtlinie vor der ersten Nutzung akzeptieren. Nutze den Assistenten nicht, um andere Personen zu überwachen oder unter Druck zu setzen. Seine Vorschläge sind unverbindlich und können Fehler enthalten: prüfe sie, bevor du handelst. Mitglieder eines geteilten Kalenders werden über diese Möglichkeit informiert. Aktiviert der Eigentümer die KI im Team-Chat, liest die KI diesen Chat, wenn ein Mitglied sie erwähnt, und die Mitglieder werden im Chat informiert. Nur der Eigentümer kann sie ein- oder ausschalten. Wenn Sie es in den KI-Einstellungen erlauben, kann der Assistent auch Termine in Ihren Kalendern erstellen, verschieben oder löschen und teilt Ihnen mit, was er geändert hat."
+      },
+      {
+        "h": "11. Wohlbefinden, Gruppen und Minderjährige",
+        "p": "Der Wohlbefinden-Modus ist optional und kein medizinischer Dienst: Er gibt allgemeine Vorschläge und stellt keine Diagnose und behandelt nichts. Im Notfall rufen Sie die örtliche Notrufnummer an. Familien-, Sportteam- und Klassenkalender können Mitglieder unter 16 Jahren (oder unter dem Alter der digitalen Einwilligung) enthalten. Sie können nur von einem Erwachsenen erstellt werden, dessen Identität verifiziert wurde, und ein Minderjähriger wird erst hinzugefügt, nachdem ein verantwortlicher Erwachsener eine Erklärung mit Vor- und Nachnamen unterschrieben hat. Mit der Unterschrift bestätigen Sie, dass Sie die elterliche Sorge oder die Rolle der Team- oder Klassenleitung innehaben und dass Ihre Angaben richtig sind. Eine falsche Erklärung verstößt gegen diese Bedingungen. Der verantwortliche Erwachsene kann seine Zustimmung jederzeit widerrufen. Der Erwachsene, der einen Minderjährigen hinzufügt, ist verantwortlich für den Zugang, den dieser Minderjährige erhält, für das, was der Minderjährige im Team-Chat schreibt, und für die Entscheidung, ob die KI des Team-Chats genutzt werden darf."
+      },
+      {
+        "h": "12. Abonnements und Zahlung",
+        "p": "Collyo ist ohne AI kostenlos nutzbar. Die kostenpflichtigen Tarife (Starter, Pro, Team) sind Monats- oder Jahresabonnements. Sie werden von Stripe als Wiederverkäufer (Merchant of Record) verkauft und abgerechnet, das auch die MwSt. erhebt; die Zahlungsseite nennt es und kann den Preis in deiner Währung anzeigen. Es gilt der Preis der Tarifseite. Ein Abonnement verlängert sich automatisch, bis du es in deinem Profil kündigst („Mein Abonnement verwalten“); es bleibt dann bis zum Ende des bereits bezahlten Zeitraums aktiv. Verbraucher in der Europäischen Union haben ein 14-tägiges Widerrufsrecht zu den gesetzlichen Bedingungen; Tarife für Arbeitsteams können innerhalb von 30 Tagen nach der ersten Zahlung unter support@collyo.app eine Erstattung verlangen. Preisänderungen kündigen wir mindestens 30 Tage vorher per E-Mail an, und du kannst vorher kündigen. Das Löschen deines Kontos kündigt dein Abonnement. Einwilligung der Erziehungsberechtigten, Schutz Minderjähriger und das Löschen des Kontos sind in jedem Tarif enthalten."
+      },
+      {
+        "h": "13. Kontakt",
+        "p": "Fragen: support@collyo.app."
+      }
     ],
-    privacy: [
-      { h: "1. Wer wir sind", p: "Verantwortlicher: AI Solution Hub®, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal. Kontakt: support@collyo.app." },
-      { h: "2. Welche Daten wir erheben", p: "Kontodaten: E-Mail-Adresse und Passwort (von unserem Authentifizierungsanbieter als Hash gespeichert). Profildaten: Anzeigename und optionales Profilfoto. Kalenderdaten: Kalender, Termine (Titel, Beschreibung, Ort, Start- und Endzeit, Erinnerung) und der Verlauf der Änderungen an Terminen. Freigabedaten: Mitglieder, Rollen und Einladungen. Technische Daten: im Browser gespeicherte Spracheinstellung." },
-      { h: "3. Warum wir sie verarbeiten", p: "Um den von dir gewünschten Dienst bereitzustellen (Erstellen und Teilen von Kalendern), um von dir ausgelöste Einladungs-E-Mails zu versenden, um einen Aktivitätsverlauf zu führen, damit Änderungen geprüft und wiederhergestellt werden können, und um den Dienst sicher zu halten. Rechtsgrundlage nach der DSGVO: Vertragserfüllung (Art. 6 Abs. 1 lit. b); berechtigte Interessen an Sicherheit (Art. 6 Abs. 1 lit. f); Einwilligung beim Hochladen eines Fotos (Art. 6 Abs. 1 lit. a)." },
-      { h: "4. Wer deine Daten sehen kann", p: "Deine Daten sind standardmäßig privat. Der Inhalt eines Kalenders ist für seine Mitglieder je nach Rolle sichtbar. Andere Mitglieder sehen deinen Anzeigenamen und dein Foto in einem geteilten Kalender. Der Verlauf eines geteilten Termins ist für die Mitglieder dieses Kalenders sichtbar." },
-      { h: "5. Dienstleister", p: "Wir setzen folgende Auftragsverarbeiter ein: Supabase (Datenbank, Authentifizierung und Avatar-Speicher; Europäische Union, eu-west-1 Irland); Resend (Einladungs-E-Mails; Europäische Union, eu-west-1); Vercel (Hosting der Web-Anwendung; globales Netzwerk). Übermittlungen außerhalb der EU/des EWR stützen sich auf Angemessenheitsbeschlüsse oder die Standardvertragsklauseln. Die Identitätsprüfung der Kalenderersteller erfolgt durch Stripe (siehe Abschnitt 15)." },
-      { h: "6. Speicherdauer", p: "Wir speichern deine Daten, solange dein Konto aktiv ist. Beim Löschen des Kontos werden deine personenbezogenen Daten gelöscht, außer wenn eine gesetzliche Aufbewahrungspflicht besteht. Der Verlauf eines Termins wird mit dem Termin gelöscht. Sicherungen werden nur so lange aufbewahrt, wie es für die Wiederherstellung nötig ist." },
-      { h: "7. Deine Rechte", p: "Nach der DSGVO und ähnlichen Gesetzen kannst du deine Daten einsehen, berichtigen, löschen, einschränken oder übertragen lassen, der Verarbeitung widersprechen und deine Einwilligung jederzeit widerrufen. Du kannst dein Profil und deine Termine in der App bearbeiten und uns kontaktieren, um weitere Rechte auszuüben. Du kannst dich bei deiner nationalen Datenschutzbehörde beschweren." },
-      { h: "8. Sicherheit", p: "Daten werden bei der Übertragung verschlüsselt (HTTPS). Der Zugriff auf Daten ist durch Sicherheitsregeln auf Zeilenebene beschränkt, sodass jeder Nutzer nur die Kalender erreicht, die er besitzt oder zu denen er eingeladen wurde. Kein System ist vollkommen sicher; wir informieren dich über Datenpannen, soweit das Gesetz es verlangt." },
-      { h: "9. Kinder", p: "Der Dienst richtet sich nicht an Kinder unter 16 Jahren (oder unter dem nationalen Alter der digitalen Einwilligung), die kein eigenes Konto anlegen können. Eine Person unter diesem Alter kann in einem Familien-, Sportteam- oder Klassenkalender nur als von einem verantwortlichen Erwachsenen verwaltetes Profil erscheinen und von diesem Erwachsenen einen eingeschränkten Zugang zu Teamkalender und Chat erhalten, wie in Abschnitt 14 beschrieben." },
-      { h: "10. Internationale Übermittlungen", p: "Übermittlungen außerhalb der EU/des EWR stützen sich auf Angemessenheitsbeschlüsse oder die Standardvertragsklauseln." },
-      { h: "11. KI-Assistent", p: "Wenn du den Assistenten nutzt, werden deine Frage und die für die Antwort nötigen Kalenderdaten (deine Termine mit Titeln und die belegten Zeiten geteilter Kalender) an Anthropic übermittelt, unseren Anbieter von KI-Modellen, der sie in unserem Auftrag verarbeitet. Die Verarbeitung kann außerhalb des EWR erfolgen, auf Grundlage der Standardvertragsklauseln. Wir speichern den Inhalt deiner Fragen nicht, nur die Anzahl der Anfragen und Token, zur Steuerung des Dienstes und für die Preisgestaltung. Rechtsgrundlage: deine Einwilligung, die du mit der Annahme der Richtlinie des Assistenten erteilst (Art. 6 Abs. 1 lit. a); du kannst sie jederzeit widerrufen. Die belegten Zeiten eines geteilten Kalenders können vom Assistenten all jener genutzt werden, die auf diesen Kalender zugreifen; die Mitglieder werden darüber informiert. In einem Team-Chat, in dem der Eigentümer die KI aktiviert hat, werden bei jeder Erwähnung der KI die letzten 40 Nachrichten dieses Chats und die gemeinsamen Notizen an unseren KI-Anbieter gesendet. Antworten und Notizen werden im Chat gespeichert." },
-      { h: "12. Verbundene Apps", p: "Du kannst Collyo als Konnektor mit einer KI-App wie Claude verbinden. Jede Verbindung bestätigst du auf einem Zustimmungsbildschirm, und du kannst sie jederzeit in deinem Profil widerrufen. Eine verbundene App kann nur lesen: deine Kalender und Termine mit Titeln sowie die belegten Zeiten geteilter Kalender ohne Titel. Der Konnektor ist schreibgeschützt und gibt keinen Zugriff auf Nachrichten des Team-Chats. Collyo sendet deine Daten nicht von sich aus an die App: Sie gelangen nur dann zur App, wenn du den Konnektor in deinem eigenen Konto nutzt, nach den Bedingungen dieser App." },
-      { h: "13. Wohlbefinden", p: "Der Wohlbefinden-Modus ist optional. Wenn Sie ihn einschalten, können Sie eine Altersgruppe, einen Beruf und eine Familiensituation angeben und täglich einen Energie-Check-in erfassen (und die Stimmung, wenn Sie das möchten). Diese Daten werden getrennt gespeichert, sind nur für Sie sichtbar und dienen nur dazu, die Vorschläge des KI-Assistenten anzupassen; sie werden an Anthropic, unseren KI-Anbieter, gesendet, wenn Sie den Assistenten mit aktiviertem Modus nutzen. Rechtsgrundlage: Ihre ausdrückliche Einwilligung (Art. 6 Abs. 1 lit. a und Art. 9 Abs. 2 lit. a, wenn die Daten die Gesundheit betreffen), die Sie jederzeit widerrufen können, indem Sie den Modus ausschalten oder uns bitten, Ihre Einträge zu löschen. Wir speichern sie, bis Sie Ihr Konto löschen oder uns um Löschung bitten. In einem Team, in dem der Inhaber die Teamanalyse einschaltet, werden die belegten Zeiten des Kalenders und, wenn der Inhaber es wählt, die Chat-Nachrichten der letzten Stunde von Anthropic analysiert, um Belastung, Spannungen oder Notlagen zu erkennen, ohne Namen zu senden. Mitglieder können ihre eigenen Nachrichten von dieser Analyse ausschließen. Ein Hinweis auf eine Notlage wird nur der betroffenen Person privat angezeigt. Das Team erhält nur allgemeine Nachrichten, die niemanden nennen. Ein Protokoll der Analysen (Daten, Quellen und Zähler, nie der Nachrichtentext) wird 90 Tage gespeichert und ist für den Inhaber sichtbar. Dies ist keine medizinische Beratung." },
-      { h: "14. Familien-, Sportteam- und Klassenkalender", p: "Diese Kalender werden von einem Erwachsenen erstellt, dessen Identität verifiziert wurde (Abschnitt 15). Der Ersteller kann Mitglieder unter 16 Jahren als verwaltete Profile hinzufügen: Vorname, Geburtsjahr, optional Geschlecht und optional Kategorie. Diese Daten sind nur für den Ersteller und die für dieses Profil verantwortlichen Erwachsenen sichtbar. Ein Profil bleibt ausstehend und wird nach 30 Tagen gelöscht, wenn niemand unterschreibt, bis ein verantwortlicher Erwachsener eine Erklärung mit Vor- und Nachnamen unterschreibt; wir speichern den Nachweis der Unterschrift (eingegebener Name, Datum, Textversion und abgedeckte Funktionen). Das Geschlecht wird nur gespeichert, wenn die Erklärung es abdeckt. Die KI ist für jeden Kalender mit einem Minderjährigen ausgeschaltet, es sei denn, eine rechtliche Freigabe ist erfasst und jeder Minderjährige ist durch eine unterschriebene Erklärung für die KI abgedeckt. Rechtsgrundlage: die Einwilligung des Trägers der elterlichen Verantwortung (Art. 6 Abs. 1 lit. a und Art. 8 DSGVO; Einwilligung der Eltern bei Kindern unter 13 in den USA). Der verantwortliche Erwachsene kann sie jederzeit widerrufen und die Löschung unter support@collyo.app verlangen. Ein Minderjähriger kann einen eingeschränkten Zugang zum Teamkalender (nur Lesen) und zum Team-Chat haben, den der erwachsene Inhaber einrichtet: Der Minderjährige meldet sich mit der E-Mail des Teaminhabers und einer Zugangskennung an, die bei der Unterschrift des Erwachsenen erzeugt wird. Wir speichern nur einen Hash der Kennung. Das Konto des Minderjährigen hat keine eigene E-Mail-Adresse, kann keine Termine ändern und kann den Assistenten, den Connector, das Wohlbefinden und Passkeys nicht nutzen. Bei einem Kind, das unter 13 sein könnte, muss die verantwortliche Person zuerst per E-Mail zustimmen, über einen Link an die vom Inhaber eingegebene Adresse; wir speichern den Nachweis der Zustimmung (Datum, Adresse, Textversion). Der erwachsene Inhaber kann den Zugang jederzeit sperren oder eine neue Kennung ausstellen. Die Nachrichten eines Minderjährigen sind für die Mitglieder des Teams sichtbar. Wenn der Inhaber die KI des Team-Chats einschaltet und die unterschriebene Erklärung sie abdeckt, kann ein Minderjähriger die KI fragen: Die letzten Nachrichten des Chats, auch die des Minderjährigen, werden dann an unseren KI-Anbieter gesendet. Ein Minderjähriger kann höchstens 20 Anfragen pro Tag stellen, und die KI kann für ihn keine Termine ändern." },
-      { h: "15. Identitätsprüfung", p: "Um einen Familien-, Sportteam- oder Klassenkalender zu erstellen, bestätigt der Ersteller seine Identität über Stripe, unseren Prüfdienstleister. Stripe erfasst und verarbeitet das Ausweisdokument und ein Selfie auf einer eigenen Seite, einschließlich eines biometrischen Abgleichs, nach seinen eigenen Bedingungen und seiner Datenschutzerklärung; Collyo erhält und speichert weder das Dokument noch das Selfie. Collyo speichert nur das Ergebnis (bestätigt oder nicht), den bestätigten Namen, das Land des Dokuments, das Datum und die Kennung der Prüfsitzung. Auf Ihrem eigenen Profil wird ein Abzeichen für bestätigte Identität angezeigt. Rechtsgrundlage: Ihre Einwilligung (Art. 6 Abs. 1 lit. a und Art. 9 Abs. 2 lit. a). Die Verarbeitung kann außerhalb der EU/des EWR auf Grundlage von Standardvertragsklauseln erfolgen. Sie können unter support@collyo.app die Löschung Ihres Prüfeintrags verlangen; die Kalendertypen, die ihn erfordern, stehen Ihnen dann nicht mehr zur Verfügung." },
-      { h: "16. Änderungen", p: "Wir aktualisieren diese Erklärung, wenn sich unsere Praxis ändert. Zuletzt aktualisiert: 17. November 2026." },
+    "privacy": [
+      {
+        "h": "1. Wer wir sind",
+        "p": "Verantwortlicher: AI Solution Hub®, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal. Kontakt: support@collyo.app."
+      },
+      {
+        "h": "2. Welche Daten wir erheben",
+        "p": "Kontodaten: E-Mail-Adresse und Passwort (von unserem Authentifizierungsanbieter als Hash gespeichert). Profildaten: Anzeigename und optionales Profilfoto. Kalenderdaten: Kalender, Termine (Titel, Beschreibung, Ort, Start- und Endzeit, Erinnerung) und der Verlauf der Änderungen an Terminen. Freigabedaten: Mitglieder, Rollen und Einladungen. Technische Daten: im Browser gespeicherte Spracheinstellung."
+      },
+      {
+        "h": "3. Warum wir sie verarbeiten",
+        "p": "Um den von dir gewünschten Dienst bereitzustellen (Erstellen und Teilen von Kalendern), um von dir ausgelöste Einladungs-E-Mails zu versenden, um einen Aktivitätsverlauf zu führen, damit Änderungen geprüft und wiederhergestellt werden können, und um den Dienst sicher zu halten. Rechtsgrundlage nach der DSGVO: Vertragserfüllung (Art. 6 Abs. 1 lit. b); berechtigte Interessen an Sicherheit (Art. 6 Abs. 1 lit. f); Einwilligung beim Hochladen eines Fotos (Art. 6 Abs. 1 lit. a)."
+      },
+      {
+        "h": "4. Wer deine Daten sehen kann",
+        "p": "Deine Daten sind standardmäßig privat. Der Inhalt eines Kalenders ist für seine Mitglieder je nach Rolle sichtbar. Andere Mitglieder sehen deinen Anzeigenamen und dein Foto in einem geteilten Kalender. Der Verlauf eines geteilten Termins ist für die Mitglieder dieses Kalenders sichtbar."
+      },
+      {
+        "h": "5. Dienstleister",
+        "p": "Wir setzen folgende Auftragsverarbeiter ein: Supabase (Datenbank, Authentifizierung und Avatar-Speicher; Europäische Union, eu-west-1 Irland); Resend (Einladungs-E-Mails; Europäische Union, eu-west-1); Vercel (Hosting der Web-Anwendung; globales Netzwerk). Übermittlungen außerhalb der EU/des EWR stützen sich auf Angemessenheitsbeschlüsse oder die Standardvertragsklauseln. Die Identitätsprüfung der Kalenderersteller erfolgt durch Stripe (siehe Abschnitt 15). Kostenpflichtige Tarife verkauft Stripe als Wiederverkäufer (siehe Abschnitt 16)."
+      },
+      {
+        "h": "6. Speicherdauer",
+        "p": "Wir speichern deine Daten, solange dein Konto aktiv ist. Beim Löschen des Kontos werden deine personenbezogenen Daten gelöscht, außer wenn eine gesetzliche Aufbewahrungspflicht besteht. Der Verlauf eines Termins wird mit dem Termin gelöscht. Sicherungen werden nur so lange aufbewahrt, wie es für die Wiederherstellung nötig ist."
+      },
+      {
+        "h": "7. Deine Rechte",
+        "p": "Nach der DSGVO und ähnlichen Gesetzen kannst du deine Daten einsehen, berichtigen, löschen, einschränken oder übertragen lassen, der Verarbeitung widersprechen und deine Einwilligung jederzeit widerrufen. Du kannst dein Profil und deine Termine in der App bearbeiten und uns kontaktieren, um weitere Rechte auszuüben. Du kannst dich bei deiner nationalen Datenschutzbehörde beschweren."
+      },
+      {
+        "h": "8. Sicherheit",
+        "p": "Daten werden bei der Übertragung verschlüsselt (HTTPS). Der Zugriff auf Daten ist durch Sicherheitsregeln auf Zeilenebene beschränkt, sodass jeder Nutzer nur die Kalender erreicht, die er besitzt oder zu denen er eingeladen wurde. Kein System ist vollkommen sicher; wir informieren dich über Datenpannen, soweit das Gesetz es verlangt."
+      },
+      {
+        "h": "9. Kinder",
+        "p": "Der Dienst richtet sich nicht an Kinder unter 16 Jahren (oder unter dem nationalen Alter der digitalen Einwilligung), die kein eigenes Konto anlegen können. Eine Person unter diesem Alter kann in einem Familien-, Sportteam- oder Klassenkalender nur als von einem verantwortlichen Erwachsenen verwaltetes Profil erscheinen und von diesem Erwachsenen einen eingeschränkten Zugang zu Teamkalender und Chat erhalten, wie in Abschnitt 14 beschrieben."
+      },
+      {
+        "h": "10. Internationale Übermittlungen",
+        "p": "Übermittlungen außerhalb der EU/des EWR stützen sich auf Angemessenheitsbeschlüsse oder die Standardvertragsklauseln."
+      },
+      {
+        "h": "11. KI-Assistent",
+        "p": "Wenn du den Assistenten nutzt, werden deine Frage und die für die Antwort nötigen Kalenderdaten (deine Termine mit Titeln und die belegten Zeiten geteilter Kalender) an Anthropic übermittelt, unseren Anbieter von KI-Modellen, der sie in unserem Auftrag verarbeitet. Die Verarbeitung kann außerhalb des EWR erfolgen, auf Grundlage der Standardvertragsklauseln. Wir speichern den Inhalt deiner Fragen nicht, nur die Anzahl der Anfragen und Token, zur Steuerung des Dienstes und für die Preisgestaltung. Rechtsgrundlage: deine Einwilligung, die du mit der Annahme der Richtlinie des Assistenten erteilst (Art. 6 Abs. 1 lit. a); du kannst sie jederzeit widerrufen. Die belegten Zeiten eines geteilten Kalenders können vom Assistenten all jener genutzt werden, die auf diesen Kalender zugreifen; die Mitglieder werden darüber informiert. In einem Team-Chat, in dem der Eigentümer die KI aktiviert hat, werden bei jeder Erwähnung der KI die letzten 40 Nachrichten dieses Chats und die gemeinsamen Notizen an unseren KI-Anbieter gesendet. Antworten und Notizen werden im Chat gespeichert."
+      },
+      {
+        "h": "12. Verbundene Apps",
+        "p": "Du kannst Collyo als Konnektor mit einer KI-App wie Claude verbinden. Jede Verbindung bestätigst du auf einem Zustimmungsbildschirm, und du kannst sie jederzeit in deinem Profil widerrufen. Eine verbundene App kann nur lesen: deine Kalender und Termine mit Titeln sowie die belegten Zeiten geteilter Kalender ohne Titel. Der Konnektor ist schreibgeschützt und gibt keinen Zugriff auf Nachrichten des Team-Chats. Collyo sendet deine Daten nicht von sich aus an die App: Sie gelangen nur dann zur App, wenn du den Konnektor in deinem eigenen Konto nutzt, nach den Bedingungen dieser App."
+      },
+      {
+        "h": "13. Wohlbefinden",
+        "p": "Der Wohlbefinden-Modus ist optional. Wenn Sie ihn einschalten, können Sie eine Altersgruppe, einen Beruf und eine Familiensituation angeben und täglich einen Energie-Check-in erfassen (und die Stimmung, wenn Sie das möchten). Diese Daten werden getrennt gespeichert, sind nur für Sie sichtbar und dienen nur dazu, die Vorschläge des KI-Assistenten anzupassen; sie werden an Anthropic, unseren KI-Anbieter, gesendet, wenn Sie den Assistenten mit aktiviertem Modus nutzen. Rechtsgrundlage: Ihre ausdrückliche Einwilligung (Art. 6 Abs. 1 lit. a und Art. 9 Abs. 2 lit. a, wenn die Daten die Gesundheit betreffen), die Sie jederzeit widerrufen können, indem Sie den Modus ausschalten oder uns bitten, Ihre Einträge zu löschen. Wir speichern sie, bis Sie Ihr Konto löschen oder uns um Löschung bitten. In einem Team, in dem der Inhaber die Teamanalyse einschaltet, werden die belegten Zeiten des Kalenders und, wenn der Inhaber es wählt, die Chat-Nachrichten der letzten Stunde von Anthropic analysiert, um Belastung, Spannungen oder Notlagen zu erkennen, ohne Namen zu senden. Mitglieder können ihre eigenen Nachrichten von dieser Analyse ausschließen. Ein Hinweis auf eine Notlage wird nur der betroffenen Person privat angezeigt. Das Team erhält nur allgemeine Nachrichten, die niemanden nennen. Ein Protokoll der Analysen (Daten, Quellen und Zähler, nie der Nachrichtentext) wird 90 Tage gespeichert und ist für den Inhaber sichtbar. Dies ist keine medizinische Beratung."
+      },
+      {
+        "h": "14. Familien-, Sportteam- und Klassenkalender",
+        "p": "Diese Kalender werden von einem Erwachsenen erstellt, dessen Identität verifiziert wurde (Abschnitt 15). Der Ersteller kann Mitglieder unter 16 Jahren als verwaltete Profile hinzufügen: Vorname, Geburtsjahr, optional Geschlecht und optional Kategorie. Diese Daten sind nur für den Ersteller und die für dieses Profil verantwortlichen Erwachsenen sichtbar. Ein Profil bleibt ausstehend und wird nach 30 Tagen gelöscht, wenn niemand unterschreibt, bis ein verantwortlicher Erwachsener eine Erklärung mit Vor- und Nachnamen unterschreibt; wir speichern den Nachweis der Unterschrift (eingegebener Name, Datum, Textversion und abgedeckte Funktionen). Das Geschlecht wird nur gespeichert, wenn die Erklärung es abdeckt. Die KI ist für jeden Kalender mit einem Minderjährigen ausgeschaltet, es sei denn, eine rechtliche Freigabe ist erfasst und jeder Minderjährige ist durch eine unterschriebene Erklärung für die KI abgedeckt. Rechtsgrundlage: die Einwilligung des Trägers der elterlichen Verantwortung (Art. 6 Abs. 1 lit. a und Art. 8 DSGVO; Einwilligung der Eltern bei Kindern unter 13 in den USA). Der verantwortliche Erwachsene kann sie jederzeit widerrufen und die Löschung unter support@collyo.app verlangen. Ein Minderjähriger kann einen eingeschränkten Zugang zum Teamkalender (nur Lesen) und zum Team-Chat haben, den der erwachsene Inhaber einrichtet: Der Minderjährige meldet sich mit der E-Mail des Teaminhabers und einer Zugangskennung an, die bei der Unterschrift des Erwachsenen erzeugt wird. Wir speichern nur einen Hash der Kennung. Das Konto des Minderjährigen hat keine eigene E-Mail-Adresse, kann keine Termine ändern und kann den Assistenten, den Connector, das Wohlbefinden und Passkeys nicht nutzen. Bei einem Kind, das unter 13 sein könnte, muss die verantwortliche Person zuerst per E-Mail zustimmen, über einen Link an die vom Inhaber eingegebene Adresse; wir speichern den Nachweis der Zustimmung (Datum, Adresse, Textversion). Der erwachsene Inhaber kann den Zugang jederzeit sperren oder eine neue Kennung ausstellen. Die Nachrichten eines Minderjährigen sind für die Mitglieder des Teams sichtbar. Wenn der Inhaber die KI des Team-Chats einschaltet und die unterschriebene Erklärung sie abdeckt, kann ein Minderjähriger die KI fragen: Die letzten Nachrichten des Chats, auch die des Minderjährigen, werden dann an unseren KI-Anbieter gesendet. Ein Minderjähriger kann höchstens 20 Anfragen pro Tag stellen, und die KI kann für ihn keine Termine ändern."
+      },
+      {
+        "h": "15. Identitätsprüfung",
+        "p": "Um einen Familien-, Sportteam- oder Klassenkalender zu erstellen, bestätigt der Ersteller seine Identität über Stripe, unseren Prüfdienstleister. Stripe erfasst und verarbeitet das Ausweisdokument und ein Selfie auf einer eigenen Seite, einschließlich eines biometrischen Abgleichs, nach seinen eigenen Bedingungen und seiner Datenschutzerklärung; Collyo erhält und speichert weder das Dokument noch das Selfie. Collyo speichert nur das Ergebnis (bestätigt oder nicht), den bestätigten Namen, das Land des Dokuments, das Datum und die Kennung der Prüfsitzung. Auf Ihrem eigenen Profil wird ein Abzeichen für bestätigte Identität angezeigt. Rechtsgrundlage: Ihre Einwilligung (Art. 6 Abs. 1 lit. a und Art. 9 Abs. 2 lit. a). Die Verarbeitung kann außerhalb der EU/des EWR auf Grundlage von Standardvertragsklauseln erfolgen. Sie können unter support@collyo.app die Löschung Ihres Prüfeintrags verlangen; die Kalendertypen, die ihn erfordern, stehen Ihnen dann nicht mehr zur Verfügung."
+      },
+      {
+        "h": "16. Zahlungen",
+        "p": "Wenn du ein Abonnement abschließt, wickelt Stripe die Zahlung als Wiederverkäufer (Merchant of Record) nach seiner eigenen Datenschutzerklärung ab: Es erhält deinen Namen, deine E-Mail, deine Rechnungsadresse, ggf. deine USt-IdNr. und deine Kartendaten. Collyo sieht deine Karte nie. Wir speichern nur deinen Tarif, seinen Status, die Anzahl der Plätze, das Verlängerungsdatum und die Kunden- und Abonnement-Kennungen von Stripe, um deinen Tarif anzuwenden (Rechtsgrundlage: Vertragserfüllung), solange das Abonnement besteht und solange das Buchhaltungsrecht es verlangt."
+      },
+      {
+        "h": "17. Änderungen",
+        "p": "Wir aktualisieren diese Erklärung, wenn sich unsere Praxis ändert. Zuletzt aktualisiert: 19. November 2026."
+      }
     ],
-    cookies: [
-      { h: "1. Was wir verwenden", p: "Calendar App verwendet keine Werbe-, Tracking- oder Analyse-Cookies. Sie nutzt den Browserspeicher (localStorage) nur für zwei Zwecke." },
-      { h: "2. Unbedingt erforderlicher Speicher", p: "Sitzung: hält dich zwischen Besuchen angemeldet (gesetzt von unserem Authentifizierungsanbieter). Sprache: merkt sich die gewählte Oberflächensprache. Keiner davon erfordert nach der ePrivacy-Richtlinie eine Einwilligung, da er für den gewünschten Dienst unbedingt erforderlich ist." },
-      { h: "3. Cookies von Drittanbietern", p: "Die Anwendung lädt keine Werbe- oder Analyse-Skripte von Drittanbietern. Unsere Hosting- und Authentifizierungsanbieter können technische Cookies setzen, die für Sicherheit und Auslieferung nötig sind." },
-      { h: "4. Speicher verwalten", p: "Du kannst diesen Speicher jederzeit in den Browser-Einstellungen löschen. Das Löschen der Sitzung meldet dich ab; das Löschen der Spracheinstellung setzt sie auf Englisch zurück." },
-      { h: "5. Änderungen", p: "Falls wir künftig nicht unbedingt erforderlichen Speicher einsetzen, fragen wir vorher nach deiner Einwilligung. Zuletzt aktualisiert: 17. November 2026." },
-    ],
+    "cookies": [
+      {
+        "h": "1. Was wir verwenden",
+        "p": "Calendar App verwendet keine Werbe-, Tracking- oder Analyse-Cookies. Sie nutzt den Browserspeicher (localStorage) nur für zwei Zwecke."
+      },
+      {
+        "h": "2. Unbedingt erforderlicher Speicher",
+        "p": "Sitzung: hält dich zwischen Besuchen angemeldet (gesetzt von unserem Authentifizierungsanbieter). Sprache: merkt sich die gewählte Oberflächensprache. Keiner davon erfordert nach der ePrivacy-Richtlinie eine Einwilligung, da er für den gewünschten Dienst unbedingt erforderlich ist."
+      },
+      {
+        "h": "3. Cookies von Drittanbietern",
+        "p": "Die Anwendung lädt keine Werbe- oder Analyse-Skripte von Drittanbietern. Unsere Hosting- und Authentifizierungsanbieter können technische Cookies setzen, die für Sicherheit und Auslieferung nötig sind."
+      },
+      {
+        "h": "4. Speicher verwalten",
+        "p": "Du kannst diesen Speicher jederzeit in den Browser-Einstellungen löschen. Das Löschen der Sitzung meldet dich ab; das Löschen der Spracheinstellung setzt sie auf Englisch zurück."
+      },
+      {
+        "h": "5. Änderungen",
+        "p": "Falls wir künftig nicht unbedingt erforderlichen Speicher einsetzen, fragen wir vorher nach deiner Einwilligung. Zuletzt aktualisiert: 19. November 2026."
+      }
+    ]
   },
-  ar: {
-    title: {"terms": "شروط الاستخدام", "privacy": "سياسة الخصوصية", "cookies": "سياسة ملفات تعريف الارتباط"},
-    terms: [
-      { h: "1. الغرض", p: "تطبيق التقويم هو تقويم على الويب يتيح لك إنشاء الأحداث وتعديلها وحذفها، وتنظيمها في تقاويم، ومشاركة التقاويم مع أشخاص آخرين عبر الدعوات." },
-      { h: "2. الحسابات", p: "تنشئ حساباً بعنوان بريد إلكتروني وكلمة مرور. أنت مسؤول عن سرية بيانات الدخول وعن كل نشاط في حسابك. يجب أن تقدم معلومات دقيقة وأن يكون عمرك 16 عاماً على الأقل، أو سن الموافقة الرقمية في بلدك." },
-      { h: "3. محتواك", p: "أنت تمتلك الأحداث والعناوين والأوصاف والمواقع والصور التي تضيفها. تمنح المشغّل فقط الحقوق اللازمة لتخزينها وعرضها لك وللأشخاص الذين تشاركهم معهم." },
-      { h: "4. المشاركة والأدوار", p: "عندما تدعو شخصاً إلى تقويم، يتلقى بريداً إلكترونياً ويمكنه القبول أو الرفض. لا يُمنح الوصول إلا بعد القبول. تحدد الأدوار (مدير، مساهم، قارئ) ما يمكن لكل عضو فعله. لا تشارك التقاويم مع أشخاص لم يوافقوا على تلقيها." },
-      { h: "5. الاستخدام المقبول", p: "لا يجوز استخدام الخدمة لتخزين محتوى غير قانوني، أو مضايقة الآخرين، أو إرسال رسائل غير مرغوب فيها عبر الدعوات، أو محاولة الوصول غير المصرح به إلى حسابات أو بيانات أخرى، أو تعطيل الخدمة." },
-      { h: "6. التوفر", p: "تُقدَّم الخدمة «كما هي». نسعى إلى توفر مستمر دون ضمانه. قد تتغير الميزات مع الوقت." },
-      { h: "7. الإنهاء", p: "يمكنك حذف حسابك في أي وقت. قد نعلّق الحسابات التي تخالف هذه الشروط." },
-      { h: "8. المسؤولية", p: "بالقدر الذي يسمح به القانون، لا يتحمل المشغّل مسؤولية الخسائر غير المباشرة، بما في ذلك الأحداث الفائتة أو الخسائر الناجمة عن تعديل تقويم مشترك من عضو آخر." },
-      { h: "9. القانون الواجب التطبيق", p: "تخضع هذه الشروط للقانون البرتغالي. تختص محاكم بورتو، دون المساس بالحقوق الإلزامية للمستهلكين في بلد إقامتك." },
-      { h: "10. مساعد الذكاء الاصطناعي", p: "مساعد الذكاء الاصطناعي اختياري. يجيب عن أسئلتك حول تقويماتك ويقترح أوقاتاً فارغة. يقرأ أحداثك الخاصة، وفي التقاويم المشتركة يقرأ فقط الأوقات المشغولة لأعضائها. يجب أن تقبل هذه السياسة قبل أول استخدام. لا تستخدم المساعد لمراقبة الآخرين أو الضغط عليهم. اقتراحاته غير ملزمة وقد تحتوي على أخطاء: تحقق منها قبل التصرف. يُعلَم أعضاء التقويم المشترك بهذه الإمكانية. إذا فعّل مالك التقويم الذكاء الاصطناعي في دردشة الفريق، يقرأ الذكاء الاصطناعي تلك الدردشة عندما يشير إليه أحد الأعضاء، ويُعلَم الأعضاء بذلك في الدردشة. المالك وحده يمكنه تفعيله أو إيقافه. إذا سمحتَ بذلك في إعدادات الذكاء الاصطناعي، يمكن للمساعد أيضًا إنشاء الأحداث أو نقلها أو حذفها في تقاويمك، ويخبرك بما غيّره." },
-      { h: "11. الرفاهية والمجموعات والقاصرون", p: "وضع الرفاهية اختياري وليس خدمة طبية: يقدّم اقتراحات عامة ولا يشخّص ولا يعالج أي حالة. في حالة الطوارئ، اتصل برقم الطوارئ المحلي. يمكن أن تضم تقاويم العائلة والفرق الرياضية والصفوف أعضاءً دون 16 سنة (أو دون سن الموافقة الرقمية). ولا يمكن إنشاؤها إلا من قبل بالغ تم التحقق من هويته، ولا تتم إضافة قاصر إلا بعد توقيع بالغ مسؤول على إقرار بالاسم الأول واسم العائلة. بالتوقيع، تؤكد أنك تملك السلطة الأبوية أو صفة مسؤول الفريق أو الصف، وأن البيانات المُدخلة صحيحة. يُعدّ الإقرار الكاذب مخالفة لهذه الشروط. يمكن للبالغ المسؤول سحب موافقته في أي وقت. يتحمل البالغ الذي يضيف قاصرًا مسؤولية الدخول الممنوح لهذا القاصر، وما يكتبه القاصر في دردشة الفريق، وقرار السماح باستخدام الذكاء الاصطناعي في دردشة الفريق." },
-      { h: "12. التواصل", p: "للاستفسارات: support@collyo.app." },
+  "ar": {
+    "title": {
+      "terms": "شروط الاستخدام",
+      "privacy": "سياسة الخصوصية",
+      "cookies": "سياسة ملفات تعريف الارتباط"
+    },
+    "terms": [
+      {
+        "h": "1. الغرض",
+        "p": "تطبيق التقويم هو تقويم على الويب يتيح لك إنشاء الأحداث وتعديلها وحذفها، وتنظيمها في تقاويم، ومشاركة التقاويم مع أشخاص آخرين عبر الدعوات."
+      },
+      {
+        "h": "2. الحسابات",
+        "p": "تنشئ حساباً بعنوان بريد إلكتروني وكلمة مرور. أنت مسؤول عن سرية بيانات الدخول وعن كل نشاط في حسابك. يجب أن تقدم معلومات دقيقة وأن يكون عمرك 16 عاماً على الأقل، أو سن الموافقة الرقمية في بلدك."
+      },
+      {
+        "h": "3. محتواك",
+        "p": "أنت تمتلك الأحداث والعناوين والأوصاف والمواقع والصور التي تضيفها. تمنح المشغّل فقط الحقوق اللازمة لتخزينها وعرضها لك وللأشخاص الذين تشاركهم معهم."
+      },
+      {
+        "h": "4. المشاركة والأدوار",
+        "p": "عندما تدعو شخصاً إلى تقويم، يتلقى بريداً إلكترونياً ويمكنه القبول أو الرفض. لا يُمنح الوصول إلا بعد القبول. تحدد الأدوار (مدير، مساهم، قارئ) ما يمكن لكل عضو فعله. لا تشارك التقاويم مع أشخاص لم يوافقوا على تلقيها."
+      },
+      {
+        "h": "5. الاستخدام المقبول",
+        "p": "لا يجوز استخدام الخدمة لتخزين محتوى غير قانوني، أو مضايقة الآخرين، أو إرسال رسائل غير مرغوب فيها عبر الدعوات، أو محاولة الوصول غير المصرح به إلى حسابات أو بيانات أخرى، أو تعطيل الخدمة."
+      },
+      {
+        "h": "6. التوفر",
+        "p": "تُقدَّم الخدمة «كما هي». نسعى إلى توفر مستمر دون ضمانه. قد تتغير الميزات مع الوقت."
+      },
+      {
+        "h": "7. الإنهاء",
+        "p": "يمكنك حذف حسابك في أي وقت. قد نعلّق الحسابات التي تخالف هذه الشروط."
+      },
+      {
+        "h": "8. المسؤولية",
+        "p": "بالقدر الذي يسمح به القانون، لا يتحمل المشغّل مسؤولية الخسائر غير المباشرة، بما في ذلك الأحداث الفائتة أو الخسائر الناجمة عن تعديل تقويم مشترك من عضو آخر."
+      },
+      {
+        "h": "9. القانون الواجب التطبيق",
+        "p": "تخضع هذه الشروط للقانون البرتغالي. تختص محاكم بورتو، دون المساس بالحقوق الإلزامية للمستهلكين في بلد إقامتك."
+      },
+      {
+        "h": "10. مساعد الذكاء الاصطناعي",
+        "p": "مساعد الذكاء الاصطناعي اختياري. يجيب عن أسئلتك حول تقويماتك ويقترح أوقاتاً فارغة. يقرأ أحداثك الخاصة، وفي التقاويم المشتركة يقرأ فقط الأوقات المشغولة لأعضائها. يجب أن تقبل هذه السياسة قبل أول استخدام. لا تستخدم المساعد لمراقبة الآخرين أو الضغط عليهم. اقتراحاته غير ملزمة وقد تحتوي على أخطاء: تحقق منها قبل التصرف. يُعلَم أعضاء التقويم المشترك بهذه الإمكانية. إذا فعّل مالك التقويم الذكاء الاصطناعي في دردشة الفريق، يقرأ الذكاء الاصطناعي تلك الدردشة عندما يشير إليه أحد الأعضاء، ويُعلَم الأعضاء بذلك في الدردشة. المالك وحده يمكنه تفعيله أو إيقافه. إذا سمحتَ بذلك في إعدادات الذكاء الاصطناعي، يمكن للمساعد أيضًا إنشاء الأحداث أو نقلها أو حذفها في تقاويمك، ويخبرك بما غيّره."
+      },
+      {
+        "h": "11. الرفاهية والمجموعات والقاصرون",
+        "p": "وضع الرفاهية اختياري وليس خدمة طبية: يقدّم اقتراحات عامة ولا يشخّص ولا يعالج أي حالة. في حالة الطوارئ، اتصل برقم الطوارئ المحلي. يمكن أن تضم تقاويم العائلة والفرق الرياضية والصفوف أعضاءً دون 16 سنة (أو دون سن الموافقة الرقمية). ولا يمكن إنشاؤها إلا من قبل بالغ تم التحقق من هويته، ولا تتم إضافة قاصر إلا بعد توقيع بالغ مسؤول على إقرار بالاسم الأول واسم العائلة. بالتوقيع، تؤكد أنك تملك السلطة الأبوية أو صفة مسؤول الفريق أو الصف، وأن البيانات المُدخلة صحيحة. يُعدّ الإقرار الكاذب مخالفة لهذه الشروط. يمكن للبالغ المسؤول سحب موافقته في أي وقت. يتحمل البالغ الذي يضيف قاصرًا مسؤولية الدخول الممنوح لهذا القاصر، وما يكتبه القاصر في دردشة الفريق، وقرار السماح باستخدام الذكاء الاصطناعي في دردشة الفريق."
+      },
+      {
+        "h": "12. الاشتراكات والدفع",
+        "p": "يمكن استخدام Collyo مجانًا دون ذكاء اصطناعي. الباقات المدفوعة (Starter وPro وTeam) اشتراكات شهرية أو سنوية. تبيعها Stripe وتصدر فواتيرها بصفتها موزعًا (التاجر المسجّل)، وتحصّل كذلك ضريبة القيمة المضافة؛ وتذكر ذلك صفحة الدفع وقد تعرض السعر بعملتك. يُطبَّق السعر المعروض في صفحة الأسعار. يتجدد الاشتراك تلقائيًا حتى تلغيه من ملفك الشخصي («إدارة اشتراكي»)، ويبقى نشطًا حتى نهاية الفترة المدفوعة. للمستهلكين في الاتحاد الأوروبي حق العدول خلال 14 يومًا وفق الشروط القانونية؛ ويمكن لباقات فرق العمل طلب استرداد المبلغ خلال 30 يومًا من الدفعة الأولى عبر support@collyo.app. نعلن عن أي تغيير في السعر قبل 30 يومًا على الأقل بالبريد الإلكتروني، ويمكنك الإلغاء قبل تطبيقه. حذف حسابك يلغي اشتراكك. موافقة الأولياء وحماية القاصرين وحذف الحساب جزء من كل الباقات."
+      },
+      {
+        "h": "13. التواصل",
+        "p": "للاستفسارات: support@collyo.app."
+      }
     ],
-    privacy: [
-      { h: "1. من نحن", p: "المسؤول عن معالجة البيانات: AI Solution Hub®، Rua Oscar da Silva 83, 2L, 4200-399 Porto، البرتغال. للتواصل: support@collyo.app." },
-      { h: "2. البيانات التي نجمعها", p: "بيانات الحساب: البريد الإلكتروني وكلمة المرور (مخزنة كقيمة تجزئة لدى مزود المصادقة). بيانات الملف الشخصي: الاسم المعروض وصورة الملف الشخصي الاختيارية. بيانات التقويم: التقاويم، والأحداث (العنوان، الوصف، المكان، وقتا البداية والنهاية، التذكير)، وسجل التغييرات على الأحداث. بيانات المشاركة: الأعضاء والأدوار والدعوات. البيانات التقنية: تفضيل اللغة المخزن في متصفحك." },
-      { h: "3. أسباب المعالجة", p: "لتقديم الخدمة التي طلبتها (إنشاء التقاويم ومشاركتها)، وإرسال رسائل الدعوة التي تبدأها، والاحتفاظ بسجل نشاط لمراجعة التغييرات واستعادتها، وللحفاظ على أمان الخدمة. الأساس القانوني بموجب اللائحة الأوروبية (GDPR): تنفيذ العقد (المادة 6(1)(ب))؛ المصالح المشروعة في الأمان (المادة 6(1)(و))؛ الموافقة عند رفع صورة (المادة 6(1)(أ))." },
-      { h: "4. من يمكنه رؤية بياناتك", p: "بياناتك خاصة افتراضياً. يكون محتوى التقويم مرئياً لأعضائه بحسب دورهم. يمكن للأعضاء الآخرين رؤية اسمك وصورتك في تقويم تشاركه. سجل الحدث المشترك مرئي لأعضاء ذلك التقويم." },
-      { h: "5. مزودو الخدمة", p: "نستخدم المعالجين التاليين: Supabase (قاعدة البيانات والمصادقة وتخزين الصور الرمزية؛ الاتحاد الأوروبي، eu-west-1 أيرلندا)؛ Resend (رسائل الدعوة؛ الاتحاد الأوروبي، eu-west-1)؛ Vercel (استضافة تطبيق الويب؛ شبكة عالمية). أي نقل خارج الاتحاد الأوروبي/المنطقة الاقتصادية الأوروبية يستند إلى قرارات الملاءمة أو البنود التعاقدية النموذجية. يتولى Stripe التحقق من هوية منشئي التقاويم (انظر القسم 15)." },
-      { h: "6. مدة الاحتفاظ", p: "نحتفظ ببياناتك طالما حسابك نشط. يؤدي حذف الحساب إلى حذف بياناتك الشخصية، إلا إذا أوجب القانون الاحتفاظ بها. يُحذف سجل الحدث مع الحدث الذي يصفه. تُحفظ النسخ الاحتياطية فقط للمدة اللازمة للاستعادة." },
-      { h: "7. حقوقك", p: "بموجب اللائحة الأوروبية وقوانين مماثلة، يمكنك الوصول إلى بياناتك وتصحيحها وحذفها وتقييد معالجتها ونقلها، والاعتراض على المعالجة، وسحب موافقتك في أي وقت. يمكنك تعديل ملفك الشخصي وأحداثك في التطبيق، والتواصل معنا لممارسة حقوق أخرى. يمكنك تقديم شكوى إلى سلطة حماية البيانات في بلدك." },
-      { h: "8. الأمان", p: "تُشفَّر البيانات أثناء النقل (HTTPS). يُقيَّد الوصول إلى البيانات بقواعد أمان على مستوى الصفوف، بحيث لا يصل كل مستخدم إلا إلى التقاويم التي يملكها أو التي دُعي إليها. لا يوجد نظام آمن تماماً؛ وسنخطرك بأي خرق كما يقتضي القانون." },
-      { h: "9. الأطفال", p: "الخدمة غير موجهة للأطفال دون 16 سنة (أو دون السن الوطنية للموافقة الرقمية)، ولا يمكنهم إنشاء حساب خاص بهم. لا يمكن أن يظهر شخص دون هذه السن في تقويم العائلة أو الفريق الرياضي أو الصف إلا كملف يديره بالغ مسؤول، ويمكن أن يحصل من هذا البالغ على دخول محدود إلى تقويم الفريق ودردشته، كما هو موضح في القسم 14." },
-      { h: "10. عمليات النقل الدولية", p: "تستند عمليات النقل خارج الاتحاد الأوروبي/المنطقة الاقتصادية إلى قرارات الملاءمة أو البنود التعاقدية النموذجية." },
-      { h: "11. مساعد الذكاء الاصطناعي", p: "عند استخدام المساعد، ترسل سؤالك ومعلومات التقويم اللازمة للإجابة (أحداثك بعناوينها، والأوقات المشغولة للتقاويم المشتركة) إلى Anthropic، مزود نماذج الذكاء الاصطناعي لدينا، الذي يعالجها نيابةً عنا. قد تتم المعالجة خارج المنطقة الاقتصادية الأوروبية بموجب البنود التعاقدية النموذجية. لا نحتفظ بمحتوى أسئلتك، بل بعدد الطلبات والرموز فقط لإدارة الخدمة وتحديد الأسعار. الأساس القانوني: موافقتك عند قبول سياسة المساعد (المادة 6(1)(أ))، ويمكنك سحبها في أي وقت. قد يستخدم مساعد أي شخص له حق الوصول إلى التقويم المشترك الأوقات المشغولة فيه، ويُعلَم الأعضاء بذلك. في دردشة فريق فعّل مالكها الذكاء الاصطناعي، تُرسل آخر 40 رسالة في هذه الدردشة والملاحظات المشتركة إلى مزود الذكاء الاصطناعي في كل مرة يُشار فيها إليه. تُحفظ الردود والملاحظات في الدردشة." },
-      { h: "12. التطبيقات المتصلة", p: "يمكنك ربط Collyo بتطبيق ذكاء اصطناعي، مثل Claude، كموصل. توافق على كل اتصال في شاشة الموافقة، ويمكنك إلغاؤه في أي وقت من ملفك الشخصي. يمكن للتطبيق المتصل القراءة فقط: تقاويمك وأحداثك مع عناوينها، والأوقات المشغولة للتقاويم المشتركة دون عناوين. الموصل للقراءة فقط ولا يمنح وصولاً إلى رسائل دردشة الفريق. لا يرسل Collyo بياناتك إلى التطبيق من تلقاء نفسه: تصل البيانات إليه فقط عندما تستخدم الموصل من حسابك، وفق شروط ذلك التطبيق." },
-      { h: "13. الرفاهية", p: "وضع الرفاهية اختياري. إذا فعّلته، يمكنك تحديد فئة عمرية ومهنة ووضع أسري، وتسجيل تقييم يومي للطاقة (والمزاج إن اخترت ذلك). تُخزَّن هذه البيانات منفصلة، ولا يراها غيرك، وتُستخدم فقط لتكييف اقتراحات مساعد الذكاء الاصطناعي؛ وتُرسل إلى Anthropic، مزود الذكاء الاصطناعي لدينا، عند استخدامك المساعد والوضع مفعّل. الأساس القانوني: موافقتك الصريحة (المادة 6(1)(أ) و9(2)(أ) عندما تتعلق البيانات بالصحة)، ويمكنك سحبها في أي وقت بإيقاف الوضع أو بطلب حذف بياناتك. نحتفظ بها حتى تحذف حسابك أو تطلب حذفها. في فريق يفعّل فيه المالك تحليل الفريق، تُحلَّل الأوقات المشغولة في التقويم، وإذا اختار المالك ذلك رسائل الدردشة في الساعة الأخيرة، بواسطة Anthropic لرصد العبء أو التوتر أو الضائقة، دون إرسال أسماء. يمكن للأعضاء استبعاد رسائلهم من هذا التحليل. تظهر إشارة الضائقة للشخص المعني وحده وبشكل خاص. ولا يتلقى الفريق إلا رسائل عامة لا تذكر أحدًا. يُحتفظ بسجل للتحليلات (التواريخ والمصادر والأعداد، وليس نص الرسائل أبدًا) لمدة 90 يومًا، ويراه المالك. هذا ليس استشارة طبية." },
-      { h: "14. تقاويم العائلة والفرق الرياضية والصفوف", p: "يُنشئ هذه التقاويم بالغ تم التحقق من هويته (القسم 15). يمكن للمنشئ إضافة أعضاء دون 16 سنة كملفات مُدارة: الاسم الأول وسنة الميلاد والجنس (اختياري) والفئة (اختيارية). لا يرى هذه البيانات إلا المنشئ والبالغون المسؤولون عن هذا الملف. يبقى الملف معلقًا ويُحذف بعد 30 يومًا إذا لم يوقّع أحد، إلى أن يوقّع بالغ مسؤول على إقرار بالاسم الأول واسم العائلة؛ ونحتفظ بسجل التوقيع (الاسم المُدخل والتاريخ ونسخة النص والوظائف المشمولة). لا يُخزَّن الجنس إلا إذا شمله الإقرار. يُعطَّل الذكاء الاصطناعي في أي تقويم يضم قاصرًا، ما لم تُسجَّل موافقة قانونية ويكن كل قاصر مشمولًا بإقرار موقّع للذكاء الاصطناعي. الأساس القانوني: موافقة صاحب المسؤولية الأبوية (المادتان 6(1)(أ) و8 من اللائحة العامة لحماية البيانات؛ وموافقة الوالدين للأطفال دون 13 سنة في الولايات المتحدة). يمكن للبالغ المسؤول سحبها وطلب الحذف في أي وقت عبر support@collyo.app. يمكن أن يحصل القاصر على دخول محدود إلى تقويم الفريق (للقراءة فقط) ودردشة الفريق، ينشئه البالغ المالك: يدخل القاصر بالبريد الإلكتروني لمالك الفريق ومعرّف دخول يُنشأ عند توقيع البالغ. نحتفظ ببصمة المعرّف فقط. ليس لحساب القاصر بريد إلكتروني خاص به، ولا يمكنه تعديل الأحداث، ولا يمكنه استخدام المساعد أو الموصّل أو الرفاهية أو مفاتيح المرور. بالنسبة لطفل قد يكون دون 13 سنة، يجب أن يوافق المسؤول أولًا عبر البريد الإلكتروني، من خلال رابط يُرسل إلى العنوان الذي يدخله المالك؛ ونحتفظ بسجل الموافقة (التاريخ والعنوان ونسخة النص). يمكن للبالغ المالك قطع الدخول أو إصدار معرّف جديد في أي وقت. رسائل القاصر مرئية لأعضاء الفريق. إذا فعّل المالك ذكاء دردشة الفريق وشملته الإقرارات الموقعة، يمكن للقاصر أن يسأل الذكاء الاصطناعي: تُرسل حينها آخر رسائل الدردشة، بما فيها رسائل القاصر، إلى مزود الذكاء الاصطناعي لدينا. يمكن للقاصر تقديم 20 طلبًا يوميًا على الأكثر، ولا يستطيع الذكاء الاصطناعي تعديل الأحداث نيابة عنه." },
-      { h: "15. التحقق من الهوية", p: "لإنشاء تقويم عائلة أو فريق رياضي أو صف، يتحقق المنشئ من هويته عبر Stripe، مزود التحقق لدينا. تجمع Stripe وثيقة الهوية وصورة شخصية وتعالجهما في صفحتها الخاصة، بما في ذلك مقارنة بيومترية، وفق شروطها وسياسة الخصوصية الخاصة بها؛ ولا يتلقى Collyo الوثيقة ولا الصورة ولا يخزّنهما. يحتفظ Collyo فقط بالنتيجة (تم التحقق أم لا) والاسم الذي تم التحقق منه وبلد الوثيقة والتاريخ ومعرّف جلسة التحقق. تظهر شارة «تم التحقق من الهوية» على ملفك الشخصي أنت فقط. الأساس القانوني: موافقتك (المادة 6(1)(أ) و9(2)(أ)). قد تتم المعالجة خارج الاتحاد الأوروبي/المنطقة الاقتصادية الأوروبية بموجب البنود التعاقدية القياسية. يمكنك طلب حذف سجل التحقق الخاص بك عبر support@collyo.app؛ وعندها لن تتوفر لك أنواع التقاويم التي تتطلبه." },
-      { h: "16. التغييرات", p: "نحدّث هذه السياسة عند تغيّر ممارساتنا. آخر تحديث: 17 نوفمبر 2026." },
+    "privacy": [
+      {
+        "h": "1. من نحن",
+        "p": "المسؤول عن معالجة البيانات: AI Solution Hub®، Rua Oscar da Silva 83, 2L, 4200-399 Porto، البرتغال. للتواصل: support@collyo.app."
+      },
+      {
+        "h": "2. البيانات التي نجمعها",
+        "p": "بيانات الحساب: البريد الإلكتروني وكلمة المرور (مخزنة كقيمة تجزئة لدى مزود المصادقة). بيانات الملف الشخصي: الاسم المعروض وصورة الملف الشخصي الاختيارية. بيانات التقويم: التقاويم، والأحداث (العنوان، الوصف، المكان، وقتا البداية والنهاية، التذكير)، وسجل التغييرات على الأحداث. بيانات المشاركة: الأعضاء والأدوار والدعوات. البيانات التقنية: تفضيل اللغة المخزن في متصفحك."
+      },
+      {
+        "h": "3. أسباب المعالجة",
+        "p": "لتقديم الخدمة التي طلبتها (إنشاء التقاويم ومشاركتها)، وإرسال رسائل الدعوة التي تبدأها، والاحتفاظ بسجل نشاط لمراجعة التغييرات واستعادتها، وللحفاظ على أمان الخدمة. الأساس القانوني بموجب اللائحة الأوروبية (GDPR): تنفيذ العقد (المادة 6(1)(ب))؛ المصالح المشروعة في الأمان (المادة 6(1)(و))؛ الموافقة عند رفع صورة (المادة 6(1)(أ))."
+      },
+      {
+        "h": "4. من يمكنه رؤية بياناتك",
+        "p": "بياناتك خاصة افتراضياً. يكون محتوى التقويم مرئياً لأعضائه بحسب دورهم. يمكن للأعضاء الآخرين رؤية اسمك وصورتك في تقويم تشاركه. سجل الحدث المشترك مرئي لأعضاء ذلك التقويم."
+      },
+      {
+        "h": "5. مزودو الخدمة",
+        "p": "نستخدم المعالجين التاليين: Supabase (قاعدة البيانات والمصادقة وتخزين الصور الرمزية؛ الاتحاد الأوروبي، eu-west-1 أيرلندا)؛ Resend (رسائل الدعوة؛ الاتحاد الأوروبي، eu-west-1)؛ Vercel (استضافة تطبيق الويب؛ شبكة عالمية). أي نقل خارج الاتحاد الأوروبي/المنطقة الاقتصادية الأوروبية يستند إلى قرارات الملاءمة أو البنود التعاقدية النموذجية. يتولى Stripe التحقق من هوية منشئي التقاويم (انظر القسم 15). تبيع Stripe الباقات المدفوعة بصفتها موزعًا (انظر القسم 16)."
+      },
+      {
+        "h": "6. مدة الاحتفاظ",
+        "p": "نحتفظ ببياناتك طالما حسابك نشط. يؤدي حذف الحساب إلى حذف بياناتك الشخصية، إلا إذا أوجب القانون الاحتفاظ بها. يُحذف سجل الحدث مع الحدث الذي يصفه. تُحفظ النسخ الاحتياطية فقط للمدة اللازمة للاستعادة."
+      },
+      {
+        "h": "7. حقوقك",
+        "p": "بموجب اللائحة الأوروبية وقوانين مماثلة، يمكنك الوصول إلى بياناتك وتصحيحها وحذفها وتقييد معالجتها ونقلها، والاعتراض على المعالجة، وسحب موافقتك في أي وقت. يمكنك تعديل ملفك الشخصي وأحداثك في التطبيق، والتواصل معنا لممارسة حقوق أخرى. يمكنك تقديم شكوى إلى سلطة حماية البيانات في بلدك."
+      },
+      {
+        "h": "8. الأمان",
+        "p": "تُشفَّر البيانات أثناء النقل (HTTPS). يُقيَّد الوصول إلى البيانات بقواعد أمان على مستوى الصفوف، بحيث لا يصل كل مستخدم إلا إلى التقاويم التي يملكها أو التي دُعي إليها. لا يوجد نظام آمن تماماً؛ وسنخطرك بأي خرق كما يقتضي القانون."
+      },
+      {
+        "h": "9. الأطفال",
+        "p": "الخدمة غير موجهة للأطفال دون 16 سنة (أو دون السن الوطنية للموافقة الرقمية)، ولا يمكنهم إنشاء حساب خاص بهم. لا يمكن أن يظهر شخص دون هذه السن في تقويم العائلة أو الفريق الرياضي أو الصف إلا كملف يديره بالغ مسؤول، ويمكن أن يحصل من هذا البالغ على دخول محدود إلى تقويم الفريق ودردشته، كما هو موضح في القسم 14."
+      },
+      {
+        "h": "10. عمليات النقل الدولية",
+        "p": "تستند عمليات النقل خارج الاتحاد الأوروبي/المنطقة الاقتصادية إلى قرارات الملاءمة أو البنود التعاقدية النموذجية."
+      },
+      {
+        "h": "11. مساعد الذكاء الاصطناعي",
+        "p": "عند استخدام المساعد، ترسل سؤالك ومعلومات التقويم اللازمة للإجابة (أحداثك بعناوينها، والأوقات المشغولة للتقاويم المشتركة) إلى Anthropic، مزود نماذج الذكاء الاصطناعي لدينا، الذي يعالجها نيابةً عنا. قد تتم المعالجة خارج المنطقة الاقتصادية الأوروبية بموجب البنود التعاقدية النموذجية. لا نحتفظ بمحتوى أسئلتك، بل بعدد الطلبات والرموز فقط لإدارة الخدمة وتحديد الأسعار. الأساس القانوني: موافقتك عند قبول سياسة المساعد (المادة 6(1)(أ))، ويمكنك سحبها في أي وقت. قد يستخدم مساعد أي شخص له حق الوصول إلى التقويم المشترك الأوقات المشغولة فيه، ويُعلَم الأعضاء بذلك. في دردشة فريق فعّل مالكها الذكاء الاصطناعي، تُرسل آخر 40 رسالة في هذه الدردشة والملاحظات المشتركة إلى مزود الذكاء الاصطناعي في كل مرة يُشار فيها إليه. تُحفظ الردود والملاحظات في الدردشة."
+      },
+      {
+        "h": "12. التطبيقات المتصلة",
+        "p": "يمكنك ربط Collyo بتطبيق ذكاء اصطناعي، مثل Claude، كموصل. توافق على كل اتصال في شاشة الموافقة، ويمكنك إلغاؤه في أي وقت من ملفك الشخصي. يمكن للتطبيق المتصل القراءة فقط: تقاويمك وأحداثك مع عناوينها، والأوقات المشغولة للتقاويم المشتركة دون عناوين. الموصل للقراءة فقط ولا يمنح وصولاً إلى رسائل دردشة الفريق. لا يرسل Collyo بياناتك إلى التطبيق من تلقاء نفسه: تصل البيانات إليه فقط عندما تستخدم الموصل من حسابك، وفق شروط ذلك التطبيق."
+      },
+      {
+        "h": "13. الرفاهية",
+        "p": "وضع الرفاهية اختياري. إذا فعّلته، يمكنك تحديد فئة عمرية ومهنة ووضع أسري، وتسجيل تقييم يومي للطاقة (والمزاج إن اخترت ذلك). تُخزَّن هذه البيانات منفصلة، ولا يراها غيرك، وتُستخدم فقط لتكييف اقتراحات مساعد الذكاء الاصطناعي؛ وتُرسل إلى Anthropic، مزود الذكاء الاصطناعي لدينا، عند استخدامك المساعد والوضع مفعّل. الأساس القانوني: موافقتك الصريحة (المادة 6(1)(أ) و9(2)(أ) عندما تتعلق البيانات بالصحة)، ويمكنك سحبها في أي وقت بإيقاف الوضع أو بطلب حذف بياناتك. نحتفظ بها حتى تحذف حسابك أو تطلب حذفها. في فريق يفعّل فيه المالك تحليل الفريق، تُحلَّل الأوقات المشغولة في التقويم، وإذا اختار المالك ذلك رسائل الدردشة في الساعة الأخيرة، بواسطة Anthropic لرصد العبء أو التوتر أو الضائقة، دون إرسال أسماء. يمكن للأعضاء استبعاد رسائلهم من هذا التحليل. تظهر إشارة الضائقة للشخص المعني وحده وبشكل خاص. ولا يتلقى الفريق إلا رسائل عامة لا تذكر أحدًا. يُحتفظ بسجل للتحليلات (التواريخ والمصادر والأعداد، وليس نص الرسائل أبدًا) لمدة 90 يومًا، ويراه المالك. هذا ليس استشارة طبية."
+      },
+      {
+        "h": "14. تقاويم العائلة والفرق الرياضية والصفوف",
+        "p": "يُنشئ هذه التقاويم بالغ تم التحقق من هويته (القسم 15). يمكن للمنشئ إضافة أعضاء دون 16 سنة كملفات مُدارة: الاسم الأول وسنة الميلاد والجنس (اختياري) والفئة (اختيارية). لا يرى هذه البيانات إلا المنشئ والبالغون المسؤولون عن هذا الملف. يبقى الملف معلقًا ويُحذف بعد 30 يومًا إذا لم يوقّع أحد، إلى أن يوقّع بالغ مسؤول على إقرار بالاسم الأول واسم العائلة؛ ونحتفظ بسجل التوقيع (الاسم المُدخل والتاريخ ونسخة النص والوظائف المشمولة). لا يُخزَّن الجنس إلا إذا شمله الإقرار. يُعطَّل الذكاء الاصطناعي في أي تقويم يضم قاصرًا، ما لم تُسجَّل موافقة قانونية ويكن كل قاصر مشمولًا بإقرار موقّع للذكاء الاصطناعي. الأساس القانوني: موافقة صاحب المسؤولية الأبوية (المادتان 6(1)(أ) و8 من اللائحة العامة لحماية البيانات؛ وموافقة الوالدين للأطفال دون 13 سنة في الولايات المتحدة). يمكن للبالغ المسؤول سحبها وطلب الحذف في أي وقت عبر support@collyo.app. يمكن أن يحصل القاصر على دخول محدود إلى تقويم الفريق (للقراءة فقط) ودردشة الفريق، ينشئه البالغ المالك: يدخل القاصر بالبريد الإلكتروني لمالك الفريق ومعرّف دخول يُنشأ عند توقيع البالغ. نحتفظ ببصمة المعرّف فقط. ليس لحساب القاصر بريد إلكتروني خاص به، ولا يمكنه تعديل الأحداث، ولا يمكنه استخدام المساعد أو الموصّل أو الرفاهية أو مفاتيح المرور. بالنسبة لطفل قد يكون دون 13 سنة، يجب أن يوافق المسؤول أولًا عبر البريد الإلكتروني، من خلال رابط يُرسل إلى العنوان الذي يدخله المالك؛ ونحتفظ بسجل الموافقة (التاريخ والعنوان ونسخة النص). يمكن للبالغ المالك قطع الدخول أو إصدار معرّف جديد في أي وقت. رسائل القاصر مرئية لأعضاء الفريق. إذا فعّل المالك ذكاء دردشة الفريق وشملته الإقرارات الموقعة، يمكن للقاصر أن يسأل الذكاء الاصطناعي: تُرسل حينها آخر رسائل الدردشة، بما فيها رسائل القاصر، إلى مزود الذكاء الاصطناعي لدينا. يمكن للقاصر تقديم 20 طلبًا يوميًا على الأكثر، ولا يستطيع الذكاء الاصطناعي تعديل الأحداث نيابة عنه."
+      },
+      {
+        "h": "15. التحقق من الهوية",
+        "p": "لإنشاء تقويم عائلة أو فريق رياضي أو صف، يتحقق المنشئ من هويته عبر Stripe، مزود التحقق لدينا. تجمع Stripe وثيقة الهوية وصورة شخصية وتعالجهما في صفحتها الخاصة، بما في ذلك مقارنة بيومترية، وفق شروطها وسياسة الخصوصية الخاصة بها؛ ولا يتلقى Collyo الوثيقة ولا الصورة ولا يخزّنهما. يحتفظ Collyo فقط بالنتيجة (تم التحقق أم لا) والاسم الذي تم التحقق منه وبلد الوثيقة والتاريخ ومعرّف جلسة التحقق. تظهر شارة «تم التحقق من الهوية» على ملفك الشخصي أنت فقط. الأساس القانوني: موافقتك (المادة 6(1)(أ) و9(2)(أ)). قد تتم المعالجة خارج الاتحاد الأوروبي/المنطقة الاقتصادية الأوروبية بموجب البنود التعاقدية القياسية. يمكنك طلب حذف سجل التحقق الخاص بك عبر support@collyo.app؛ وعندها لن تتوفر لك أنواع التقاويم التي تتطلبه."
+      },
+      {
+        "h": "16. المدفوعات",
+        "p": "عند الاشتراك، تعالج Stripe الدفع بصفتها موزعًا (التاجر المسجّل) وفق سياسة الخصوصية الخاصة بها: فتتلقى اسمك وبريدك الإلكتروني وعنوان الفوترة ورقم ضريبة القيمة المضافة إن وُجد وبيانات بطاقتك. لا يرى Collyo بطاقتك أبدًا. نحتفظ فقط بباقتك وحالتها وعدد المقاعد وتاريخ التجديد ومعرّفات العميل والاشتراك لدى Stripe لتطبيق باقتك (الأساس القانوني: تنفيذ العقد)، ما دام الاشتراك قائمًا وطوال المدة التي يفرضها قانون المحاسبة."
+      },
+      {
+        "h": "17. التغييرات",
+        "p": "نحدّث هذه السياسة عند تغيّر ممارساتنا. آخر تحديث: 19 نوفمبر 2026."
+      }
     ],
-    cookies: [
-      { h: "1. ما نستخدمه", p: "لا يستخدم تطبيق التقويم ملفات تعريف ارتباط إعلانية أو للتتبع أو للتحليل. يستخدم تخزين المتصفح (localStorage) لغرضين فقط." },
-      { h: "2. التخزين الضروري تماماً", p: "الجلسة: تبقيك مسجلاً للدخول بين الزيارات (يضبطها مزود المصادقة). اللغة: تتذكر لغة الواجهة التي اخترتها. لا يتطلب أيٌّ منهما موافقة بموجب قواعد ePrivacy، لأنهما ضروريان تماماً لتقديم الخدمة التي طلبتها." },
-      { h: "3. ملفات تعريف الارتباط للأطراف الثالثة", p: "لا يحمّل التطبيق نصوصاً إعلانية أو تحليلية لأطراف ثالثة. قد يضبط مزودو الاستضافة والمصادقة لدينا ملفات تقنية لازمة للأمان والتسليم." },
-      { h: "4. إدارة التخزين", p: "يمكنك مسح هذا التخزين في أي وقت من إعدادات المتصفح. مسح الجلسة سيسجّل خروجك؛ ومسح اختيار اللغة سيعيدها إلى الإنجليزية." },
-      { h: "5. التغييرات", p: "إذا أضفنا لاحقاً تخزيناً غير ضروري، فسنطلب موافقتك أولاً. آخر تحديث: 17 نوفمبر 2026." },
-    ],
+    "cookies": [
+      {
+        "h": "1. ما نستخدمه",
+        "p": "لا يستخدم تطبيق التقويم ملفات تعريف ارتباط إعلانية أو للتتبع أو للتحليل. يستخدم تخزين المتصفح (localStorage) لغرضين فقط."
+      },
+      {
+        "h": "2. التخزين الضروري تماماً",
+        "p": "الجلسة: تبقيك مسجلاً للدخول بين الزيارات (يضبطها مزود المصادقة). اللغة: تتذكر لغة الواجهة التي اخترتها. لا يتطلب أيٌّ منهما موافقة بموجب قواعد ePrivacy، لأنهما ضروريان تماماً لتقديم الخدمة التي طلبتها."
+      },
+      {
+        "h": "3. ملفات تعريف الارتباط للأطراف الثالثة",
+        "p": "لا يحمّل التطبيق نصوصاً إعلانية أو تحليلية لأطراف ثالثة. قد يضبط مزودو الاستضافة والمصادقة لدينا ملفات تقنية لازمة للأمان والتسليم."
+      },
+      {
+        "h": "4. إدارة التخزين",
+        "p": "يمكنك مسح هذا التخزين في أي وقت من إعدادات المتصفح. مسح الجلسة سيسجّل خروجك؛ ومسح اختيار اللغة سيعيدها إلى الإنجليزية."
+      },
+      {
+        "h": "5. التغييرات",
+        "p": "إذا أضفنا لاحقاً تخزيناً غير ضروري، فسنطلب موافقتك أولاً. آخر تحديث: 19 نوفمبر 2026."
+      }
+    ]
   },
-  pt: {
-    title: {"terms": "Termos de Uso", "privacy": "Política de Privacidade", "cookies": "Política de Cookies"},
-    terms: [
-      { h: "1. Finalidade", p: "O Calendar App é um calendário na web que permite criar, editar e excluir eventos, organizá-los em calendários e compartilhar calendários com outras pessoas por meio de convites." },
-      { h: "2. Contas", p: "Você cria uma conta com um endereço de e-mail e uma senha. É responsável por manter suas credenciais em sigilo e por toda atividade na sua conta. Deve fornecer informações corretas e ter pelo menos 16 anos, ou a idade de consentimento digital do seu país." },
-      { h: "3. Seu conteúdo", p: "Você é proprietário dos eventos, títulos, descrições, locais e fotos que adiciona. Concede ao operador apenas os direitos necessários para armazená-los e exibi-los a você e às pessoas com quem os compartilha." },
-      { h: "4. Compartilhamento e funções", p: "Quando você convida alguém para um calendário, a pessoa recebe um e-mail e pode aceitar ou recusar. O acesso só é concedido após a aceitação. As funções (Administrador, Colaborador, Leitor) definem o que cada membro pode fazer. Não compartilhe calendários com pessoas que não concordaram em recebê-los." },
-      { h: "5. Uso aceitável", p: "Você não deve usar o serviço para armazenar conteúdo ilegal, assediar outras pessoas, enviar mensagens não solicitadas por meio de convites, tentar acessar sem autorização outras contas ou dados, nem interromper o serviço." },
-      { h: "6. Disponibilidade", p: "O serviço é fornecido “como está”. Buscamos disponibilidade contínua, mas não a garantimos. Os recursos podem mudar com o tempo." },
-      { h: "7. Encerramento", p: "Você pode excluir sua conta a qualquer momento. Podemos suspender contas que violem estes termos." },
-      { h: "8. Responsabilidade", p: "Na medida permitida pela lei, o operador não se responsabiliza por perdas indiretas, incluindo eventos perdidos ou perdas decorrentes da alteração de um calendário compartilhado por outro membro." },
-      { h: "9. Lei aplicável", p: "Estes termos são regidos pelo direito português. Os tribunais do Porto são competentes, sem prejuízo dos direitos obrigatórios do consumidor no seu país de residência." },
-      { h: "10. Assistente de IA", p: "O assistente de IA é opcional. Responde a perguntas sobre os seus calendários e sugere horários livres. Lê os seus próprios eventos e, nos calendários partilhados, apenas os horários ocupados dos membros. Deve aceitar esta política antes da primeira utilização. Não use o assistente para vigiar ou pressionar outras pessoas. As sugestões não vinculam e podem conter erros: verifique-as antes de agir. Os membros de um calendário partilhado são informados desta possibilidade. Se o proprietário ativar a IA no chat de uma equipa, a IA lê esse chat quando um membro a menciona, e os membros são informados na conversa. Só o proprietário pode ativá-la ou desativá-la. Se o permitir nas definições da IA, o assistente também pode criar, mover ou eliminar eventos nos seus calendários, e indica-lhe o que alterou." },
-      { h: "11. Bem-estar, grupos e menores", p: "O modo bem-estar é opcional e não é um serviço médico: dá sugestões gerais e não faz diagnósticos nem trata nada. Em caso de emergência, ligue para o número de emergência local. Os calendários de família, equipa desportiva e turma podem incluir membros com menos de 16 anos (ou abaixo da idade do consentimento digital). Só podem ser criados por um adulto cuja identidade tenha sido verificada, e um menor só é adicionado depois de um adulto responsável assinar uma declaração com o seu nome e apelido. Ao assinar, confirma que detém a responsabilidade parental ou a função de responsável pela equipa ou turma, e que os dados introduzidos são exatos. Uma declaração falsa viola estes termos. O adulto responsável pode retirar o seu acordo a qualquer momento. O adulto que adiciona um menor é responsável pelo acesso dado a esse menor, pelo que o menor escreve no chat da equipa e pela decisão de permitir ou não a IA do chat da equipa." },
-      { h: "12. Contacto", p: "Dúvidas: support@collyo.app." },
+  "pt": {
+    "title": {
+      "terms": "Termos de Uso",
+      "privacy": "Política de Privacidade",
+      "cookies": "Política de Cookies"
+    },
+    "terms": [
+      {
+        "h": "1. Finalidade",
+        "p": "O Calendar App é um calendário na web que permite criar, editar e excluir eventos, organizá-los em calendários e compartilhar calendários com outras pessoas por meio de convites."
+      },
+      {
+        "h": "2. Contas",
+        "p": "Você cria uma conta com um endereço de e-mail e uma senha. É responsável por manter suas credenciais em sigilo e por toda atividade na sua conta. Deve fornecer informações corretas e ter pelo menos 16 anos, ou a idade de consentimento digital do seu país."
+      },
+      {
+        "h": "3. Seu conteúdo",
+        "p": "Você é proprietário dos eventos, títulos, descrições, locais e fotos que adiciona. Concede ao operador apenas os direitos necessários para armazená-los e exibi-los a você e às pessoas com quem os compartilha."
+      },
+      {
+        "h": "4. Compartilhamento e funções",
+        "p": "Quando você convida alguém para um calendário, a pessoa recebe um e-mail e pode aceitar ou recusar. O acesso só é concedido após a aceitação. As funções (Administrador, Colaborador, Leitor) definem o que cada membro pode fazer. Não compartilhe calendários com pessoas que não concordaram em recebê-los."
+      },
+      {
+        "h": "5. Uso aceitável",
+        "p": "Você não deve usar o serviço para armazenar conteúdo ilegal, assediar outras pessoas, enviar mensagens não solicitadas por meio de convites, tentar acessar sem autorização outras contas ou dados, nem interromper o serviço."
+      },
+      {
+        "h": "6. Disponibilidade",
+        "p": "O serviço é fornecido “como está”. Buscamos disponibilidade contínua, mas não a garantimos. Os recursos podem mudar com o tempo."
+      },
+      {
+        "h": "7. Encerramento",
+        "p": "Você pode excluir sua conta a qualquer momento. Podemos suspender contas que violem estes termos."
+      },
+      {
+        "h": "8. Responsabilidade",
+        "p": "Na medida permitida pela lei, o operador não se responsabiliza por perdas indiretas, incluindo eventos perdidos ou perdas decorrentes da alteração de um calendário compartilhado por outro membro."
+      },
+      {
+        "h": "9. Lei aplicável",
+        "p": "Estes termos são regidos pelo direito português. Os tribunais do Porto são competentes, sem prejuízo dos direitos obrigatórios do consumidor no seu país de residência."
+      },
+      {
+        "h": "10. Assistente de IA",
+        "p": "O assistente de IA é opcional. Responde a perguntas sobre os seus calendários e sugere horários livres. Lê os seus próprios eventos e, nos calendários partilhados, apenas os horários ocupados dos membros. Deve aceitar esta política antes da primeira utilização. Não use o assistente para vigiar ou pressionar outras pessoas. As sugestões não vinculam e podem conter erros: verifique-as antes de agir. Os membros de um calendário partilhado são informados desta possibilidade. Se o proprietário ativar a IA no chat de uma equipa, a IA lê esse chat quando um membro a menciona, e os membros são informados na conversa. Só o proprietário pode ativá-la ou desativá-la. Se o permitir nas definições da IA, o assistente também pode criar, mover ou eliminar eventos nos seus calendários, e indica-lhe o que alterou."
+      },
+      {
+        "h": "11. Bem-estar, grupos e menores",
+        "p": "O modo bem-estar é opcional e não é um serviço médico: dá sugestões gerais e não faz diagnósticos nem trata nada. Em caso de emergência, ligue para o número de emergência local. Os calendários de família, equipa desportiva e turma podem incluir membros com menos de 16 anos (ou abaixo da idade do consentimento digital). Só podem ser criados por um adulto cuja identidade tenha sido verificada, e um menor só é adicionado depois de um adulto responsável assinar uma declaração com o seu nome e apelido. Ao assinar, confirma que detém a responsabilidade parental ou a função de responsável pela equipa ou turma, e que os dados introduzidos são exatos. Uma declaração falsa viola estes termos. O adulto responsável pode retirar o seu acordo a qualquer momento. O adulto que adiciona um menor é responsável pelo acesso dado a esse menor, pelo que o menor escreve no chat da equipa e pela decisão de permitir ou não a IA do chat da equipa."
+      },
+      {
+        "h": "12. Subscrições e pagamento",
+        "p": "O Collyo pode ser usado gratuitamente, sem AI. Os planos pagos (Starter, Pro, Team) são subscrições mensais ou anuais. São vendidos e faturados pela Stripe como revendedor (comerciante registado), que também cobra o IVA; a página de pagamento indica-o e pode mostrar o preço na sua moeda. Aplica-se o preço da página de preços. Uma subscrição renova-se automaticamente até a cancelar no seu perfil («Gerir a minha subscrição»); continua ativa até ao fim do período já pago. Os consumidores da União Europeia têm um direito de livre resolução de 14 dias nas condições previstas na lei; os planos para equipas de trabalho podem pedir reembolso nos 30 dias seguintes ao primeiro pagamento em support@collyo.app. Anunciamos qualquer alteração de preço com pelo menos 30 dias de antecedência por e-mail, e pode cancelar antes de se aplicar. Eliminar a sua conta cancela a sua subscrição. O consentimento dos responsáveis, a proteção dos menores e a eliminação da conta fazem parte de todos os planos."
+      },
+      {
+        "h": "13. Contacto",
+        "p": "Dúvidas: support@collyo.app."
+      }
     ],
-    privacy: [
-      { h: "1. Quem somos", p: "Controlador dos dados: AI Solution Hub®, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal. Contato: support@collyo.app." },
-      { h: "2. Dados que coletamos", p: "Dados da conta: e-mail e senha (armazenada como hash pelo nosso provedor de autenticação). Dados do perfil: nome de exibição e foto de perfil opcional. Dados do calendário: calendários, eventos (título, descrição, local, horários de início e fim, lembrete) e histórico de alterações dos eventos. Dados de compartilhamento: membros, funções e convites. Dados técnicos: preferência de idioma armazenada no seu navegador." },
-      { h: "3. Por que tratamos os dados", p: "Para fornecer o serviço solicitado (criar e compartilhar calendários), enviar os e-mails de convite que você dispara, manter um histórico de atividades para revisar e restaurar alterações, e manter o serviço seguro. Bases legais (GDPR): execução de contrato; legítimo interesse em segurança; consentimento ao enviar uma foto." },
-      { h: "4. Quem pode ver seus dados", p: "Seus dados são privados por padrão. O conteúdo de um calendário é visível aos seus membros conforme a função de cada um. Os demais membros podem ver seu nome e sua foto em um calendário compartilhado. O histórico de um evento compartilhado é visível aos membros desse calendário." },
-      { h: "5. Provedores de serviço", p: "Usamos os seguintes operadores: Supabase (banco de dados, autenticação e armazenamento de avatares; União Europeia, eu-west-1 Irlanda); Resend (e-mails de convite; União Europeia, eu-west-1); Vercel (hospedagem do aplicativo web; rede global). Qualquer transferência fora da UE/EEE usa decisões de adequação ou as Cláusulas Contratuais Padrão. A verificação de identidade dos criadores de calendários é feita pela Stripe (ver secção 15)." },
-      { h: "6. Retenção", p: "Mantemos seus dados enquanto sua conta estiver ativa. Excluir a conta apaga seus dados pessoais, exceto quando a lei exigir retenção. O histórico de um evento é removido com o evento que ele descreve. Os backups são mantidos apenas pelo tempo necessário à recuperação." },
-      { h: "7. Seus direitos", p: "Pela LGPD, pelo GDPR e leis semelhantes, você pode acessar, corrigir, excluir, restringir ou portar seus dados, opor-se ao tratamento e revogar o consentimento a qualquer momento. Você pode editar seu perfil e seus eventos no aplicativo e nos contatar para exercer outros direitos. Pode apresentar reclamação à autoridade nacional de proteção de dados." },
-      { h: "8. Segurança", p: "Os dados são criptografados em trânsito (HTTPS). O acesso é restrito por regras de segurança em nível de linha, de modo que cada usuário alcança apenas os calendários que possui ou para os quais foi convidado. Nenhum sistema é totalmente seguro; notificaremos qualquer incidente conforme exigido por lei." },
-      { h: "9. Crianças", p: "O serviço não se destina a crianças com menos de 16 anos (ou abaixo da idade nacional do consentimento digital), que não podem criar a sua própria conta. Uma pessoa abaixo dessa idade só pode aparecer num calendário de família, equipa desportiva ou turma como perfil gerido por um adulto responsável, e pode ter um acesso limitado ao calendário e ao chat da equipa criado por esse adulto, conforme descrito na secção 14." },
-      { h: "10. Transferências internacionais", p: "As transferências fora da UE/EEE usam decisões de adequação ou as Cláusulas Contratuais Padrão." },
-      { h: "11. Assistente de IA", p: "Se usar o assistente, a sua pergunta e as informações do calendário necessárias para a responder (os seus eventos com títulos e os horários ocupados dos calendários partilhados) são enviadas à Anthropic, o nosso fornecedor de modelos de IA, que as trata em nosso nome. O tratamento pode ocorrer fora da UE/EEE, com Cláusulas Contratuais Padrão. Não guardamos o conteúdo das suas perguntas, apenas o número de pedidos e de tokens, para gerir o serviço e definir preços. Base legal: o seu consentimento, dado ao aceitar a política do assistente (art. 6.º, n.º 1, al. a)); pode retirá-lo a qualquer momento. Os horários ocupados de um calendário partilhado podem ser usados pelo assistente de quem tem acesso a esse calendário, e os membros são informados. Num chat de equipa onde o proprietário ativou a IA, as últimas 40 mensagens desse chat e as notas partilhadas são enviadas ao nosso fornecedor de IA sempre que um membro menciona a IA. As respostas e as notas ficam guardadas no chat." },
-      { h: "12. Aplicações ligadas", p: "Pode ligar o Collyo a uma aplicação de IA, como o Claude, como conector. Aprova cada ligação num ecrã de consentimento e pode revogá-la a qualquer momento no seu perfil. Uma aplicação ligada só pode ler: os seus calendários e eventos com títulos, e os horários ocupados dos calendários partilhados sem títulos. O conector é só de leitura e não dá acesso às mensagens do chat de equipa. O Collyo não envia os seus dados à aplicação por si: os dados só chegam à aplicação quando usa o conector na sua própria conta, segundo os termos dessa aplicação." },
-      { h: "13. Bem-estar", p: "O modo bem-estar é opcional. Se o ativar, pode indicar uma faixa etária, uma profissão e uma situação familiar, e registar um balanço diário de energia (e o humor, se o escolher). Estes dados são guardados em separado, só são visíveis para si e servem apenas para adaptar as sugestões do assistente de IA; são enviados à Anthropic, o nosso fornecedor de IA, quando usa o assistente com o modo ativo. Base legal: o seu consentimento explícito (art. 6.º, n.º 1, al. a) e art. 9.º, n.º 2, al. a), quando os dados dizem respeito à saúde), que pode retirar a qualquer momento desativando o modo ou pedindo-nos que apaguemos os seus dados. Guardamo-los até eliminar a sua conta ou pedir a eliminação. Numa equipa em que o proprietário ativa a análise de equipa, os horários ocupados do calendário e, se o proprietário o escolher, as mensagens do chat da última hora são analisados pela Anthropic para detetar carga, tensão ou aflição, sem enviar nomes. Os membros podem excluir as suas próprias mensagens desta análise. Um sinal de aflição só é mostrado à pessoa em causa, em privado. A equipa só recebe mensagens gerais que não nomeiam ninguém. Um registo das análises (datas, fontes e contagens, nunca o texto das mensagens) é guardado 90 dias e é visível para o proprietário. Isto não é aconselhamento médico." },
-      { h: "14. Calendários de família, equipa desportiva e turma", p: "Estes calendários são criados por um adulto cuja identidade foi verificada (secção 15). O criador pode adicionar membros com menos de 16 anos como perfis geridos: nome próprio, ano de nascimento, sexo opcional e categoria opcional. Estes dados só são visíveis para o criador e para os adultos responsáveis por esse perfil. Um perfil fica pendente, e é eliminado após 30 dias se ninguém assinar, até que um adulto responsável assine uma declaração com o seu nome e apelido; guardamos o registo da assinatura (nome escrito, data, versão do texto e funções abrangidas). O sexo só é guardado se a declaração o abranger. A IA fica desativada em qualquer calendário que inclua um menor, a menos que esteja registada uma aprovação jurídica e cada menor esteja abrangido por uma declaração assinada para a IA. Base legal: o consentimento do titular da responsabilidade parental (art. 6.º, n.º 1, al. a) e art. 8.º do RGPD; consentimento parental para menores de 13 anos nos Estados Unidos). O adulto responsável pode retirá-lo e pedir a eliminação a qualquer momento em support@collyo.app. Um menor pode ter um acesso limitado ao calendário da equipa (só leitura) e ao chat da equipa, criado pelo adulto proprietário: o menor entra com o e-mail do proprietário da equipa e um identificador de acesso gerado quando o adulto assina. Só guardamos uma impressão do identificador. A conta do menor não tem e-mail próprio, não pode alterar eventos e não pode usar o assistente, o conector, o bem-estar nem as chaves de acesso. Para uma criança que possa ter menos de 13 anos, o responsável tem de aprovar primeiro por e-mail, através de um link enviado para o endereço que o proprietário introduz; guardamos o registo da aprovação (data, endereço, versão do texto). O adulto proprietário pode cortar o acesso ou emitir um novo identificador a qualquer momento. As mensagens de um menor são visíveis para os membros da equipa. Se o proprietário ativar a IA do chat da equipa e a declaração assinada a abranger, um menor pode pedir ajuda à IA: as últimas mensagens do chat, incluindo as do menor, são então enviadas ao nosso fornecedor de IA. Um menor pode fazer no máximo 20 pedidos por dia, e a IA não pode alterar eventos por ele." },
-      { h: "15. Verificação de identidade", p: "Para criar um calendário de família, equipa desportiva ou turma, o criador verifica a sua identidade através da Stripe, o nosso fornecedor de verificação. A Stripe recolhe e trata o documento de identidade e uma selfie na sua própria página, incluindo uma comparação biométrica, segundo os seus próprios termos e política de privacidade; o Collyo não recebe nem guarda o documento nem a selfie. O Collyo só guarda o resultado (verificado ou não), o nome verificado, o país do documento, a data e o identificador da sessão de verificação. No seu próprio perfil é mostrado um selo de identidade verificada. Base legal: o seu consentimento (art. 6.º, n.º 1, al. a) e art. 9.º, n.º 2, al. a)). O tratamento pode ocorrer fora da UE/EEE, com Cláusulas Contratuais Padrão. Pode pedir a eliminação do seu registo de verificação em support@collyo.app; os tipos de calendário que o exigem deixarão então de estar disponíveis para si." },
-      { h: "16. Alterações", p: "Atualizamos esta política quando nossas práticas mudarem. Última atualização: 17 de novembro de 2026." },
+    "privacy": [
+      {
+        "h": "1. Quem somos",
+        "p": "Controlador dos dados: AI Solution Hub®, Rua Oscar da Silva 83, 2L, 4200-399 Porto, Portugal. Contato: support@collyo.app."
+      },
+      {
+        "h": "2. Dados que coletamos",
+        "p": "Dados da conta: e-mail e senha (armazenada como hash pelo nosso provedor de autenticação). Dados do perfil: nome de exibição e foto de perfil opcional. Dados do calendário: calendários, eventos (título, descrição, local, horários de início e fim, lembrete) e histórico de alterações dos eventos. Dados de compartilhamento: membros, funções e convites. Dados técnicos: preferência de idioma armazenada no seu navegador."
+      },
+      {
+        "h": "3. Por que tratamos os dados",
+        "p": "Para fornecer o serviço solicitado (criar e compartilhar calendários), enviar os e-mails de convite que você dispara, manter um histórico de atividades para revisar e restaurar alterações, e manter o serviço seguro. Bases legais (GDPR): execução de contrato; legítimo interesse em segurança; consentimento ao enviar uma foto."
+      },
+      {
+        "h": "4. Quem pode ver seus dados",
+        "p": "Seus dados são privados por padrão. O conteúdo de um calendário é visível aos seus membros conforme a função de cada um. Os demais membros podem ver seu nome e sua foto em um calendário compartilhado. O histórico de um evento compartilhado é visível aos membros desse calendário."
+      },
+      {
+        "h": "5. Provedores de serviço",
+        "p": "Usamos os seguintes operadores: Supabase (banco de dados, autenticação e armazenamento de avatares; União Europeia, eu-west-1 Irlanda); Resend (e-mails de convite; União Europeia, eu-west-1); Vercel (hospedagem do aplicativo web; rede global). Qualquer transferência fora da UE/EEE usa decisões de adequação ou as Cláusulas Contratuais Padrão. A verificação de identidade dos criadores de calendários é feita pela Stripe (ver secção 15). Os planos pagos são vendidos pela Stripe como revendedor (ver secção 16)."
+      },
+      {
+        "h": "6. Retenção",
+        "p": "Mantemos seus dados enquanto sua conta estiver ativa. Excluir a conta apaga seus dados pessoais, exceto quando a lei exigir retenção. O histórico de um evento é removido com o evento que ele descreve. Os backups são mantidos apenas pelo tempo necessário à recuperação."
+      },
+      {
+        "h": "7. Seus direitos",
+        "p": "Pela LGPD, pelo GDPR e leis semelhantes, você pode acessar, corrigir, excluir, restringir ou portar seus dados, opor-se ao tratamento e revogar o consentimento a qualquer momento. Você pode editar seu perfil e seus eventos no aplicativo e nos contatar para exercer outros direitos. Pode apresentar reclamação à autoridade nacional de proteção de dados."
+      },
+      {
+        "h": "8. Segurança",
+        "p": "Os dados são criptografados em trânsito (HTTPS). O acesso é restrito por regras de segurança em nível de linha, de modo que cada usuário alcança apenas os calendários que possui ou para os quais foi convidado. Nenhum sistema é totalmente seguro; notificaremos qualquer incidente conforme exigido por lei."
+      },
+      {
+        "h": "9. Crianças",
+        "p": "O serviço não se destina a crianças com menos de 16 anos (ou abaixo da idade nacional do consentimento digital), que não podem criar a sua própria conta. Uma pessoa abaixo dessa idade só pode aparecer num calendário de família, equipa desportiva ou turma como perfil gerido por um adulto responsável, e pode ter um acesso limitado ao calendário e ao chat da equipa criado por esse adulto, conforme descrito na secção 14."
+      },
+      {
+        "h": "10. Transferências internacionais",
+        "p": "As transferências fora da UE/EEE usam decisões de adequação ou as Cláusulas Contratuais Padrão."
+      },
+      {
+        "h": "11. Assistente de IA",
+        "p": "Se usar o assistente, a sua pergunta e as informações do calendário necessárias para a responder (os seus eventos com títulos e os horários ocupados dos calendários partilhados) são enviadas à Anthropic, o nosso fornecedor de modelos de IA, que as trata em nosso nome. O tratamento pode ocorrer fora da UE/EEE, com Cláusulas Contratuais Padrão. Não guardamos o conteúdo das suas perguntas, apenas o número de pedidos e de tokens, para gerir o serviço e definir preços. Base legal: o seu consentimento, dado ao aceitar a política do assistente (art. 6.º, n.º 1, al. a)); pode retirá-lo a qualquer momento. Os horários ocupados de um calendário partilhado podem ser usados pelo assistente de quem tem acesso a esse calendário, e os membros são informados. Num chat de equipa onde o proprietário ativou a IA, as últimas 40 mensagens desse chat e as notas partilhadas são enviadas ao nosso fornecedor de IA sempre que um membro menciona a IA. As respostas e as notas ficam guardadas no chat."
+      },
+      {
+        "h": "12. Aplicações ligadas",
+        "p": "Pode ligar o Collyo a uma aplicação de IA, como o Claude, como conector. Aprova cada ligação num ecrã de consentimento e pode revogá-la a qualquer momento no seu perfil. Uma aplicação ligada só pode ler: os seus calendários e eventos com títulos, e os horários ocupados dos calendários partilhados sem títulos. O conector é só de leitura e não dá acesso às mensagens do chat de equipa. O Collyo não envia os seus dados à aplicação por si: os dados só chegam à aplicação quando usa o conector na sua própria conta, segundo os termos dessa aplicação."
+      },
+      {
+        "h": "13. Bem-estar",
+        "p": "O modo bem-estar é opcional. Se o ativar, pode indicar uma faixa etária, uma profissão e uma situação familiar, e registar um balanço diário de energia (e o humor, se o escolher). Estes dados são guardados em separado, só são visíveis para si e servem apenas para adaptar as sugestões do assistente de IA; são enviados à Anthropic, o nosso fornecedor de IA, quando usa o assistente com o modo ativo. Base legal: o seu consentimento explícito (art. 6.º, n.º 1, al. a) e art. 9.º, n.º 2, al. a), quando os dados dizem respeito à saúde), que pode retirar a qualquer momento desativando o modo ou pedindo-nos que apaguemos os seus dados. Guardamo-los até eliminar a sua conta ou pedir a eliminação. Numa equipa em que o proprietário ativa a análise de equipa, os horários ocupados do calendário e, se o proprietário o escolher, as mensagens do chat da última hora são analisados pela Anthropic para detetar carga, tensão ou aflição, sem enviar nomes. Os membros podem excluir as suas próprias mensagens desta análise. Um sinal de aflição só é mostrado à pessoa em causa, em privado. A equipa só recebe mensagens gerais que não nomeiam ninguém. Um registo das análises (datas, fontes e contagens, nunca o texto das mensagens) é guardado 90 dias e é visível para o proprietário. Isto não é aconselhamento médico."
+      },
+      {
+        "h": "14. Calendários de família, equipa desportiva e turma",
+        "p": "Estes calendários são criados por um adulto cuja identidade foi verificada (secção 15). O criador pode adicionar membros com menos de 16 anos como perfis geridos: nome próprio, ano de nascimento, sexo opcional e categoria opcional. Estes dados só são visíveis para o criador e para os adultos responsáveis por esse perfil. Um perfil fica pendente, e é eliminado após 30 dias se ninguém assinar, até que um adulto responsável assine uma declaração com o seu nome e apelido; guardamos o registo da assinatura (nome escrito, data, versão do texto e funções abrangidas). O sexo só é guardado se a declaração o abranger. A IA fica desativada em qualquer calendário que inclua um menor, a menos que esteja registada uma aprovação jurídica e cada menor esteja abrangido por uma declaração assinada para a IA. Base legal: o consentimento do titular da responsabilidade parental (art. 6.º, n.º 1, al. a) e art. 8.º do RGPD; consentimento parental para menores de 13 anos nos Estados Unidos). O adulto responsável pode retirá-lo e pedir a eliminação a qualquer momento em support@collyo.app. Um menor pode ter um acesso limitado ao calendário da equipa (só leitura) e ao chat da equipa, criado pelo adulto proprietário: o menor entra com o e-mail do proprietário da equipa e um identificador de acesso gerado quando o adulto assina. Só guardamos uma impressão do identificador. A conta do menor não tem e-mail próprio, não pode alterar eventos e não pode usar o assistente, o conector, o bem-estar nem as chaves de acesso. Para uma criança que possa ter menos de 13 anos, o responsável tem de aprovar primeiro por e-mail, através de um link enviado para o endereço que o proprietário introduz; guardamos o registo da aprovação (data, endereço, versão do texto). O adulto proprietário pode cortar o acesso ou emitir um novo identificador a qualquer momento. As mensagens de um menor são visíveis para os membros da equipa. Se o proprietário ativar a IA do chat da equipa e a declaração assinada a abranger, um menor pode pedir ajuda à IA: as últimas mensagens do chat, incluindo as do menor, são então enviadas ao nosso fornecedor de IA. Um menor pode fazer no máximo 20 pedidos por dia, e a IA não pode alterar eventos por ele."
+      },
+      {
+        "h": "15. Verificação de identidade",
+        "p": "Para criar um calendário de família, equipa desportiva ou turma, o criador verifica a sua identidade através da Stripe, o nosso fornecedor de verificação. A Stripe recolhe e trata o documento de identidade e uma selfie na sua própria página, incluindo uma comparação biométrica, segundo os seus próprios termos e política de privacidade; o Collyo não recebe nem guarda o documento nem a selfie. O Collyo só guarda o resultado (verificado ou não), o nome verificado, o país do documento, a data e o identificador da sessão de verificação. No seu próprio perfil é mostrado um selo de identidade verificada. Base legal: o seu consentimento (art. 6.º, n.º 1, al. a) e art. 9.º, n.º 2, al. a)). O tratamento pode ocorrer fora da UE/EEE, com Cláusulas Contratuais Padrão. Pode pedir a eliminação do seu registo de verificação em support@collyo.app; os tipos de calendário que o exigem deixarão então de estar disponíveis para si."
+      },
+      {
+        "h": "16. Pagamentos",
+        "p": "Quando subscreve, a Stripe processa o pagamento como revendedor (comerciante registado) segundo a sua própria política de privacidade: recebe o seu nome, e-mail, morada de faturação, número de IVA se existir e os dados do cartão. O Collyo nunca vê o seu cartão. Guardamos apenas o seu plano, o estado, o número de lugares, a data de renovação e os identificadores de cliente e subscrição da Stripe, para aplicar o seu plano (base legal: execução do contrato), enquanto a subscrição existir e durante o tempo exigido pela lei contabilística."
+      },
+      {
+        "h": "17. Alterações",
+        "p": "Atualizamos esta política quando nossas práticas mudarem. Última atualização: 19 de novembro de 2026."
+      }
     ],
-    cookies: [
-      { h: "1. O que usamos", p: "O Calendar App não usa cookies de publicidade, rastreamento ou análise. Usa o armazenamento do navegador (localStorage) somente para duas finalidades." },
-      { h: "2. Armazenamento estritamente necessário", p: "Sessão: mantém você conectado entre as visitas (definido pelo nosso provedor de autenticação). Idioma: lembra o idioma de interface escolhido. Nenhum deles exige consentimento pelas regras ePrivacy, pois são estritamente necessários para o serviço que você solicitou." },
-      { h: "3. Cookies de terceiros", p: "O aplicativo não carrega scripts de publicidade ou análise de terceiros. Nossos provedores de hospedagem e autenticação podem definir cookies técnicos necessários para segurança e entrega." },
-      { h: "4. Gerenciar o armazenamento", p: "Você pode limpar esse armazenamento a qualquer momento nas configurações do navegador. Limpar a sessão encerra seu login; limpar a escolha de idioma o redefine para inglês." },
-      { h: "5. Alterações", p: "Se no futuro adicionarmos armazenamento não essencial, pediremos seu consentimento antes. Última atualização: 17 de novembro de 2026." },
-    ],
-  },
+    "cookies": [
+      {
+        "h": "1. O que usamos",
+        "p": "O Calendar App não usa cookies de publicidade, rastreamento ou análise. Usa o armazenamento do navegador (localStorage) somente para duas finalidades."
+      },
+      {
+        "h": "2. Armazenamento estritamente necessário",
+        "p": "Sessão: mantém você conectado entre as visitas (definido pelo nosso provedor de autenticação). Idioma: lembra o idioma de interface escolhido. Nenhum deles exige consentimento pelas regras ePrivacy, pois são estritamente necessários para o serviço que você solicitou."
+      },
+      {
+        "h": "3. Cookies de terceiros",
+        "p": "O aplicativo não carrega scripts de publicidade ou análise de terceiros. Nossos provedores de hospedagem e autenticação podem definir cookies técnicos necessários para segurança e entrega."
+      },
+      {
+        "h": "4. Gerenciar o armazenamento",
+        "p": "Você pode limpar esse armazenamento a qualquer momento nas configurações do navegador. Limpar a sessão encerra seu login; limpar a escolha de idioma o redefine para inglês."
+      },
+      {
+        "h": "5. Alterações",
+        "p": "Se no futuro adicionarmos armazenamento não essencial, pediremos seu consentimento antes. Última atualização: 19 de novembro de 2026."
+      }
+    ]
+  }
 }

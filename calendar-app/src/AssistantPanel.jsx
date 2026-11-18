@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import AiAvatar from './AiAvatar.jsx'
 import { CrisisResources } from './WellbeingPanel.jsx'
+import { PRICING } from './pricing.js'
 import { useI18n } from './i18n/index.jsx'
 import { askAssistant, getAiAcceptedAt, acceptAssistantPolicy, getAiPermissions, setAiPermissions, getWellbeingSettings, saveWellbeingSettings } from './lib/api.js'
 
@@ -14,12 +15,15 @@ const ERROR_KEYS = {
 }
 
 export default function AssistantPanel({ user, onClose, onApplied, onOpenWellbeing }) {
-  const { t, locale } = useI18n()
+  const { t, locale, lang } = useI18n()
   const [accepted, setAccepted] = useState(undefined) // undefined = loading
   const [messages, setMessages] = useState([])
   const [text, setText] = useState('')
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState(null)
+  const [errCode, setErrCode] = useState(null)
+  // A plan limit (no AI in the plan, or the month's quota used up): offer the plans page.
+  const [planErr, setPlanErr] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [perms, setPerms] = useState({ can_create: false, can_update: false, can_delete: false })
   const endRef = useRef(null)
@@ -64,7 +68,7 @@ export default function AssistantPanel({ user, onClose, onApplied, onOpenWellbei
     const content = text.trim()
     if (!content || busy) return
     const next = [...messages, { role: 'user', content }]
-    setMessages(next); setText(''); setBusy(true); setErr(null)
+    setMessages(next); setText(''); setBusy(true); setErr(null); setErrCode(null)
     try {
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
       const res = await askAssistant(next.map(({ role, content: c }) => ({ role, content: c })), timezone, locale)
@@ -72,7 +76,8 @@ export default function AssistantPanel({ user, onClose, onApplied, onOpenWellbei
       if (res.applied?.length) onApplied?.()
     } catch (ex) {
       if (ex.message === 'consent_required') setAccepted(false)
-      setErr(t(ERROR_KEYS[ex.message] || 'assistantError'))
+      setErr(t(ERROR_KEYS[ex.message] || 'assistantError')); setErrCode(ex.message)
+      setPlanErr(['plan_required', 'quota_reached'].includes(ex.message))
     } finally { setBusy(false) }
   }
 
@@ -127,6 +132,8 @@ export default function AssistantPanel({ user, onClose, onApplied, onOpenWellbei
           <div className="space-y-4">
             <p className="text-sm text-neutral-700 whitespace-pre-line">{t('assistantIntro')}</p>
             {err && <p className="text-sm font-medium text-neutral-900">{err}</p>}
+            {['plan_required', 'quota_reached'].includes(errCode) && <a href="#/pricing" data-upgrade-link className="text-sm text-neutral-700 underline underline-offset-2">{(PRICING[lang] || PRICING.en).seeAllPlans}</a>}
+            {err && planErr && <a href="#/pricing" className="text-sm text-neutral-700 underline underline-offset-2">{t('aiSeePlans')}</a>}
             <button type="button" onClick={accept} className="w-full py-2.5 rounded-xl bg-neutral-900 text-white text-sm">{t('assistantAccept')}</button>
           </div>
         )}
@@ -161,6 +168,8 @@ export default function AssistantPanel({ user, onClose, onApplied, onOpenWellbei
               <div ref={endRef} />
             </div>
             {err && <p className="text-sm font-medium text-neutral-900">{err}</p>}
+            {['plan_required', 'quota_reached'].includes(errCode) && <a href="#/pricing" data-upgrade-link className="text-sm text-neutral-700 underline underline-offset-2">{(PRICING[lang] || PRICING.en).seeAllPlans}</a>}
+            {err && planErr && <a href="#/pricing" className="text-sm text-neutral-700 underline underline-offset-2">{t('aiSeePlans')}</a>}
             <form onSubmit={send} className="flex gap-2">
               <input className={input} value={text} maxLength={2000} disabled={busy}
                 placeholder={t('assistantPlaceholder')} onChange={(e) => setText(e.target.value)} aria-label={t('assistantPlaceholder')} />

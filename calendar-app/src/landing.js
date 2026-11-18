@@ -48,6 +48,7 @@ export const LANDING = {
     trust: [["Hosted in the EU","Your data is stored on servers in the European Union."],["Verified creators","Whoever creates a family, club or class calendar proves their identity."],["Minors protected","An adult signs for every minor, and a parent approves under 13."],["AI only with your consent","Off until you switch it on, and it never changes an event without your approval."],["No ads, no tracking","No advertising and no tracking cookies."]],
     faqTitle: "Questions",
     faq: [["Who sees my calendar?","Only the people you invite. Each one sees and does what their role allows: owner, administrator, contributor or reader."],["What does the AI read?","Only the calendar you are working on, when you ask it. It is off until the owner turns it on, and it changes events only with your consent."],["Can children use Collyo?","Yes, in a family, club or class calendar. An adult signs a declaration for each minor, and under 13 a parent approves by e-mail. Minors get a limited access."],["Is my data protected?","Your data is stored in the EU and access is controlled by roles. Our privacy policy gives the details."],["Can I use it with my own AI app?","Yes. Connect Collyo to any AI client that supports MCP. It is read-only, and you can revoke it any time."]],
+    pricing: 'Pricing',
     footer: 'AI Solution Hub®',
   },
   fr: {
@@ -98,6 +99,7 @@ export const LANDING = {
     trust: [["Hébergé dans l’UE","Vos données sont stockées sur des serveurs de l’Union européenne."],["Créateurs vérifiés","Qui crée un calendrier de famille, de club ou de classe prouve son identité."],["Mineurs protégés","Un adulte signe pour chaque mineur, et un parent approuve avant 13 ans."],["L’AI seulement avec votre accord","Désactivée tant que vous ne l’activez pas, et elle ne modifie jamais un événement sans votre approbation."],["Sans publicité, sans traçage","Aucune publicité et aucun cookie de suivi."]],
     faqTitle: "Questions",
     faq: [["Qui voit mon calendrier ?","Seulement les personnes que vous invitez. Chacune voit et fait ce que son rôle permet : propriétaire, administrateur, contributeur ou lecteur."],["Que lit l’AI ?","Uniquement le calendrier sur lequel vous travaillez, quand vous la sollicitez. Elle est désactivée jusqu’à ce que le propriétaire l’active, et ne modifie les événements qu’avec votre accord."],["Les enfants peuvent-ils utiliser Collyo ?","Oui, dans un calendrier de famille, de club ou de classe. Un adulte signe une déclaration pour chaque mineur, et avant 13 ans un parent approuve par e-mail. Les mineurs ont un accès limité."],["Mes données sont-elles protégées ?","Vos données sont stockées dans l’UE et l’accès est contrôlé par les rôles. Notre politique de confidentialité donne le détail."],["Puis-je l’utiliser avec ma propre application d’AI ?","Oui. Connectez Collyo à tout client AI compatible MCP. C’est en lecture seule, et vous pouvez le révoquer à tout moment."]],
+    pricing: 'Tarifs',
     footer: 'AI Solution Hub®',
   },
   es: {
@@ -148,6 +150,7 @@ export const LANDING = {
     trust: [["Alojado en la UE","Tus datos se almacenan en servidores de la Unión Europea."],["Creadores verificados","Quien crea un calendario de familia, club o clase demuestra su identidad."],["Menores protegidos","Un adulto firma por cada menor, y un progenitor aprueba antes de los 13 años."],["AI solo con tu consentimiento","Desactivada hasta que la actives, y nunca cambia un evento sin tu aprobación."],["Sin anuncios, sin rastreo","Sin publicidad y sin cookies de seguimiento."]],
     faqTitle: "Preguntas",
     faq: [["¿Quién ve mi calendario?","Solo las personas que invitas. Cada una ve y hace lo que permite su rol: propietario, administrador, colaborador o lector."],["¿Qué lee la AI?","Solo el calendario en el que trabajas, cuando se lo pides. Está desactivada hasta que el propietario la active, y solo cambia eventos con tu consentimiento."],["¿Pueden los niños usar Collyo?","Sí, en un calendario de familia, club o clase. Un adulto firma una declaración por cada menor y, antes de los 13 años, un progenitor aprueba por e-mail. Los menores tienen un acceso limitado."],["¿Están protegidos mis datos?","Tus datos se almacenan en la UE y el acceso se controla por roles. Nuestra política de privacidad da los detalles."],["¿Puedo usarlo con mi propia app de AI?","Sí. Conecta Collyo a cualquier cliente de AI compatible con MCP. Es de solo lectura y puedes revocarlo cuando quieras."]],
+    pricing: 'Precios',
     footer: 'AI Solution Hub®',
   },
   de: {
@@ -198,6 +201,7 @@ export const LANDING = {
     trust: [["In der EU gehostet","Deine Daten liegen auf Servern in der Europäischen Union."],["Geprüfte Ersteller","Wer einen Familien-, Vereins- oder Klassenkalender erstellt, weist seine Identität nach."],["Minderjährige geschützt","Ein Erwachsener unterschreibt für jedes Kind, und unter 13 Jahren stimmt ein Elternteil zu."],["AI nur mit deiner Zustimmung","Aus, bis du sie einschaltest, und sie ändert nie einen Termin ohne deine Freigabe."],["Keine Werbung, kein Tracking","Keine Werbung und keine Tracking-Cookies."]],
     faqTitle: "Fragen",
     faq: [["Wer sieht meinen Kalender?","Nur die Personen, die du einlädst. Jede sieht und tut, was ihre Rolle erlaubt: Eigentümer, Administrator, Mitwirkender oder Leser."],["Was liest die AI?","Nur den Kalender, an dem du arbeitest, wenn du sie fragst. Sie ist aus, bis der Eigentümer sie einschaltet, und ändert Termine nur mit deiner Zustimmung."],["Können Kinder Collyo nutzen?","Ja, in einem Familien-, Vereins- oder Klassenkalender. Ein Erwachsener unterschreibt für jedes Kind eine Erklärung, und unter 13 Jahren stimmt ein Elternteil per E-Mail zu. Minderjährige haben einen eingeschränkten Zugang."],["Sind meine Daten geschützt?","Deine Daten liegen in der EU, und der Zugriff wird über Rollen gesteuert. Details stehen in unserer Datenschutzerklärung."],["Kann ich es mit meiner eigenen AI-App nutzen?","Ja. Verbinde Collyo mit jedem AI-Client, der MCP unterstützt. Es ist schreibgeschützt, und du kannst es jederzeit widerrufen."]],
+    pricing: 'Preise',
     footer: 'AI Solution Hub®',
   },
   ar: {
@@ -248,6 +252,7 @@ export const LANDING = {
     trust: [["مستضاف في الاتحاد الأوروبي","تُخزَّن بياناتك على خوادم في الاتحاد الأوروبي."],["منشئون موثَّقون","من ينشئ تقويم عائلة أو نادٍ أو صف يثبت هويته."],["حماية القاصرين","يوقّع بالغ عن كل قاصر، ويوافق أحد الوالدين لمن هم دون 13 سنة."],["AI بموافقتك فقط","متوقف حتى تشغّله، ولا يغيّر حدثًا أبدًا دون موافقتك."],["بلا إعلانات ولا تتبّع","لا إعلانات ولا ملفات تعريف ارتباط للتتبع."]],
     faqTitle: "أسئلة",
     faq: [["من يرى تقويمي؟","فقط الأشخاص الذين تدعوهم. يرى كل واحد ويفعل ما يسمح به دوره: مالك أو مشرف أو مساهم أو قارئ."],["ماذا يقرأ AI؟","فقط التقويم الذي تعمل عليه، عندما تطلب منه ذلك. هو متوقف حتى يشغّله المالك، ولا يغيّر الأحداث إلا بموافقتك."],["هل يمكن للأطفال استخدام Collyo؟","نعم، في تقويم عائلة أو نادٍ أو صف. يوقّع بالغ إقرارًا عن كل قاصر، ولمن هم دون 13 سنة يوافق أحد الوالدين بالبريد الإلكتروني. يحصل القاصرون على وصول محدود."],["هل بياناتي محمية؟","تُخزَّن بياناتك في الاتحاد الأوروبي ويُضبط الوصول عبر الأدوار. تجد التفاصيل في سياسة الخصوصية."],["هل أستطيع استخدامه مع تطبيق AI الخاص بي؟","نعم. اربط Collyo بأي عميل AI يدعم MCP. هو للقراءة فقط ويمكنك إلغاؤه في أي وقت."]],
+    pricing: 'الأسعار',
     footer: 'AI Solution Hub®',
   },
   pt: {
@@ -298,6 +303,7 @@ export const LANDING = {
     trust: [["Alojado na UE","Os seus dados ficam em servidores da União Europeia."],["Criadores verificados","Quem cria um calendário de família, clube ou turma prova a sua identidade."],["Menores protegidos","Um adulto assina por cada menor, e um dos pais aprova antes dos 13 anos."],["AI só com o seu consentimento","Desativada até a ligar, e nunca altera um evento sem a sua aprovação."],["Sem anúncios, sem rastreio","Sem publicidade e sem cookies de rastreio."]],
     faqTitle: "Perguntas",
     faq: [["Quem vê o meu calendário?","Só as pessoas que convidar. Cada uma vê e faz o que o seu papel permite: proprietário, administrador, colaborador ou leitor."],["O que lê a AI?","Só o calendário em que está a trabalhar, quando lhe pede. Está desativada até o proprietário a ligar, e só altera eventos com o seu consentimento."],["As crianças podem usar o Collyo?","Sim, num calendário de família, clube ou turma. Um adulto assina uma declaração por cada menor e, antes dos 13 anos, um dos pais aprova por e-mail. Os menores têm um acesso limitado."],["Os meus dados estão protegidos?","Os seus dados ficam na UE e o acesso é controlado por papéis. A nossa política de privacidade dá os detalhes."],["Posso usá-lo com a minha própria app de AI?","Sim. Ligue o Collyo a qualquer cliente de AI compatível com MCP. É só de leitura e pode revogá-lo a qualquer momento."]],
+    pricing: 'Preços',
     footer: 'AI Solution Hub®',
   },
 }

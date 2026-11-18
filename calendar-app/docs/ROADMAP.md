@@ -126,8 +126,7 @@ from the backlog below.
 
 ## Phase 2: monetization foundation (S7 - S12)
 
-Nothing here is billable today: there is no plan, no quota and no payment.
-The pricing grid cannot be enforced before this phase is closed.
+Paid plans are on sale since 19 November 2026 (Stripe, live, Managed Payments). See `docs/PRICING.md` for what is built and what is left.
 
 - [~] **S7. Entitlements model.** *Started 18 Nov 2026: tables and the AI quota are done, see `docs/PRICING.md`; calendar and member limits are not enforced yet.*
       Tables `plans`, `subscriptions`, `usage_counters`; one server-side
@@ -141,24 +140,24 @@ The pricing grid cannot be enforced before this phase is closed.
       *Done when*: the counter matches the number of confirmed AI actions in
       a test session, including retries and failed calls being excluded.
 
-- [ ] **S9. Stripe.**
+- [x] **S9. Stripe.** *Done 18-19 Nov 2026: Checkout, portal, webhook sync, test and live modes; a failed payment is mapped to `past_due` (grace).*
       Checkout, customer portal, webhooks, subscription state sync.
       *Done when*: subscribe, upgrade, cancel and failed payment all update
       `subscriptions` within seconds, in test mode.
 
-- [ ] **S10. Plan enforcement.**
+- [~] **S10. Plan enforcement.** *AI quota enforced server-side with a message and a link to the plans; shared-calendar and member limits not enforced yet.*
       Seats, shared-calendar count and AI quota enforced server-side with a
       clear message at the limit; no silent failure.
       *Done when*: a user at quota is stopped with an explicit message and an
       upgrade path, and the API refuses the same call directly.
 
-- [ ] **S11. Pricing page and trial.**
+- [x] **S11. Pricing page and trial.** *Done differently: a free plan without AI instead of a trial (decided 18 Nov 2026); pricing page in six languages, linked from the landing page.*
       Honest page: what exists today vs what is announced; TTC/HT and VAT
       stated. 14-day trial instead of a free tier.
       *Done when*: a new account gets exactly 14 days, then degrades to a
       read-only state without data loss.
 
-- [ ] **S12. Billing legal.**
+- [~] **S12. Billing legal.** *Terms section 12 (subscriptions) and privacy section 16 (payments) written in six languages on 19 Nov 2026; to be reviewed by a lawyer.*
       Update Terms (price change, notice period, refunds, fair use) and
       Privacy (payment processor, AI provider if any).
       *Done when*: the pages list every processor actually used, with location.

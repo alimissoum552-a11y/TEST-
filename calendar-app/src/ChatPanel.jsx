@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { PRICING } from './pricing.js'
 import { useI18n } from './i18n/index.jsx'
 import Avatar from './Avatar.jsx'
 import AiAvatar from './AiAvatar.jsx'
@@ -20,7 +21,7 @@ const MENTION = /@(ai|ia|ki)\b/i
 const AI_ERRORS = { ai_disabled: 'chatAiDisabled', daily_limit: 'assistantLimit', plan_required: 'aiPlanRequired', quota_reached: 'aiQuotaReached', assistant_not_configured: 'assistantNotConfigured', ai_not_approved_for_minors: 'chatAiNotApproved' }
 
 export default function ChatPanel({ calendarId, user, myHandle, canWrite, isOwner, onClose, onApplied, minor = false }) {
-  const { t, locale } = useI18n()
+  const { t, locale, lang } = useI18n()
   const myLabel = user.user_metadata?.display_name || user.email || ''
   const [messages, setMessages] = useState([])
   const [names, setNames] = useState({})
@@ -31,6 +32,9 @@ export default function ChatPanel({ calendarId, user, myHandle, canWrite, isOwne
   const [text, setText] = useState('')
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState(null)
+  const [errCode, setErrCode] = useState(null)
+  // A plan limit (no AI in the plan, or the month's quota used up): offer the plans page.
+  const [planErr, setPlanErr] = useState(false)
   const [aiOn, setAiOn] = useState(false)
   const [aiThinking, setAiThinking] = useState(false)
   const [confirmAi, setConfirmAi] = useState(false)
@@ -160,14 +164,15 @@ export default function ChatPanel({ calendarId, user, myHandle, canWrite, isOwne
 
   // The AI's reply arrives as a chat message through Realtime.
   async function requestAi() {
-    setAiThinking(true)
+    setAiThinking(true); setErrCode(null)
     try {
       const res = await askChatAi(calendarId)
       if (res?.applied?.length) onApplied?.()
     } catch (ex) {
       // A minor does not need the technical reason: the adult in charge decides (declaration and AI switch).
       const unavailable = minor && ['ai_not_approved_for_minors', 'ai_disabled'].includes(ex.message)
-      setErr(t(unavailable ? 'chatAiMinorOff' : (AI_ERRORS[ex.message] || 'chatAiFailed')))
+      setErr(t(unavailable ? 'chatAiMinorOff' : (AI_ERRORS[ex.message] || 'chatAiFailed'))); setErrCode(ex.message)
+      setPlanErr(!minor && ['plan_required', 'quota_reached'].includes(ex.message))
     } finally { setAiThinking(false) }
   }
 
@@ -317,6 +322,8 @@ export default function ChatPanel({ calendarId, user, myHandle, canWrite, isOwne
           </ul>
         )}
         {err && <p className="text-sm font-medium text-neutral-900">{err}</p>}
+            {['plan_required', 'quota_reached'].includes(errCode) && <a href="#/pricing" data-upgrade-link className="text-sm text-neutral-700 underline underline-offset-2">{(PRICING[lang] || PRICING.en).seeAllPlans}</a>}
+            {err && planErr && <a href="#/pricing" className="text-sm text-neutral-700 underline underline-offset-2">{t('aiSeePlans')}</a>}
         {canWrite ? (
           <form onSubmit={send} className="flex gap-2">
             <input className={input} value={text} maxLength={2000} disabled={busy}

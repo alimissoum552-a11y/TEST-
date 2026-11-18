@@ -38,18 +38,25 @@ describe('legal texts', () => {
 
   it('covers well-being, minors and identity verification in privacy and terms', () => {
     for (const lang of LANGS) {
-      expect(PAGES[lang].privacy, lang).toHaveLength(16)
-      expect(PAGES[lang].terms, lang).toHaveLength(12)
+      expect(PAGES[lang].privacy, lang).toHaveLength(17)
+      expect(PAGES[lang].terms, lang).toHaveLength(13)
       for (const s of [...PAGES[lang].privacy, ...PAGES[lang].terms]) expect(s.p.length, `${lang} ${s.h}`).toBeGreaterThan(20)
     }
     expect(PAGES.en.privacy[14].p).toMatch(/Stripe/)
     expect(PAGES.en.privacy[13].p).toMatch(/30 days/)
   })
 
+  it('covers subscriptions in the terms and payments in privacy, in every language', () => {
+    for (const lang of LANGS) {
+      expect(PAGES[lang].terms[11].p, lang).toMatch(/Stripe/)
+      expect(PAGES[lang].privacy[15].p, lang).toMatch(/Stripe/)
+    }
+  })
+
   it('shows the same update date everywhere', () => {
-    expect(OPERATOR.updated).toBe('17 November 2026')
-    expect(PAGES.en.privacy[15].p).toMatch(/17 November 2026/)
-    expect(PAGES.en.cookies[4].p).toMatch(/17 November 2026/)
+    expect(OPERATOR.updated).toBe('19 November 2026')
+    expect(PAGES.en.privacy[16].p).toMatch(/19 November 2026/)
+    expect(PAGES.en.cookies[4].p).toMatch(/19 November 2026/)
   })
 })
 
