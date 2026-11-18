@@ -604,6 +604,11 @@ export const deleteCalendar = (calendarId) => callFunction('team-admin', { actio
 // Deletes the caller's own account and everything attached to it. The e-mail address typed by the user is the confirmation.
 export const deleteMyAccount = (confirmEmail) => callFunction('delete-account', { confirm_email: confirmEmail })
 
+// Paid plans (Stripe Billing, function `billing`). Both return a Stripe URL to open in the same tab.
+// Not wired to a button yet: billing is closed until the launch (docs/PRICING.md).
+export const startCheckout = (plan, interval, seats) => callFunction('billing', { action: 'checkout', plan, interval, seats })
+export const openBillingPortal = () => callFunction('billing', { action: 'portal' })
+
 // The owner names an adult responsible by e-mail. The server links the account (or stores an invitation) and sends an e-mail.
 export const inviteGuardian = (profileId, email) =>
   callFunction('minor-consent', { action: 'invite_guardian', profile_id: profileId, email })

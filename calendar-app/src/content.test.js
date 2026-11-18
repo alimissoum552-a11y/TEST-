@@ -52,3 +52,23 @@ describe('legal texts', () => {
     expect(PAGES.en.cookies[4].p).toMatch(/17 November 2026/)
   })
 })
+
+import { PRICING } from './pricing.js'
+
+describe('pricing copy', () => {
+  it('has the same keys in every language, for every plan', () => {
+    const base = Object.keys(PRICING.en).sort()
+    const planKeys = Object.keys(PRICING.en.plans).sort()
+    for (const lang of LANGS) {
+      expect(Object.keys(PRICING[lang]).sort(), lang).toEqual(base)
+      expect(Object.keys(PRICING[lang].plans).sort(), lang).toEqual(planKeys)
+      for (const code of planKeys) {
+        expect(PRICING[lang].plans[code].items, `${lang} ${code}`).toHaveLength(PRICING.en.plans[code].items.length)
+      }
+      expect(PRICING[lang].notes, lang).toHaveLength(PRICING.en.notes.length)
+    }
+  })
+  it('tells visitors that nothing is charged yet', () => {
+    expect(PRICING.en.banner).toMatch(/No payment is open yet/)
+  })
+})

@@ -10,11 +10,12 @@ export function parseRoute(hash) {
   const invite = hash.match(/^#\/join\?invite=([0-9a-f-]{36})$/i)?.[1] ?? null
   const consent = hash.match(/^#\/oauth\/consent\?authorization_id=([^&]+)/)?.[1] ?? null
   const guide = /#\/ai-guide$/.test(hash)
+  const pricing = /^#\/pricing$/.test(hash)
   const reset = /#\/reset-password$/.test(hash)
   // Guardian consent link (e-mail) and minor access page.
   const consentToken = hash.match(/^#\/consent\?token=([A-Za-z0-9_-]{20,100})$/)?.[1] ?? null
   const minor = /^#\/minor$/.test(hash)
-  return { legal, auth, invite, consent, guide, reset, consentToken, minor }
+  return { legal, auth, invite, consent, guide, pricing, reset, consentToken, minor }
 }
 
 export function useLegalRoute() {

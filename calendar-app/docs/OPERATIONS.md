@@ -40,6 +40,7 @@ project. Each file is written to be safe to re-run (`if not exists`, `drop polic
 | `migrations_023_guardian_invites.sql` | `find_user_id_by_email()` (service role only), `profile_guardian_invites`, linking of an invited adult when the address is confirmed |
 | `migrations_024_security_hardening.sql` | NULL role no longer passes the role checks (invite, restore, accept, decline); anonymous access to the RPC functions closed; trigger functions and the purge not callable through the API. Regression test: `supabase/tests/security_regression.sql` |
 | `migrations_025_minor_account_cleanup.sql` | Trigger that deletes a minor's sign-in account when its managed profile is deleted (e.g. when the owner's account is deleted) |
+| `migrations_026_plans_entitlements.sql` | `plans`, `subscriptions` (every account on the `launch` plan), `ai_usage.billed_to` and `calendar_id`. Nothing is charged: see `docs/PRICING.md` |
 | `migrations_022_sex_two_values.sql` | The sex of a managed profile is female, male or empty |
 | `migrations_021_minor_no_calendars.sql` | Fix found by the end-to-end test: a minor could create a calendar. Restrictive policies on `calendars`, invitations, members, usage and AI notes |
 
@@ -74,6 +75,7 @@ happened once with `chat_ai_notes` (fixed in migration 011).
 | `minor-consent` | App (adult owner) and the consent page | User session for the request; a one-time token for info and approve | Guardian consent by e-mail for a child who may be under 13, and invitation of an adult responsible by e-mail (with or without an account). Deployed with `--no-verify-jwt`. |
 | `team-admin` | App (calendar owner) | User session, owner of the calendar | Removes a minor profile together with the technical account of the minor, and deletes a calendar (minor accounts first, then the event history). The personal calendar cannot be deleted. |
 | `delete-account` | App (profile panel, "Delete my account") | User session; the account's own e-mail typed as confirmation; refuses minors | Deletes the caller's calendars (database cascade), the technical accounts of their minors, their avatar files and their sign-in account. |
+| `billing` | App (later), Stripe webhook | `checkout` and `portal`: user session; webhook: Stripe signature (`STRIPE_BILLING_WEBHOOK_SECRET`). Deployed with `--no-verify-jwt` | Stripe Billing: Checkout session, customer portal, and the webhook that writes `subscriptions`. Test key for now (`STRIPE_BILLING_API_KEY`); see `docs/PRICING.md`. |
 
 Deploy one function (the CLI asks for confirmation in agent mode; `--yes` confirms that one deploy):
 

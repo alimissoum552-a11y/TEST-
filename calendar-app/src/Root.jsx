@@ -14,6 +14,7 @@ import MinorLogin from './MinorLogin.jsx'
 import { getMyProfile } from './lib/api.js'
 import { useI18n } from './i18n/index.jsx'
 import { listPasskeys, verifyWithPasskey, isPasskeyVerified, markPasskeyVerified, clearPasskeyVerifications } from './passkeys.js'
+import PricingPage from './PricingPage.jsx'
 
 // A pending invitation is kept in this browser until it is answered or dismissed.
 // That way it survives sign-out, sign-in, and the e-mail confirmation step of a new account.
@@ -40,7 +41,7 @@ export default function Root() {
     return () => window.removeEventListener('hashchange', f)
   }, [])
 
-  const { invite: routeInvite, consent, auth, guide, reset, consentToken, minor } = parseRoute(hash)
+  const { invite: routeInvite, consent, auth, guide, pricing, reset, consentToken, minor } = parseRoute(hash)
   const [pending, setPending] = useState(() => routeInvite || readPendingInvite())
   const [joinedCalendarId, setJoinedCalendarId] = useState(null)
   const [session, setSession] = useState(undefined) // undefined = loading
@@ -108,6 +109,7 @@ export default function Root() {
 
   if (legal) return <LegalPage kind={legal} onBack={goBackFromLegal} />
   if (guide) return <AiGuidePage onBack={() => { window.location.hash = '' }} />
+  if (pricing) return <PricingPage onBack={() => { window.location.hash = '' }} />
   // The guardian consent page needs no sign-in.
   if (consentToken) return <ConsentPage token={consentToken} />
   if (session === undefined) return <div className="min-h-screen bg-neutral-200" />

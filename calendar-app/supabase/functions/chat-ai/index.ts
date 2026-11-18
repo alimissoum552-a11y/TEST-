@@ -3,6 +3,7 @@
 // Runs with the caller's JWT for reads (RLS applies). Writes (notes, reply) use the service role.
 // Secrets: ANTHROPIC_API_KEY. Provided by Supabase: SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY.
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2'
+import { checkAiQuota } from '../_shared/plans.ts'
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -147,6 +148,9 @@ Deno.serve(async (req) => {
     const { count } = await admin.from('ai_usage').select('id', { count: 'exact', head: true })
       .eq('user_id', user.id).gte('created_at', since)
     if ((count ?? 0) >= (isMinor ? MINOR_DAILY_REQUEST_CAP : DAILY_REQUEST_CAP)) return json({ error: 'daily_limit' }, 429)
+    // The AI follows the calendar: the owner's plan pays and has the monthly quota, whoever asks (docs/PRICING.md).
+    const quota = await checkAiQuota(admin, cal.owner_id)
+    if (!quota.ok) return json({ error: quota.error, limit: quota.limit }, quota.error === 'quota_reached' ? 429 : 403)
 
     const { data: rows, error: mErr } = await supa.from('messages')
       .select('id, user_id, content, created_at, is_ai').eq('calendar_id', calId)
@@ -247,7 +251,8 @@ Deno.serve(async (req) => {
     }
 
     await admin.from('ai_usage').insert({
-      user_id: user.id, model: MODEL, input_tokens: inputTokens, output_tokens: outputTokens, tool_calls: toolCalls,
+      user_id: user.id, billed_to: cal.owner_id, calendar_id: calId,
+      model: MODEL, input_tokens: inputTokens, output_tokens: outputTokens, tool_calls: toolCalls,
     })
     if (!reply) return json({ error: 'empty_reply' }, 502)
 

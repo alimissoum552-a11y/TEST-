@@ -17,7 +17,7 @@ const TYPING_SEND_MS = 2000
 const TYPING_HIDE_MS = 3000
 const MENTION = /@(ai|ia|ki)\b/i
 // ai_not_approved_for_minors: the calendar has a minor who is not covered by a signed declaration that includes AI.
-const AI_ERRORS = { ai_disabled: 'chatAiDisabled', daily_limit: 'assistantLimit', assistant_not_configured: 'assistantNotConfigured', ai_not_approved_for_minors: 'chatAiNotApproved' }
+const AI_ERRORS = { ai_disabled: 'chatAiDisabled', daily_limit: 'assistantLimit', plan_required: 'aiPlanRequired', quota_reached: 'aiQuotaReached', assistant_not_configured: 'assistantNotConfigured', ai_not_approved_for_minors: 'chatAiNotApproved' }
 
 export default function ChatPanel({ calendarId, user, myHandle, canWrite, isOwner, onClose, onApplied, minor = false }) {
   const { t, locale } = useI18n()

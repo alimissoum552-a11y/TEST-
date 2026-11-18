@@ -4,6 +4,7 @@
 // SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY.
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2'
 import { findFreeSlots, type Interval } from './slots.ts'
+import { checkAiQuota } from '../_shared/plans.ts'
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -168,6 +169,9 @@ Deno.serve(async (req) => {
     const { count } = await admin.from('ai_usage').select('id', { count: 'exact', head: true })
       .eq('user_id', user.id).gte('created_at', since)
     if ((count ?? 0) >= DAILY_REQUEST_CAP) return json({ error: 'daily_limit' }, 429)
+    // The plan of the caller must include the AI and have requests left this month (docs/PRICING.md).
+    const quota = await checkAiQuota(admin, user.id)
+    if (!quota.ok) return json({ error: quota.error, limit: quota.limit }, quota.error === 'quota_reached' ? 429 : 403)
 
     // Calendars the caller can access. Ownership decides whether titles may be read.
     // Calendars with minors are hidden from the assistant unless the minor AI rules are met (migrations_017).
@@ -213,7 +217,7 @@ Deno.serve(async (req) => {
       }
 
       await admin.from('ai_usage').insert({
-        user_id: user.id, model: MODEL, input_tokens: inputTokens, output_tokens: outputTokens, tool_calls: toolCalls,
+        user_id: user.id, billed_to: user.id, model: MODEL, input_tokens: inputTokens, output_tokens: outputTokens, tool_calls: toolCalls,
       })
       const raw = r.content.filter((b: any) => b.type === 'text').map((b: any) => b.text).join('\n').trim()
       // The model starts its answer with this marker when the user shows serious distress. The app then shows help.

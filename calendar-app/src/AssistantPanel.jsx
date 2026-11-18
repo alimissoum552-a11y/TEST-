@@ -8,6 +8,8 @@ import { askAssistant, getAiAcceptedAt, acceptAssistantPolicy, getAiPermissions,
 // Answers are shown as plain text (never as HTML).
 const ERROR_KEYS = {
   daily_limit: 'assistantLimit',
+  plan_required: 'aiPlanRequired',
+  quota_reached: 'aiQuotaReached',
   assistant_not_configured: 'assistantNotConfigured',
 }
 

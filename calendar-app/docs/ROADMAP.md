@@ -129,13 +129,13 @@ from the backlog below.
 Nothing here is billable today: there is no plan, no quota and no payment.
 The pricing grid cannot be enforced before this phase is closed.
 
-- [ ] **S7. Entitlements model.**
+- [~] **S7. Entitlements model.** *Started 18 Nov 2026: tables and the AI quota are done, see `docs/PRICING.md`; calendar and member limits are not enforced yet.*
       Tables `plans`, `subscriptions`, `usage_counters`; one server-side
       function `can(user, action)` used by the API.
       *Done when*: every limited feature (seats, shared calendars, AI actions)
       asks `can()` and no limit is enforced in the client only.
 
-- [ ] **S8. Usage metering.**
+- [~] **S8. Usage metering.** *AI requests are counted per month and per payer (`ai_usage.billed_to`); team well-being analysis is not metered yet.*
       Count AI actions per user per month, atomically, with an explicit
       definition of a billable "action".
       *Done when*: the counter matches the number of confirmed AI actions in
