@@ -43,6 +43,8 @@ project. Each file is written to be safe to re-run (`if not exists`, `drop polic
 | `migrations_026_plans_entitlements.sql` | `plans`, `subscriptions` (every account on the `launch` plan), `ai_usage.billed_to` and `calendar_id`. Nothing is charged: see `docs/PRICING.md` |
 | `migrations_027_free_default.sql` | New accounts start on the free plan (no AI); accounts created before keep the launch plan |
 | `migrations_028_cancel_and_refund.sql` | `subscriptions.plan_before_stripe`, `cancel_at`, `started_at`: the plan restored when a subscription ends, the scheduled end date, the start of the refund window |
+| `migrations_029_ops_monitoring.sql` | `ops_errors`, `ops_state`, `ops_cron_failures()` (see Monitoring) |
+| `migrations_030_plan_limits.sql` | Plan limits enforced by triggers: shared calendars, members and pending invitations per calendar, team well-being analysis (`plan_of()`, `team_wellbeing_allowed()`). Test: `supabase/tests/plan_limits_test.sql` |
 | `migrations_022_sex_two_values.sql` | The sex of a managed profile is female, male or empty |
 | `migrations_021_minor_no_calendars.sql` | Fix found by the end-to-end test: a minor could create a calendar. Restrictive policies on `calendars`, invitations, members, usage and AI notes |
 

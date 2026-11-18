@@ -70,7 +70,11 @@ async function manage(req: Request, admin: any, secret: string, body: any): Prom
     if (cErr || !created?.user) return json({ error: 'server_error' }, 500)
     const minorId = created.user.id
     const { error: mErr } = await admin.from('calendar_members').insert({ calendar_id: prof.calendar_id, user_id: minorId, role: 'minor' })
-    if (mErr) { await admin.auth.admin.deleteUser(minorId); return json({ error: 'server_error' }, 500) }
+    if (mErr) {
+      await admin.auth.admin.deleteUser(minorId)
+      if (String(mErr.message).includes('plan_limit_members')) return json({ error: 'plan_limit_members' }, 403)
+      return json({ error: 'server_error' }, 500)
+    }
 
     const issued = await issueIdentifier(admin, secret, profileId, { auth_user_id: minorId, access_created_at: new Date().toISOString() })
     if (!issued) return json({ error: 'server_error' }, 500)

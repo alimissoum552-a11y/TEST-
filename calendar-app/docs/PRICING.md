@@ -23,7 +23,7 @@
 
 1. **One real purchase** (Starter monthly, 3 EUR) to check the live card payment and the live webhook end to end, then refund and cancel it in the Stripe dashboard. Not done: the live payment page cannot be driven by a script.
 2. In the Stripe dashboard, check that the customer portal lets subscribers switch between the four Collyo products (the API does not echo the list back).
-3. Shared-calendar and member limits per plan are stored but not enforced; team well-being analysis is not gated by plan.
+3. ~~Plan limits~~ — done 18 November 2026 (migration 030): the database refuses a shared calendar beyond the plan (Free and Starter: none, Pro: 1, Team groups: 10), a member or invitation beyond the plan (Free and Starter: no members, Pro: 20, Team groups: 50 per calendar, invitations pending included), and turning on the team well-being analysis outside Team (work) and the launch plan; the hourly analysis skips calendars whose owner's plan no longer includes it. Nothing already there is removed after a downgrade: the limit only stops adding more. The app explains the refusal with a link to the plans. Test: `supabase/tests/plan_limits_test.sql` (rolled back; every line must say ok).
 4. Education: check teachers by school e-mail or a document, then give a promotion code on the coupon `edu_50`.
 5. Telling the nine launch accounts, in writing and with notice, when they move to the grid.
 6. Legal review of the terms and privacy sections on payment.

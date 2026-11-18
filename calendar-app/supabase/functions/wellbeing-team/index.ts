@@ -27,6 +27,9 @@ Deno.serve(async (req) => {
 
   let processed = 0
   for (const team of teams ?? []) {
+    // The owner's plan must include the team analysis (migration 030); a downgraded calendar is skipped.
+    const { data: allowed } = await admin.rpc('team_wellbeing_allowed', { p_calendar: team.calendar_id })
+    if (allowed !== true) continue
     try { await analyseCalendar(admin, apiKey, team); processed++ } catch (e) { console.error('calendar', team.calendar_id, e); await reportError('wellbeing-team', e, { calendar: team.calendar_id }) }
   }
   return json({ ok: true, processed })

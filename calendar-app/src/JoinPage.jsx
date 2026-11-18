@@ -39,7 +39,7 @@ export default function JoinPage({ inviteId, user, onJoined, onDone }) {
           if (member) onJoined?.(inv.calendar_id)
         }
       } catch (ex) {
-        if (!cancelled) { setErr(ex.message || t('joinFailed')); setState('used') }
+        if (!cancelled) { setErr(String(ex.message).includes('plan_limit_members') ? t('planLimitJoin') : (ex.message || t('joinFailed'))); setState('used') }
       }
     })()
     return () => { cancelled = true }

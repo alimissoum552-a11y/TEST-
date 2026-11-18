@@ -21,7 +21,7 @@ export default function InvitesPanel({ onAnswered }) {
       if (accept) await acceptInvite(inv.id); else await declineInvite(inv.id)
       setInvites((l) => l.filter((x) => x.id !== inv.id))
       onAnswered?.(accept ? inv.calendar_id : null)
-    } catch (ex) { setErr(ex.message) } finally { setBusy(null) }
+    } catch (ex) { setErr(String(ex.message).includes('plan_limit_members') ? t('planLimitJoin') : ex.message) } finally { setBusy(null) }
   }
 
   if (dismissed || (!invites.length && !err)) return null

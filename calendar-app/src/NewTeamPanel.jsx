@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useI18n } from './i18n/index.jsx'
 import { getIdentityStatus, startIdentityVerification, createTeamCalendar } from './lib/api.js'
 import { GROUP_KINDS } from './lib/family.js'
+import PlanLimitNote, { planLimitCode } from './PlanLimitNote.jsx'
 
 const field = 'w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:border-neutral-900 bg-white'
 const SUGGESTION_KEY = { family: 'ntSugFamily', sports: 'ntSugSports', class: 'ntSugClass' }
@@ -16,6 +17,7 @@ export default function NewTeamPanel({ user, onClose, onCreated }) {
   const [touched, setTouched] = useState(false)
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState(null)
+  const [limit, setLimit] = useState(null)
 
   useEffect(() => {
     getIdentityStatus(user.id).then(setIdentity).catch(() => setIdentity({ status: 'none' }))
@@ -40,13 +42,15 @@ export default function NewTeamPanel({ user, onClose, onCreated }) {
   async function submit(e) {
     e.preventDefault()
     if (!name.trim()) return
-    setBusy(true); setErr(null)
+    setBusy(true); setErr(null); setLimit(null)
     try {
       const cal = await createTeamCalendar(user.id, name.trim(), kind)
       onCreated?.(cal.id)
       onClose()
     } catch (ex) {
-      setErr(ex.message === 'creator_not_verified' ? t('famErrCreator') : t('famErrGeneric'))
+      const code = planLimitCode(ex.message)
+      if (code) setLimit(code)
+      else setErr(ex.message === 'creator_not_verified' ? t('famErrCreator') : t('famErrGeneric'))
     } finally { setBusy(false) }
   }
 
@@ -83,6 +87,7 @@ export default function NewTeamPanel({ user, onClose, onCreated }) {
         </div>
 
         {err && <p className="text-sm font-medium text-neutral-900">{err}</p>}
+        <PlanLimitNote code={limit} />
         <button type="submit" disabled={busy || !verified || !name.trim()}
           className="w-full py-2.5 rounded-xl bg-neutral-900 text-white text-sm disabled:opacity-50">{t('ntCreate')}</button>
       </form>

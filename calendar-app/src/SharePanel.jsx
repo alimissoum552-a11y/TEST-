@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useI18n } from './i18n/index.jsx'
 import { listMembers, listCalendarInvites, inviteMember, setMemberRole, removeMember, sendInviteEmail, cancelInvite } from './lib/api.js'
+import PlanLimitNote, { planLimitCode } from './PlanLimitNote.jsx'
 
 const ROLES = ['administrator', 'contributor', 'reader']
 
@@ -11,6 +12,7 @@ export default function SharePanel({ calendarId, canManage = false, onClose }) {
   const [role, setRole] = useState('reader')
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState(null)
+  const [limit, setLimit] = useState(null)
   const [pending, setPending] = useState([])
   const input = 'rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:border-neutral-900'
 
@@ -23,7 +25,7 @@ export default function SharePanel({ calendarId, canManage = false, onClose }) {
   useEffect(() => { refresh() }, [calendarId])
 
   async function invite(e) {
-    e.preventDefault(); setBusy(true); setMsg(null)
+    e.preventDefault(); setBusy(true); setMsg(null); setLimit(null)
     try {
       const inviteId = await inviteMember(calendarId, email.trim(), role)
       // Notify the invitee by email; a mail failure does not undo the membership.
@@ -36,7 +38,9 @@ export default function SharePanel({ calendarId, canManage = false, onClose }) {
       }
       await refresh()
     } catch (ex) {
-      setMsg({ err: true, text: ex.message === 'NO_USER' ? t('noUser') : ex.message })
+      const code = planLimitCode(ex.message)
+      if (code) setLimit(code)
+      else setMsg({ err: true, text: ex.message === 'NO_USER' ? t('noUser') : ex.message })
     } finally { setBusy(false) }
   }
 
@@ -79,6 +83,7 @@ export default function SharePanel({ calendarId, canManage = false, onClose }) {
         )}
 
         {msg && <p className={`text-sm ${msg.err ? 'font-medium text-neutral-900' : 'text-neutral-600'}`}>{msg.text}</p>}
+        <PlanLimitNote code={limit} />
 
         <ul className="space-y-2">
           {members.map((m) => (

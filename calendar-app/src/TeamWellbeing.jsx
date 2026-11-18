@@ -3,6 +3,7 @@ import { useI18n } from './i18n/index.jsx'
 import {
   getTeamWellbeing, saveTeamWellbeing, getMyWellbeingOptout, setMyWellbeingOptout, getWellbeingAnalysisLog,
 } from './lib/api.js'
+import PlanLimitNote, { planLimitCode } from './PlanLimitNote.jsx'
 
 const DEFAULTS = { enabled: false, use_agenda: true, use_messages: false, meeting_hours_alert: 3 }
 
@@ -39,7 +40,7 @@ export function TeamWellbeingSettings({ calendarId, userId, isOwner }) {
       setForm({ ...DEFAULTS, ...row, meeting_hours_alert: Number(row.meeting_hours_alert) })
       setSaved(true)
     } catch (ex) {
-      setErr(ex.message === 'not_allowed' ? t('teamWbOwnerOnly') : ex.message)
+      setErr(ex.message === 'not_allowed' ? t('teamWbOwnerOnly') : (planLimitCode(ex.message) ?? ex.message))
     } finally { setBusy(false) }
   }
 
@@ -99,7 +100,7 @@ export function TeamWellbeingSettings({ calendarId, userId, isOwner }) {
           className="w-28 rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:border-neutral-900" />
       </div>
 
-      {err && <p className="text-sm font-medium text-neutral-900">{err}</p>}
+      {err && (planLimitCode(err) ? <PlanLimitNote code={planLimitCode(err)} /> : <p className="text-sm font-medium text-neutral-900">{err}</p>)}
       {saved && !err && <p className="text-sm text-neutral-700">{t('wbSaved')}</p>}
 
       <button type="submit" disabled={busy || (form.enabled && !sourcesOk)}

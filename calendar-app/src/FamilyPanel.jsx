@@ -52,6 +52,7 @@ export default function FamilyPanel({ calendar, userId, isOwner }) {
       invalid_email: 'fmErrEmail',
       is_owner: 'fmErrGuardianOwner',
       email_failed: 'fmErrEmailSend',
+      plan_limit_members: 'planLimitMembers',
     })[message] || 'famErrGeneric'
   }
 
