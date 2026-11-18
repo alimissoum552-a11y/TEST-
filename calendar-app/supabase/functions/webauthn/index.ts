@@ -161,7 +161,9 @@ Deno.serve(async (req) => {
     if (action === 'auth-options') {
       const email = String(body?.email || '').trim().toLowerCase()
       if (!email) return json({ error: 'invalid_email' }, 400)
-      const { data: profile } = await db.from('profiles').select('id, email').ilike('email', email).maybeSingle()
+      // ilike is case-insensitive but treats % and _ as wildcards: escape them so only an exact address matches.
+      const exact = email.replace(/[\\%_]/g, (c) => '\\' + c)
+      const { data: profile } = await db.from('profiles').select('id, email').ilike('email', exact).maybeSingle()
       if (!profile) return json({ error: 'no_passkey' }, 404)
       const { data: creds } = await db.from('webauthn_credentials')
         .select('credential_id, transports').eq('user_id', profile.id)

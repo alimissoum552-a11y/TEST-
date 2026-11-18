@@ -39,6 +39,7 @@ project. Each file is written to be safe to re-run (`if not exists`, `drop polic
 | `migrations_020_minor_access.sql` | `profiles.account_type`, role `minor`, minor restrictions, `team_member_names()`, access and consent columns, `minor_consents`, `minor_login_attempts`, AI rule without operator approval |
 | `migrations_023_guardian_invites.sql` | `find_user_id_by_email()` (service role only), `profile_guardian_invites`, linking of an invited adult when the address is confirmed |
 | `migrations_024_security_hardening.sql` | NULL role no longer passes the role checks (invite, restore, accept, decline); anonymous access to the RPC functions closed; trigger functions and the purge not callable through the API. Regression test: `supabase/tests/security_regression.sql` |
+| `migrations_025_minor_account_cleanup.sql` | **Prepared, not applied yet.** Trigger that deletes a minor's sign-in account when its managed profile is deleted (e.g. when the owner's account is deleted) |
 | `migrations_022_sex_two_values.sql` | The sex of a managed profile is female, male or empty |
 | `migrations_021_minor_no_calendars.sql` | Fix found by the end-to-end test: a minor could create a calendar. Restrictive policies on `calendars`, invitations, members, usage and AI notes |
 

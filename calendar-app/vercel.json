@@ -2,5 +2,17 @@
   "rewrites": [
     { "source": "/mcp", "destination": "https://oybvllumenwbzekgxjtz.supabase.co/functions/v1/mcp" },
     { "source": "/mcp/:path*", "destination": "https://oybvllumenwbzekgxjtz.supabase.co/functions/v1/mcp/:path*" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy", "value": "publickey-credentials-get=(self), publickey-credentials-create=(self), camera=(), microphone=(), geolocation=(), payment=()" },
+        { "key": "Content-Security-Policy-Report-Only", "value": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://oybvllumenwbzekgxjtz.supabase.co; connect-src 'self' https://oybvllumenwbzekgxjtz.supabase.co wss://oybvllumenwbzekgxjtz.supabase.co; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" }
+      ]
+    }
   ]
 }
