@@ -2384,14 +2384,16 @@ const I18nContext = createContext(null)
 
 export function I18nProvider({ children }) {
   const [lang, setLang] = useState(() => {
-    const saved = typeof localStorage !== 'undefined' && localStorage.getItem(STORAGE_KEY)
+    // Storage can be blocked (private windows, strict cookie settings): the app must still start.
+    let saved = null
+    try { saved = typeof localStorage !== 'undefined' && localStorage.getItem(STORAGE_KEY) } catch { /* blocked */ }
     return saved && DICT[saved] ? saved : 'en'
   })
 
   useEffect(() => {
     document.documentElement.lang = lang
     document.documentElement.dir = RTL.has(lang) ? 'rtl' : 'ltr'
-    localStorage.setItem(STORAGE_KEY, lang)
+    try { localStorage.setItem(STORAGE_KEY, lang) } catch { /* blocked */ }
   }, [lang])
 
   const value = useMemo(() => {
@@ -2403,10 +2405,12 @@ export function I18nProvider({ children }) {
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>
 }
 
+// English, used if a component ever renders outside the provider (it happened once in production, together with a
+// page changed by the browser): showing English is better than a blank page.
+const FALLBACK = { lang: 'en', setLang: () => {}, t: (k) => DICT.en[k] ?? k, locale: 'en-US' }
+
 export function useI18n() {
-  const ctx = useContext(I18nContext)
-  if (!ctx) throw new Error('useI18n must be used inside I18nProvider')
-  return ctx
+  return useContext(I18nContext) ?? FALLBACK
 }
 
 export function LanguageSelect({ onPick, placement = 'down' }) {

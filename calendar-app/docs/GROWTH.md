@@ -34,7 +34,7 @@ A digest is e-mailed every Monday at 07:00 UTC to `OPS_ALERT_TO` (function `grow
 
 ## Running a campaign from Claude (MCP)
 
-The Collyo connector (`https://collyo.app/mcp`) gives the founder's account extra campaign tools; every other account only gets the read-only calendar tools. Who is the founder: the Supabase secret `ADMIN_USER_IDS` (comma-separated user ids; today the founder's main account only).
+The Collyo connector (`https://collyo.app/mcp`) gives the founder's account extra campaign tools; every other account only gets the read-only calendar tools. Who is the founder: the Supabase secret `ADMIN_USER_IDS` (comma-separated user ids; today the founder's two accounts).
 
 **Connect it in the Claude app**: Settings > Connectors > Add custom connector, name "Collyo", URL `https://collyo.app/mcp`, then Connect: sign in with the founder's Collyo account and approve. Turn the connector on in the conversation or project of the campaign.
 

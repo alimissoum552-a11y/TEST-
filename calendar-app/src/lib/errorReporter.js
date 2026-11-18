@@ -6,6 +6,13 @@ export function errorKey(message, stack) {
   return `${String(message ?? '').slice(0, 200)}|${String(stack ?? '').split('\n')[1] ?? ''}`
 }
 
+let sendReport = null
+
+// For errors React catches itself (error boundary): they never reach window.onerror.
+export function reportClientError(kind, message, stack) {
+  sendReport?.(kind, message, stack)
+}
+
 export function installErrorReporter({ url, anonKey, release = '', fetchImpl = (...a) => fetch(...a), target = window } = {}) {
   if (!url || !anonKey) return () => {}
   const seen = new Set()
@@ -20,6 +27,7 @@ export function installErrorReporter({ url, anonKey, release = '', fetchImpl = (
       keepalive: true,
     }).catch(() => {})
   }
+  sendReport = send
   const onError = (e) => send('error', e?.message, e?.error?.stack)
   const onRejection = (e) => send('rejection', e?.reason?.message ?? e?.reason, e?.reason?.stack)
   target.addEventListener('error', onError)

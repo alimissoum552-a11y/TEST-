@@ -328,6 +328,7 @@ Unexpected errors are collected and an e-mail digest is sent when something need
 - **Retention**: `ops_errors` rows are deleted after 90 days (`ops-errors-retention` job).
 - **Checked**: a test error sent by a browser was stored with the address and token masked, and the job sent its digest (`sent: true`).
 - Stripe also e-mails the account owner when a webhook endpoint keeps failing.
+- **Crash protection (18 November 2026)**: the first real alert showed a Chrome visitor on Windows whose landing page crashed (`useI18n must be used inside I18nProvider`, then `removeChild` errors): the signature of a page changed under React by the browser (page translation or an extension). Since then: the page opts out of browser translation (`translate="no"`, `<meta name="google" content="notranslate">`; the app has its own six languages), `useI18n()` falls back to English instead of throwing, language storage that the browser blocks no longer stops the app, and a top-level error screen (`src/ErrorBoundary.jsx`) offers a reload and reports the error as `boundary`.
 
 ## Backups
 

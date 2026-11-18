@@ -4,14 +4,17 @@ import Root from './Root.jsx'
 import { I18nProvider } from './i18n/index.jsx'
 import './index.css'
 import { installErrorReporter } from './lib/errorReporter.js'
+import ErrorBoundary from './ErrorBoundary.jsx'
 
 // Unexpected errors of the app are reported for monitoring (scrubbed on the server).
 installErrorReporter({ url: import.meta.env.VITE_SUPABASE_URL, anonKey: import.meta.env.VITE_SUPABASE_ANON_KEY })
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <I18nProvider>
-      <Root />
-    </I18nProvider>
+    <ErrorBoundary>
+      <I18nProvider>
+        <Root />
+      </I18nProvider>
+    </ErrorBoundary>
   </React.StrictMode>
 )
