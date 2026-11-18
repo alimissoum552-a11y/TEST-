@@ -613,6 +613,9 @@ export const startCheckout = (plan, interval, seats) => callFunction('billing', 
 export const openBillingPortal = () => callFunction('billing', { action: 'portal' })
 // Within 14 days of the start (30 for work teams): refund and end the subscription now.
 export const requestRefund = () => callFunction('billing', { action: 'refund' })
+// Founder accounts: whether the account is an admin, and switching its own plan without payment (to test each plan).
+export const getBillingMe = () => callFunction('billing', { action: 'me' })
+export const adminSetPlan = (plan) => callFunction('billing', { action: 'admin_set_plan', plan })
 // Education price: request with a school address, read the request, confirm the e-mailed link.
 export const requestEducation = (schoolName, schoolEmail, country) => callFunction('education', { action: 'request', school_name: schoolName, school_email: schoolEmail, country })
 export const getEducationStatus = () => callFunction('education', { action: 'status' })

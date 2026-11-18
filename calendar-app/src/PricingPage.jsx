@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useI18n } from './i18n/index.jsx'
 import { PRICING } from './pricing.js'
 import { supabase } from './lib/supabase.js'
-import { startCheckout, openBillingPortal, requestEducation, getEducationStatus } from './lib/api.js'
+import { startCheckout, openBillingPortal, requestEducation, getEducationStatus, getBillingMe, adminSetPlan, getMySubscription } from './lib/api.js'
 
 // Payment buttons stay disabled until billing is opened for real (build setting VITE_BILLING_OPEN=true). docs/PRICING.md.
 const BILLING_OPEN = import.meta.env.VITE_BILLING_OPEN === 'true'
@@ -21,6 +21,17 @@ export default function PricingPage({ onBack }) {
   const [busyPlan, setBusyPlan] = useState(null)
   const [note, setNote] = useState(null)
 
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [currentPlan, setCurrentPlan] = useState(null)
+  const switchPlan = async (code) => {
+    setBusyPlan(code); setNote(null)
+    try {
+      await adminSetPlan(code)
+      setCurrentPlan(code)
+      setNote(L.adminDone.replace('{plan}', code === 'launch' ? L.launchName : (L.plans[code]?.name || code)))
+    } catch (ex) { setNote(ex.message === 'stripe_subscription_active' ? L.adminStripe : L.checkoutError) }
+    finally { setBusyPlan(null) }
+  }
   const [edu, setEdu] = useState(null) // the signed-in user's education request, if any
   const [eduForm, setEduForm] = useState(null) // { school, email, country } while the form is open
   const [eduMsg, setEduMsg] = useState(null)
@@ -29,7 +40,11 @@ export default function PricingPage({ onBack }) {
     if (!supabase) return
     supabase.auth.getSession().then(({ data }) => {
       setSignedIn(!!data?.session)
-      if (data?.session) getEducationStatus().then((r) => setEdu(r?.request ?? null)).catch(() => {})
+      if (data?.session) {
+        getEducationStatus().then((r) => setEdu(r?.request ?? null)).catch(() => {})
+        getBillingMe().then((r) => setIsAdmin(!!r?.admin)).catch(() => {})
+        getMySubscription(data.session.user.id).then((sub) => setCurrentPlan(sub?.plan_code ?? null)).catch(() => {})
+      }
     }).catch(() => {})
   }, [])
 
@@ -92,6 +107,16 @@ export default function PricingPage({ onBack }) {
           <p role="note" className="rounded-2xl bg-white ring-1 ring-neutral-300 px-4 py-3 text-sm text-neutral-800">{L.banner}</p>
         </header>
 
+        {isAdmin && (
+          <div className="flex flex-wrap items-center gap-3 rounded-2xl bg-white ring-1 ring-neutral-900 px-4 py-3" data-admin-bar>
+            <p className="text-sm text-neutral-900">{L.adminNote}{currentPlan ? ` ${L.adminCurrent} : ${currentPlan === 'launch' ? L.launchName : (L.plans[currentPlan]?.name || currentPlan)}.` : ''}</p>
+            {currentPlan !== 'launch' && (
+              <button type="button" onClick={() => switchPlan('launch')} disabled={busyPlan !== null} data-admin-switch="launch"
+                className="px-3 py-1.5 rounded-xl bg-neutral-900 text-xs font-medium text-white disabled:opacity-50">{L.adminBack}</button>
+            )}
+          </div>
+        )}
+
         <div role="group" aria-label={`${L.monthly} / ${L.yearly}`} className="inline-flex rounded-full bg-white ring-1 ring-neutral-300 p-1">
           {[[false, L.monthly], [true, L.yearly]].map(([val, label]) => (
             <button key={String(val)} type="button" onClick={() => setYearly(val)} aria-pressed={yearly === val}
@@ -128,7 +153,10 @@ export default function PricingPage({ onBack }) {
                       <li key={i} className="flex gap-2"><span aria-hidden="true" className="text-neutral-900">✓</span><span>{it}</span></li>
                     ))}
                   </ul>
-                  {code === 'free'
+                  {isAdmin
+                    ? <button type="button" onClick={() => switchPlan(code)} disabled={busyPlan !== null || currentPlan === code} data-admin-switch={code}
+                        className="mt-6 px-4 py-2.5 rounded-2xl bg-neutral-900 text-sm font-medium text-white disabled:opacity-40">{currentPlan === code ? L.adminCurrent : L.adminChoose}</button>
+                    : code === 'free'
                     ? <a href="#/signup" className="mt-6 text-center px-4 py-2.5 rounded-2xl bg-neutral-900 text-sm font-medium text-white hover:bg-neutral-700">{L.startFree}</a>
                     : !BILLING_OPEN
                       ? <button type="button" disabled className="mt-6 px-4 py-2.5 rounded-2xl bg-neutral-100 text-sm font-medium text-neutral-500">{L.soon}</button>

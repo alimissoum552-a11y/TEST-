@@ -122,7 +122,13 @@ export const PRICING = {
     "eduConfirmReview": "Thank you, your address is confirmed. We check the school and e-mail you within a few days.",
     "eduConfirmBad": "This link is not valid or was already used.",
     "eduConfirmExpired": "This link has expired. Ask again from the pricing page.",
-    "eduActive": "Education price active"
+    "eduActive": "Education price active",
+    "adminNote": "Admin account: you can switch to any plan without paying, to test it.",
+    "adminChoose": "Switch without payment (admin)",
+    "adminBack": "Back to the launch plan (everything included)",
+    "adminDone": "Plan switched: {plan}. Open your profile to see it.",
+    "adminStripe": "Cancel your paid subscription first (Manage or cancel my subscription).",
+    "adminCurrent": "Current plan"
   },
   "fr": {
     "title": "Formules et tarifs",
@@ -246,7 +252,13 @@ export const PRICING = {
     "eduConfirmReview": "Merci, votre adresse est confirmée. Nous vérifions l’établissement et vous écrivons sous quelques jours.",
     "eduConfirmBad": "Ce lien n’est pas valide ou a déjà servi.",
     "eduConfirmExpired": "Ce lien a expiré. Refaites la demande depuis la page des tarifs.",
-    "eduActive": "Tarif éducation actif"
+    "eduActive": "Tarif éducation actif",
+    "adminNote": "Compte administrateur : vous pouvez passer à n’importe quelle formule sans payer, pour la tester.",
+    "adminChoose": "Activer sans paiement (admin)",
+    "adminBack": "Revenir à la formule de lancement (tout inclus)",
+    "adminDone": "Formule activée : {plan}. Ouvrez votre profil pour la voir.",
+    "adminStripe": "Résiliez d’abord votre abonnement payant (Gérer ou résilier mon abonnement).",
+    "adminCurrent": "Formule actuelle"
   },
   "es": {
     "title": "Planes y precios",
@@ -370,7 +382,13 @@ export const PRICING = {
     "eduConfirmReview": "Gracias, tu dirección está confirmada. Comprobamos el centro y te escribimos en unos días.",
     "eduConfirmBad": "Este enlace no es válido o ya se usó.",
     "eduConfirmExpired": "Este enlace caducó. Vuelve a pedirlo desde la página de precios.",
-    "eduActive": "Precio educativo activo"
+    "eduActive": "Precio educativo activo",
+    "adminNote": "Cuenta de administrador: puedes pasar a cualquier plan sin pagar, para probarlo.",
+    "adminChoose": "Activar sin pago (admin)",
+    "adminBack": "Volver al plan de lanzamiento (todo incluido)",
+    "adminDone": "Plan activado: {plan}. Abre tu perfil para verlo.",
+    "adminStripe": "Cancela antes tu suscripción de pago (Gestionar o cancelar mi suscripción).",
+    "adminCurrent": "Plan actual"
   },
   "de": {
     "title": "Tarife und Preise",
@@ -494,7 +512,13 @@ export const PRICING = {
     "eduConfirmReview": "Danke, deine Adresse ist bestätigt. Wir prüfen die Schule und schreiben dir in einigen Tagen.",
     "eduConfirmBad": "Dieser Link ist ungültig oder wurde schon benutzt.",
     "eduConfirmExpired": "Dieser Link ist abgelaufen. Frage erneut über die Tarifseite an.",
-    "eduActive": "Bildungspreis aktiv"
+    "eduActive": "Bildungspreis aktiv",
+    "adminNote": "Administratorkonto: Du kannst ohne Zahlung zu jedem Tarif wechseln, um ihn zu testen.",
+    "adminChoose": "Ohne Zahlung aktivieren (Admin)",
+    "adminBack": "Zurück zum Start-Tarif (alles inklusive)",
+    "adminDone": "Tarif aktiviert: {plan}. Öffne dein Profil, um ihn zu sehen.",
+    "adminStripe": "Kündige zuerst dein bezahltes Abonnement (Abonnement verwalten oder kündigen).",
+    "adminCurrent": "Aktueller Tarif"
   },
   "ar": {
     "title": "الباقات والأسعار",
@@ -618,7 +642,13 @@ export const PRICING = {
     "eduConfirmReview": "شكرًا، تم تأكيد عنوانك. نتحقق من المؤسسة ونراسلك خلال أيام.",
     "eduConfirmBad": "هذا الرابط غير صالح أو استُخدم من قبل.",
     "eduConfirmExpired": "انتهت صلاحية الرابط. اطلبه من جديد من صفحة الأسعار.",
-    "eduActive": "السعر التعليمي مفعّل"
+    "eduActive": "السعر التعليمي مفعّل",
+    "adminNote": "حساب مسؤول: يمكنك الانتقال إلى أي باقة دون دفع لتجربتها.",
+    "adminChoose": "تفعيل دون دفع (مسؤول)",
+    "adminBack": "العودة إلى باقة الإطلاق (كل شيء مشمول)",
+    "adminDone": "تم تفعيل الباقة: {plan}. افتح ملفك الشخصي لرؤيتها.",
+    "adminStripe": "ألغِ اشتراكك المدفوع أولًا (إدارة اشتراكي أو إلغاؤه).",
+    "adminCurrent": "الباقة الحالية"
   },
   "pt": {
     "title": "Planos e preços",
@@ -742,6 +772,12 @@ export const PRICING = {
     "eduConfirmReview": "Obrigado, o seu endereço está confirmado. Verificamos a escola e escrevemos-lhe dentro de alguns dias.",
     "eduConfirmBad": "Este link não é válido ou já foi usado.",
     "eduConfirmExpired": "Este link expirou. Peça de novo na página de preços.",
-    "eduActive": "Preço de educação ativo"
+    "eduActive": "Preço de educação ativo",
+    "adminNote": "Conta de administrador: pode passar para qualquer plano sem pagar, para o testar.",
+    "adminChoose": "Ativar sem pagamento (admin)",
+    "adminBack": "Voltar ao plano de lançamento (tudo incluído)",
+    "adminDone": "Plano ativado: {plan}. Abra o seu perfil para o ver.",
+    "adminStripe": "Cancele primeiro a subscrição paga (Gerir ou cancelar a minha subscrição).",
+    "adminCurrent": "Plano atual"
   }
 }

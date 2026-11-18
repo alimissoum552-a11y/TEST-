@@ -14,6 +14,7 @@ import { verifyStripeSignature } from '../identity/stripe.ts'
 import { EDUCATION_PLANS, EDUCATION_COUPON } from '../_shared/education.ts'
 import { validateCheckout, subscriptionRow, nextSubscriptionRow, refundAllowed, lookupKey, formEncode, MAX_SEATS, webhookTargetExists } from '../_shared/billing.ts'
 import { reportError } from '../_shared/ops.ts'
+import { isAdminId, ADMIN_SWITCH_PLANS } from '../_shared/admins.ts'
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -33,10 +34,12 @@ Deno.serve(async (req) => {
     })
     const { data: { user } } = await supa.auth.getUser()
     if (!user) return json({ error: 'unauthorized' }, 401)
+    const body = await req.json().catch(() => ({}))
+    if (body?.action === 'me') return json({ admin: isAdminId(user.id, Deno.env.get('ADMIN_USER_IDS')) })
+    if (body?.action === 'admin_set_plan') return await adminSetPlan(admin, user, body)
     const key = keyFor(currentMode())
     if (!key) return json({ error: 'billing_not_configured' }, 503)
 
-    const body = await req.json().catch(() => ({}))
     if (body?.action === 'checkout') return await checkout(admin, user, body, key)
     if (body?.action === 'portal') return await portal(admin, user, key)
     if (body?.action === 'refund') return await refund(admin, user)
@@ -152,6 +155,23 @@ async function refund(admin: any, user: any): Promise<Response> {
   }
   await stripe(key, `/subscriptions/${encodeURIComponent(sub.stripe_subscription_id)}`, undefined, 'DELETE')
   return json({ ok: true, refunded_cents: refunded })
+}
+
+// Founder accounts only: switch your own plan without payment to test it (or go back to launch). Never touches Stripe.
+async function adminSetPlan(admin: any, user: any, body: any): Promise<Response> {
+  if (!isAdminId(user.id, Deno.env.get('ADMIN_USER_IDS'))) return json({ error: 'not_allowed' }, 403)
+  const plan = String(body?.plan ?? '')
+  if (!ADMIN_SWITCH_PLANS.includes(plan)) return json({ error: 'invalid_plan' }, 400)
+  const { data: sub } = await admin.from('subscriptions').select('source, status').eq('user_id', user.id).maybeSingle()
+  // A paid Stripe subscription would overwrite the switch at its next event: cancel it first from the portal.
+  if (sub?.source === 'stripe' && ['active', 'trialing', 'past_due'].includes(sub.status)) return json({ error: 'stripe_subscription_active' }, 409)
+  const seats = plan === 'team_work' ? 3 : 1
+  const { error } = await admin.from('subscriptions').upsert({
+    user_id: user.id, plan_code: plan, status: 'active', source: plan === 'launch' ? 'launch' : 'manual', seats,
+    current_period_end: null, cancel_at: null, started_at: null, plan_before_stripe: null, updated_at: new Date().toISOString(),
+  }, { onConflict: 'user_id' })
+  if (error) throw error
+  return json({ ok: true, plan })
 }
 
 async function webhook(req: Request, admin: any, signature: string): Promise<Response> {
