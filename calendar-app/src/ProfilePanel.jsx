@@ -106,7 +106,7 @@ export default function ProfilePanel({ user, onClose, onChanged, onHandleChanged
 
   return (
     <div className="absolute inset-0 z-10 flex items-end sm:items-center justify-center bg-black/40" onClick={onClose}>
-      <div className="w-full sm:max-w-md bg-white rounded-t-3xl sm:rounded-3xl p-6 md:p-8 shadow-xl space-y-5"
+      <div className="w-full sm:max-w-md max-h-[92vh] overflow-y-auto bg-white rounded-t-3xl sm:rounded-3xl p-6 md:p-8 shadow-xl space-y-5"
         onClick={(e) => e.stopPropagation()}>
         <h3 className="text-lg font-semibold text-neutral-900">{t('profile')}</h3>
 
