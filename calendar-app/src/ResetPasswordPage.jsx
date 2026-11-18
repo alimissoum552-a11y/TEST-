@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useI18n } from './i18n/index.jsx'
 import { supabase } from './lib/supabase.js'
 import { listPasskeys, removeAllPasskeys } from './passkeys.js'
+import { passwordProblem, MIN_PASSWORD_LENGTH } from './lib/passwordCheck.js'
 
 // Reached after a successful passkey check: the user is signed in and chooses a new password.
 export default function ResetPasswordPage({ byEmail = false }) {
@@ -18,8 +19,9 @@ export default function ResetPasswordPage({ byEmail = false }) {
     e.preventDefault()
     setMsg(null)
     if (password !== confirm) { setMsg({ err: true, text: t('resetMismatch') }); return }
-    if (password.length < 6) { setMsg({ err: true, text: t('resetTooShort') }); return }
     setBusy(true)
+    const problem = await passwordProblem(password)
+    if (problem) { setBusy(false); setMsg({ err: true, text: t(problem === 'passwordTooShort' ? 'resetTooShort' : problem) }); return }
     const { error } = await supabase.auth.updateUser({ password })
     if (error) { setBusy(false); setMsg({ err: true, text: error.message }); return }
     // After an e-mail recovery the lost device's passkeys can be removed here (Supabase also notifies by e-mail).
@@ -39,14 +41,14 @@ export default function ResetPasswordPage({ byEmail = false }) {
         <h1 className="text-2xl font-semibold text-neutral-900">{t('resetNewTitle')}</h1>
 
         <div className="relative">
-          <input className={input} type={show ? 'text' : 'password'} required minLength={6}
+          <input className={input} type={show ? 'text' : 'password'} required minLength={MIN_PASSWORD_LENGTH}
             placeholder={t('resetNewPassword')} value={password} onChange={(e) => setPassword(e.target.value)} />
           <button type="button" onClick={() => setShow((v) => !v)} aria-label={show ? t('hidePassword') : t('showPassword')}
             className="absolute end-2 top-1/2 -translate-y-1/2 p-1.5 text-neutral-500 hover:text-neutral-900">
             {show ? <EyeOff /> : <Eye />}
           </button>
         </div>
-        <input className={input} type={show ? 'text' : 'password'} required minLength={6}
+        <input className={input} type={show ? 'text' : 'password'} required minLength={MIN_PASSWORD_LENGTH}
           placeholder={t('resetConfirm')} value={confirm} onChange={(e) => setConfirm(e.target.value)} />
 
         {byEmail && (

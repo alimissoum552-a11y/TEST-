@@ -43,8 +43,8 @@ Still to decide: signed declarations are deleted with the guardian's account (da
 
 ## Open (not changed)
 
-- DMARC is `p=none` (monitoring only). Move to `quarantine` once reports show only Collyo mail.
-- Supabase Auth: leaked-password protection (HaveIBeenPwned) is off.
+- DMARC is `p=none`: the record to set is in `docs/OPERATIONS.md`, "Hardening" (Cloudflare dashboard).
+- Leaked passwords: Supabase's protection needs the Pro plan; the app checks Have I Been Pwned itself and requires 10 characters (18 November 2026).
 - `calendar_role(cal, uid)`, `is_minor(uid)`, `minor_ai_allowed(cal)` still tell a signed-in user the role, minor status or AI state for ids they already know (needed by the access rules). Ids are random, so low risk.
 - A signed-out visitor who queries a table through the API now gets "permission denied" instead of an empty list. The app never does this signed out.
 - Four helper functions have no fixed `search_path` (`touch_updated_at`, `reset_reminder_on_change`, `normalize_name`, `name_key`); `pg_net` is in the `public` schema.

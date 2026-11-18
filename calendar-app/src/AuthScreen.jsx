@@ -5,6 +5,7 @@ import { goLegal, parseRoute } from './router.js'
 import { signInWithPasskey } from './passkeys.js'
 import { Eye, EyeOff } from './ResetPasswordPage.jsx'
 import Logo from './Logo.jsx'
+import { passwordProblem, MIN_PASSWORD_LENGTH } from './lib/passwordCheck.js'
 
 export default function AuthScreen({ initialError = null }) {
   const { t } = useI18n()
@@ -48,6 +49,10 @@ export default function AuthScreen({ initialError = null }) {
     e.preventDefault()
     if (mode === 'signup' && !accepted) { setMessage({ type: 'error', text: t('mustAcceptTerms') }); return }
     setBusy(true); setMessage(null)
+    if (mode === 'signup') {
+      const problem = await passwordProblem(password)
+      if (problem) { setBusy(false); setMessage({ type: 'error', text: t(problem) }); return }
+    }
     const res = mode === 'signin'
       ? await supabase.auth.signInWithPassword({ email, password })
       : await supabase.auth.signUp({ email, password, options: { data: { display_name: name } } })
@@ -100,7 +105,7 @@ export default function AuthScreen({ initialError = null }) {
         )}
         <input className={input} type="email" required placeholder={t('email')} value={email} onChange={(e) => setEmail(e.target.value)} />
         <div className="relative">
-          <input className={input + ' pe-11'} type={showPassword ? 'text' : 'password'} required minLength={6}
+          <input className={input + ' pe-11'} type={showPassword ? 'text' : 'password'} required minLength={mode === 'signup' ? MIN_PASSWORD_LENGTH : 6}
             placeholder={t('password')} value={password} onChange={(e) => setPassword(e.target.value)} />
           <button type="button" onClick={() => setShowPassword((v) => !v)}
             aria-label={showPassword ? t('hidePassword') : t('showPassword')}
