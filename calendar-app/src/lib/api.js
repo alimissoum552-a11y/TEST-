@@ -613,6 +613,10 @@ export const startCheckout = (plan, interval, seats) => callFunction('billing', 
 export const openBillingPortal = () => callFunction('billing', { action: 'portal' })
 // Within 14 days of the start (30 for work teams): refund and end the subscription now.
 export const requestRefund = () => callFunction('billing', { action: 'refund' })
+// Education price: request with a school address, read the request, confirm the e-mailed link.
+export const requestEducation = (schoolName, schoolEmail, country) => callFunction('education', { action: 'request', school_name: schoolName, school_email: schoolEmail, country })
+export const getEducationStatus = () => callFunction('education', { action: 'status' })
+export const confirmEducation = (token) => callFunction('education', { action: 'confirm', token })
 
 // The caller's own subscription with the plan it points to (RLS: a user reads only their own row).
 export async function getMySubscription(userId) {

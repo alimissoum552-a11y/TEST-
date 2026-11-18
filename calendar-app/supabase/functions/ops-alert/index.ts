@@ -46,7 +46,11 @@ Deno.serve(async (req) => {
       }
     }
 
-    // 4. The site answers.
+    // 4. Education requests waiting for a manual check.
+    const { count: eduReview } = await admin.from('education_requests').select('user_id', { count: 'exact', head: true }).eq('status', 'review').gte('confirmed_at', since)
+    if (eduReview) lines.push(`Education requests to check: ${eduReview} (table education_requests, status review; docs/OPERATIONS.md, "Education requests")`)
+
+    // 5. The site answers.
     const site = await fetch(Deno.env.get('APP_URL') ?? 'https://collyo.app', { method: 'GET' }).then((r) => r.status).catch(() => 0)
     const { data: down } = await admin.from('ops_state').select('value').eq('key', 'site_down_since').maybeSingle()
     if (site !== 200 && !down) {

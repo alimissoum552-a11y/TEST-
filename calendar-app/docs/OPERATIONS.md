@@ -46,6 +46,7 @@ project. Each file is written to be safe to re-run (`if not exists`, `drop polic
 | `migrations_029_ops_monitoring.sql` | `ops_errors`, `ops_state`, `ops_cron_failures()` (see Monitoring) |
 | `migrations_030_plan_limits.sql` | Plan limits enforced by triggers: shared calendars, members and pending invitations per calendar, team well-being analysis (`plan_of()`, `team_wellbeing_allowed()`). Test: `supabase/tests/plan_limits_test.sql` |
 | `migrations_031_profile_columns.sql` | A user may only change `display_name`, `avatar_url`, `handle`, `ai_accepted_at`, `timezone` in their profile; no insert or delete through the API. Test: `supabase/tests/profile_columns_test.sql` |
+| `migrations_032_education.sql` | `education_requests` (one per account; read by its owner, written by the `education` function) |
 | `migrations_022_sex_two_values.sql` | The sex of a managed profile is female, male or empty |
 | `migrations_021_minor_no_calendars.sql` | Fix found by the end-to-end test: a minor could create a calendar. Restrictive policies on `calendars`, invitations, members, usage and AI notes |
 
@@ -81,6 +82,7 @@ happened once with `chat_ai_notes` (fixed in migration 011).
 | `team-admin` | App (calendar owner) | User session, owner of the calendar | Removes a minor profile together with the technical account of the minor, and deletes a calendar (minor accounts first, then the event history). The personal calendar cannot be deleted. |
 | `delete-account` | App (profile panel, "Delete my account") | User session; the account's own e-mail typed as confirmation; refuses minors | Cancels the caller's paid Stripe subscription (live or test), then deletes their calendars (database cascade), the technical accounts of their minors, their avatar files and their sign-in account. |
 | `billing` | App (later), Stripe webhook | `checkout` and `portal`: user session; webhook: Stripe signature (`STRIPE_BILLING_WEBHOOK_SECRET`). Deployed with `--no-verify-jwt` | Stripe Billing: Checkout session, customer portal, self-service refund (14 days, 30 for work teams) and the webhook that writes `subscriptions` and restores the previous plan when a subscription ends. Test and live keys side by side (`STRIPE_BILLING_API_KEY`, `STRIPE_BILLING_LIVE_API_KEY`), mode chosen by `BILLING_MODE` (unset = test); see `docs/PRICING.md`. |
+| `education` | Pricing page, e-mail link, support | `request`/`status`: user session; `confirm`: the one-time link; `decide`: `x-cron-secret`. Deployed with `--no-verify-jwt` | Education price requests (see below) |
 
 Deploy one function (the CLI asks for confirmation in agent mode; `--yes` confirms that one deploy):
 
@@ -348,3 +350,17 @@ The single 867 kB script was split. Pages (`src/Root.jsx`) and panels (`src/App.
 
 - **Browsers**, on the live site with a temporary account (official Playwright image `mcr.microsoft.com/playwright:v1.65.1-noble`, which has the WebKit and Firefox system libraries): Safari (WebKit) desktop, Safari on iPhone 14, Firefox desktop and Chrome on Android (Pixel 7). Landing, pricing, terms, sign-in, profile panel and team chat opened in all four with no page error, no CSP violation and no horizontal scroll on the phones.
 - **Load**, on production with temporary data (one team calendar, 40 members, 200 events, 300 messages; deleted afterwards): 240 reads (events, last 50 messages, member names, my calendars) by 20 members in parallel took 2.7 s (88 requests/s), median about 100 ms per request, no error, and every member saw all 200 events. The slowest 5 % (about 0.7 s) are mostly new TLS connections from the test tool. Realtime fan-out to many open chats was not load-tested.
+
+
+## Education requests
+
+A request whose school domain is not on the known list waits in `education_requests` with `status = 'review'`; the monitoring digest says how many arrived. Check the school (web site, staff page, or ask the teacher for a document by e-mail), then approve or reject with the support secret (the same `CRON_SECRET`), for example from the Supabase SQL editor:
+
+```sql
+select net.http_post(
+  url := 'https://oybvllumenwbzekgxjtz.supabase.co/functions/v1/education',
+  headers := jsonb_build_object('Content-Type', 'application/json', 'x-cron-secret', (select decrypted_secret from vault.decrypted_secrets where name = 'cron_secret')),
+  body := jsonb_build_object('action', 'decide', 'user_id', '<user id>', 'approve', true, 'note', 'checked on the school site'));
+```
+
+The teacher receives an e-mail either way. To find the requests: `select user_id, school_name, school_email, country, confirmed_at from education_requests where status = 'review';`

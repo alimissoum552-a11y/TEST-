@@ -11,6 +11,7 @@
 // STRIPE_BILLING_LIVE_WEBHOOK_SECRET (live), BILLING_MODE, APP_URL.
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { verifyStripeSignature } from '../identity/stripe.ts'
+import { EDUCATION_PLANS, EDUCATION_COUPON } from '../_shared/education.ts'
 import { validateCheckout, subscriptionRow, nextSubscriptionRow, refundAllowed, lookupKey, formEncode, MAX_SEATS } from '../_shared/billing.ts'
 import { reportError } from '../_shared/ops.ts'
 
@@ -91,6 +92,10 @@ async function checkout(admin: any, user: any, body: any, key: string): Promise<
   const price = prices?.data?.[0]
   if (!price) return json({ error: 'price_not_found' }, 404)
 
+  // Approved teachers: the education coupon is applied directly (no code to type) on the plans it covers.
+  const { data: edu } = await admin.from('education_requests').select('status').eq('user_id', user.id).maybeSingle()
+  const education = edu?.status === 'approved' && EDUCATION_PLANS.includes(v.plan)
+
   const session = await stripe(key, '/checkout/sessions', {
     mode: 'subscription',
     customer,
@@ -101,7 +106,7 @@ async function checkout(admin: any, user: any, body: any, key: string): Promise<
     }],
     subscription_data: { metadata: { user_id: user.id, plan_code: v.plan } },
     metadata: { user_id: user.id, plan_code: v.plan },
-    allow_promotion_codes: true,
+    ...(education ? { discounts: [{ coupon: EDUCATION_COUPON }] } : { allow_promotion_codes: true }),
     // Managed Payments stays on (account default): Stripe is the merchant of record and handles VAT. docs/PRICING.md, "Who sells".
     // VAT: computed by Stripe Tax from the customer's address. Businesses can enter their VAT number (reverse charge).
     automatic_tax: { enabled: true },

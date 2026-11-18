@@ -24,7 +24,7 @@
 1. **One real purchase** (Starter monthly, 3 EUR) to check the live card payment and the live webhook end to end, then refund and cancel it in the Stripe dashboard. Not done: the live payment page cannot be driven by a script.
 2. In the Stripe dashboard, check that the customer portal lets subscribers switch between the four Collyo products (the API does not echo the list back).
 3. ~~Plan limits~~ — done 18 November 2026 (migration 030): the database refuses a shared calendar beyond the plan (Free and Starter: none, Pro: 1, Team groups: 10), a member or invitation beyond the plan (Free and Starter: no members, Pro: 20, Team groups: 50 per calendar, invitations pending included), and turning on the team well-being analysis outside Team (work) and the launch plan; the hourly analysis skips calendars whose owner's plan no longer includes it. Nothing already there is removed after a downgrade: the limit only stops adding more. The app explains the refusal with a link to the plans. Test: `supabase/tests/plan_limits_test.sql` (rolled back; every line must say ok).
-4. Education: check teachers by school e-mail or a document, then give a promotion code on the coupon `edu_50`.
+4. ~~Education~~ — done 18 November 2026 (migration 032, function `education`): see "Education" below.
 5. Telling the nine launch accounts, in writing and with notice, when they move to the grid.
 6. Legal review of the terms and privacy sections on payment.
 
@@ -107,3 +107,11 @@ Consequences, to settle before launch (with an accountant):
 - **Invoices come from Collyo**: fill in the legal name, address, VAT number and invoice footer in the Stripe dashboard (Settings > Business > Invoices) and the checkout branding. The terms must name the seller.
 - **Turn Managed Payments off in the dashboard** as well (Settings > Payments), so that no other flow (payment links, a future change) uses it by mistake. The per-session setting is enough for the app.
 - Selling outside the EU (United States sales tax, United Kingdom VAT) adds registrations; start with the EU and decide later.
+
+
+## Education (built 18 November 2026)
+
+- **Request**: on the pricing page, a signed-in adult gives the school, their address at the school and the country. Personal mailboxes (Gmail, Outlook, Orange...) are refused. A link valid 7 days goes to the school address (one new link per 10 minutes at most).
+- **Confirmation**: the link (`#/education?token=...`, works once) confirms the address. Known school domains (`.edu`, `.edu.xx`, `.ac.xx`, `ac-*.fr`, `.sch.uk`, `k12.*.us`, `educa.*`, `schule.*`, `min-edu.pt`) are approved at once; any other domain goes to a manual check, which the monitoring digest reports.
+- **Price**: an approved account gets the coupon `edu_50` (50 %) applied directly at checkout for Pro and Team (groups); nothing to type. Starter and Team (work) are not covered. Schools: by quote, as before.
+- **Tested** with temporary accounts: refusals (no session, personal mailbox, a second request at once, bad or reused link, decision without the support secret), confirmation to review then approval by support, automatic approval for `ac-lyon.fr`, and a live Pro checkout at 3.50 EUR instead of 7 EUR (session expired, test customer deleted); in the browser, the form, its messages and the confirmation page.

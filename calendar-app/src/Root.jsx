@@ -19,6 +19,7 @@ const ResetPasswordPage = lazyPanel(() => import('./ResetPasswordPage.jsx'), bla
 const ConsentPage = lazyPanel(() => import('./ConsentPage.jsx'), blank)
 const MinorLogin = lazyPanel(() => import('./MinorLogin.jsx'), blank)
 const PricingPage = lazyPanel(() => import('./PricingPage.jsx'), blank)
+const EducationConfirmPage = lazyPanel(() => import('./EducationConfirmPage.jsx'), blank)
 
 
 // A pending invitation is kept in this browser until it is answered or dismissed.
@@ -46,7 +47,7 @@ export default function Root() {
     return () => window.removeEventListener('hashchange', f)
   }, [])
 
-  const { invite: routeInvite, consent, auth, guide, pricing, reset, consentToken, minor } = parseRoute(hash)
+  const { invite: routeInvite, consent, auth, guide, pricing, educationToken, reset, consentToken, minor } = parseRoute(hash)
   const [pending, setPending] = useState(() => routeInvite || readPendingInvite())
   const [joinedCalendarId, setJoinedCalendarId] = useState(null)
   const [session, setSession] = useState(undefined) // undefined = loading
@@ -115,6 +116,7 @@ export default function Root() {
   if (legal) return <LegalPage kind={legal} onBack={goBackFromLegal} />
   if (guide) return <AiGuidePage onBack={() => { window.location.hash = '' }} />
   if (pricing) return <PricingPage onBack={() => { window.location.hash = '' }} />
+  if (educationToken) return <EducationConfirmPage token={educationToken} />
   // The guardian consent page needs no sign-in.
   if (consentToken) return <ConsentPage token={consentToken} />
   if (session === undefined) return <div className="min-h-screen bg-neutral-200" />

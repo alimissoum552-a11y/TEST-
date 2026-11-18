@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useI18n } from './i18n/index.jsx'
 import { PRICING } from './pricing.js'
 import { supabase } from './lib/supabase.js'
-import { startCheckout, openBillingPortal } from './lib/api.js'
+import { startCheckout, openBillingPortal, requestEducation, getEducationStatus } from './lib/api.js'
 
 // Payment buttons stay disabled until billing is opened for real (build setting VITE_BILLING_OPEN=true). docs/PRICING.md.
 const BILLING_OPEN = import.meta.env.VITE_BILLING_OPEN === 'true'
@@ -21,10 +21,27 @@ export default function PricingPage({ onBack }) {
   const [busyPlan, setBusyPlan] = useState(null)
   const [note, setNote] = useState(null)
 
+  const [edu, setEdu] = useState(null) // the signed-in user's education request, if any
+  const [eduForm, setEduForm] = useState(null) // { school, email, country } while the form is open
+  const [eduMsg, setEduMsg] = useState(null)
+
   useEffect(() => {
     if (!supabase) return
-    supabase.auth.getSession().then(({ data }) => setSignedIn(!!data?.session)).catch(() => {})
+    supabase.auth.getSession().then(({ data }) => {
+      setSignedIn(!!data?.session)
+      if (data?.session) getEducationStatus().then((r) => setEdu(r?.request ?? null)).catch(() => {})
+    }).catch(() => {})
   }, [])
+
+  const sendEducation = async (e) => {
+    e.preventDefault(); setEduMsg(null)
+    try {
+      await requestEducation(eduForm.school.trim(), eduForm.email.trim(), eduForm.country.trim())
+      setEduForm(null); setEdu({ status: 'email_sent' })
+    } catch (ex) {
+      setEduMsg(ex.message === 'school_email_required' ? L.eduErrFreeMail : ex.message === 'wait' ? L.eduErrWait : L.eduErr)
+    }
+  }
 
   // Signed out: go and create an account first. Signed in: open the Stripe payment page, or the portal if already subscribed.
   const choose = async (code) => {
@@ -135,6 +152,27 @@ export default function PricingPage({ onBack }) {
             <li className="flex flex-col rounded-3xl bg-white p-6 ring-1 ring-neutral-300">
               <h2 className="text-lg font-semibold text-neutral-900">{L.eduTitle}</h2>
               <p className="mt-3 text-sm text-neutral-700">{L.eduText}</p>
+              <div className="mt-4 space-y-2 text-sm" data-education>
+                {!signedIn && <p className="text-xs text-neutral-500">{L.eduNeedAccount}</p>}
+                {signedIn && edu?.status && edu.status !== 'rejected' && (
+                  <p className="text-sm text-neutral-900" data-education-status={edu.status}>
+                    {{ email_sent: L.eduSent, review: L.eduReview, approved: L.eduApproved }[edu.status]}
+                  </p>
+                )}
+                {signedIn && edu?.status === 'rejected' && <p className="text-xs text-neutral-700">{L.eduRejected}</p>}
+                {signedIn && (!edu || edu.status === 'rejected' || edu.status === 'email_sent') && !eduForm && (
+                  <button type="button" onClick={() => setEduForm({ school: '', email: '', country: '' })} className="text-sm text-neutral-700 underline underline-offset-2" data-education-ask>{L.eduAsk}</button>
+                )}
+                {eduForm && (
+                  <form onSubmit={sendEducation} className="space-y-2" data-education-form>
+                    <input required placeholder={L.eduSchool} value={eduForm.school} onChange={(e) => setEduForm({ ...eduForm, school: e.target.value })} className="w-full rounded-xl border border-neutral-200 px-3 py-1.5 text-sm" />
+                    <input required type="email" placeholder={L.eduSchoolEmail} value={eduForm.email} onChange={(e) => setEduForm({ ...eduForm, email: e.target.value })} className="w-full rounded-xl border border-neutral-200 px-3 py-1.5 text-sm" />
+                    <input placeholder={L.eduCountry} value={eduForm.country} onChange={(e) => setEduForm({ ...eduForm, country: e.target.value })} className="w-full rounded-xl border border-neutral-200 px-3 py-1.5 text-sm" />
+                    <button type="submit" className="w-full px-4 py-2 rounded-2xl bg-neutral-900 text-sm font-medium text-white">{L.eduSend}</button>
+                  </form>
+                )}
+                {eduMsg && <p className="text-xs font-medium text-neutral-900" role="alert">{eduMsg}</p>}
+              </div>
             </li>
           </ul>
         )}
