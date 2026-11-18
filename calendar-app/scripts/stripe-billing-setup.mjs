@@ -1,7 +1,8 @@
 // Creates (or reuses) the Stripe products, prices, education coupon, customer-portal configuration and webhook endpoint
 // for the paid plans listed in the `plans` table. Safe to run again: prices are found by lookup key.
 //
-//   STRIPE_BILLING_API_KEY=sk_test_... node scripts/stripe-billing-setup.mjs
+//   STRIPE_BILLING_API_KEY=sk_test_... node scripts/stripe-billing-setup.mjs --set-secrets   (test mode)
+//   STRIPE_BILLING_API_KEY=<live key>   node scripts/stripe-billing-setup.mjs --set-secrets   (live mode: stores the *_LIVE_* secrets)
 //
 // The same script runs against the live key at launch. It prints the webhook signing secret only when it creates the
 // endpoint (Stripe shows it once): store it as the Supabase secret STRIPE_BILLING_WEBHOOK_SECRET.
@@ -10,6 +11,8 @@ const SUPABASE = process.env.SUPABASE_URL || 'https://oybvllumenwbzekgxjtz.supab
 const ANON = process.env.SUPABASE_ANON_KEY
 const WEBHOOK_URL = `${SUPABASE}/functions/v1/billing`
 if (!KEY) throw new Error('STRIPE_BILLING_API_KEY is required')
+const LIVE = /^(sk|rk)_live_/.test(KEY)
+console.log(`mode: ${LIVE ? 'LIVE' : 'test'}`)
 if (!ANON) throw new Error('SUPABASE_ANON_KEY is required (the plans table is public)')
 
 const enc = (o, p = '') => Object.entries(o).flatMap(([k, v]) => {
@@ -91,9 +94,9 @@ else {
     enabled_events: ['checkout.session.completed', 'customer.subscription.created', 'customer.subscription.updated', 'customer.subscription.deleted', 'invoice.payment_failed', 'invoice.paid'],
   })
   console.log('created webhook', created.id)
-  await setSecrets({ STRIPE_BILLING_WEBHOOK_SECRET: created.secret })
+  await setSecrets({ [LIVE ? 'STRIPE_BILLING_LIVE_WEBHOOK_SECRET' : 'STRIPE_BILLING_WEBHOOK_SECRET']: created.secret })
 }
-if (process.argv.includes('--set-secrets')) await setSecrets({ STRIPE_BILLING_API_KEY: KEY })
+if (process.argv.includes('--set-secrets')) await setSecrets({ [LIVE ? 'STRIPE_BILLING_LIVE_API_KEY' : 'STRIPE_BILLING_API_KEY']: KEY })
 
 // Stores secrets in the Supabase project through the Management API, without ever printing them.
 async function setSecrets(values) {

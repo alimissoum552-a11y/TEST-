@@ -4,7 +4,10 @@
 //   webhook  : Stripe tells us the subscription changed (Stripe-Signature header); we read the subscription from Stripe
 //              and write the `subscriptions` row. Reading it again from Stripe makes the order of events irrelevant.
 // Deployed with --no-verify-jwt (the webhook has no session); the user actions check the session themselves.
-// Secrets: STRIPE_BILLING_API_KEY (test key now, live key at launch), STRIPE_BILLING_WEBHOOK_SECRET, APP_URL.
+// Two Stripe modes live side by side. BILLING_MODE ('test' by default, 'live' at launch) decides which one the app's
+// checkout and portal use. Webhooks are verified with the secret of the mode they come from (event.livemode).
+// Secrets: STRIPE_BILLING_API_KEY + STRIPE_BILLING_WEBHOOK_SECRET (test), STRIPE_BILLING_LIVE_API_KEY +
+// STRIPE_BILLING_LIVE_WEBHOOK_SECRET (live), BILLING_MODE, APP_URL.
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { verifyStripeSignature } from '../identity/stripe.ts'
 import { validateCheckout, subscriptionRow, lookupKey, formEncode, MAX_SEATS } from '../_shared/billing.ts'
@@ -27,25 +30,29 @@ Deno.serve(async (req) => {
     })
     const { data: { user } } = await supa.auth.getUser()
     if (!user) return json({ error: 'unauthorized' }, 401)
-    if (!stripeKey()) return json({ error: 'billing_not_configured' }, 503)
+    const key = keyFor(currentMode())
+    if (!key) return json({ error: 'billing_not_configured' }, 503)
 
     const body = await req.json().catch(() => ({}))
-    if (body?.action === 'checkout') return await checkout(admin, user, body)
-    if (body?.action === 'portal') return await portal(admin, user)
+    if (body?.action === 'checkout') return await checkout(admin, user, body, key)
+    if (body?.action === 'portal') return await portal(admin, user, key)
     return json({ error: 'unknown_action' }, 400)
   } catch (_e) {
     return json({ error: 'server_error' }, 500)
   }
 })
 
-const stripeKey = () => Deno.env.get('STRIPE_BILLING_API_KEY') ?? ''
+type Mode = 'test' | 'live'
+const currentMode = (): Mode => (Deno.env.get('BILLING_MODE') === 'live' ? 'live' : 'test')
+const keyFor = (mode: Mode) => Deno.env.get(mode === 'live' ? 'STRIPE_BILLING_LIVE_API_KEY' : 'STRIPE_BILLING_API_KEY') ?? ''
+const webhookSecretFor = (mode: Mode) => Deno.env.get(mode === 'live' ? 'STRIPE_BILLING_LIVE_WEBHOOK_SECRET' : 'STRIPE_BILLING_WEBHOOK_SECRET') ?? ''
 const appUrl = () => (Deno.env.get('APP_URL') ?? 'https://collyo.app').replace(/\/+$/, '')
 
-async function stripe(path: string, params?: Record<string, unknown>, method: 'GET' | 'POST' = 'POST'): Promise<any> {
+async function stripe(key: string, path: string, params?: Record<string, unknown>, method: 'GET' | 'POST' = 'POST'): Promise<any> {
   const query = method === 'GET' && params ? '?' + formEncode(params).join('&') : ''
   const res = await fetch(`${STRIPE}${path}${query}`, {
     method,
-    headers: { Authorization: `Bearer ${stripeKey()}`, ...(method === 'POST' ? { 'Content-Type': 'application/x-www-form-urlencoded' } : {}) },
+    headers: { Authorization: `Bearer ${key}`, ...(method === 'POST' ? { 'Content-Type': 'application/x-www-form-urlencoded' } : {}) },
     body: method === 'POST' ? formEncode(params ?? {}).join('&') : undefined,
   })
   const data = await res.json().catch(() => ({}))
@@ -53,7 +60,7 @@ async function stripe(path: string, params?: Record<string, unknown>, method: 'G
   return data
 }
 
-async function checkout(admin: any, user: any, body: any): Promise<Response> {
+async function checkout(admin: any, user: any, body: any, key: string): Promise<Response> {
   const { data: me } = await admin.from('profiles').select('account_type').eq('id', user.id).maybeSingle()
   if (me?.account_type === 'minor') return json({ error: 'not_allowed' }, 403)
 
@@ -71,16 +78,16 @@ async function checkout(admin: any, user: any, body: any): Promise<Response> {
 
   let customer = sub?.stripe_customer_id as string | null
   if (!customer) {
-    const c = await stripe('/customers', { email: user.email, metadata: { user_id: user.id } })
+    const c = await stripe(key, '/customers', { email: user.email, metadata: { user_id: user.id } })
     customer = c.id
     await admin.from('subscriptions').update({ stripe_customer_id: customer, updated_at: new Date().toISOString() }).eq('user_id', user.id)
   }
 
-  const prices = await stripe('/prices', { lookup_keys: [lookupKey(v.plan, v.interval)], active: true, limit: 1 }, 'GET')
+  const prices = await stripe(key, '/prices', { lookup_keys: [lookupKey(v.plan, v.interval)], active: true, limit: 1 }, 'GET')
   const price = prices?.data?.[0]
   if (!price) return json({ error: 'price_not_found' }, 404)
 
-  const session = await stripe('/checkout/sessions', {
+  const session = await stripe(key, '/checkout/sessions', {
     mode: 'subscription',
     customer,
     client_reference_id: user.id,
@@ -105,19 +112,23 @@ async function checkout(admin: any, user: any, body: any): Promise<Response> {
   return json({ url: session.url })
 }
 
-async function portal(admin: any, user: any): Promise<Response> {
+async function portal(admin: any, user: any, key: string): Promise<Response> {
   const { data: sub } = await admin.from('subscriptions').select('stripe_customer_id').eq('user_id', user.id).maybeSingle()
   if (!sub?.stripe_customer_id) return json({ error: 'no_customer' }, 404)
-  const session = await stripe('/billing_portal/sessions', { customer: sub.stripe_customer_id, return_url: `${appUrl()}/` })
+  const session = await stripe(key, '/billing_portal/sessions', { customer: sub.stripe_customer_id, return_url: `${appUrl()}/` })
   return json({ url: session.url })
 }
 
 async function webhook(req: Request, admin: any, signature: string): Promise<Response> {
   const payload = await req.text()
-  const ok = await verifyStripeSignature(payload, signature, Deno.env.get('STRIPE_BILLING_WEBHOOK_SECRET') ?? '')
+  // The mode only chooses which secret the signature must match: a forged event cannot pass either way.
+  let parsed: any = null
+  try { parsed = JSON.parse(payload) } catch { return json({ error: 'bad_payload' }, 400) }
+  const mode: Mode = parsed?.livemode === true ? 'live' : 'test'
+  const ok = await verifyStripeSignature(payload, signature, webhookSecretFor(mode))
   if (!ok) return json({ error: 'bad_signature' }, 400)
 
-  const event = JSON.parse(payload)
+  const event = parsed
   const obj = event?.data?.object
   let subId: string | null = null
   switch (event?.type) {
@@ -132,7 +143,7 @@ async function webhook(req: Request, admin: any, signature: string): Promise<Res
   if (!subId) return json({ ok: true, ignored: true })
 
   // Read the subscription again: the event may be old or out of order, Stripe's copy is the truth.
-  const sub = await stripe(`/subscriptions/${encodeURIComponent(subId)}`, { expand: ['items.data.price'] }, 'GET')
+  const sub = await stripe(keyFor(mode), `/subscriptions/${encodeURIComponent(subId)}`, { expand: ['items.data.price'] }, 'GET')
   const row = subscriptionRow(sub)
   if (!row) return json({ ok: true, ignored: true })
 
