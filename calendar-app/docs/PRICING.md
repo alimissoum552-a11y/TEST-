@@ -48,7 +48,8 @@ Competitors seen: TimeTree Premium 4.49 USD / month or 44.99 USD / year with a f
 - Secrets: `STRIPE_BILLING_API_KEY` (the test key now) and `STRIPE_BILLING_WEBHOOK_SECRET`. The live key of the identity verification (`STRIPE_API_KEY`) is untouched.
 - Tested on production with temporary accounts and the Stripe test account: refusals (no token 401, unknown plan 400, too few seats 400, forged webhook signature 400), a Checkout session is created, a card subscription written by the webhook (`pro`, active, period end), the second checkout refused, a portal session created, an upgrade to the work plan with 4 seats followed, a cancellation followed, and the assistant is then refused (`plan_required`). Unit tests: `supabase/functions/_shared/billing.test.ts`.
 - **Not tested: paying on the hosted Stripe page.** Stripe's page blocks scripted browsers, so the card form must be tested once by hand in a normal browser (test card 4242 4242 4242 4242, any future date, any CVC), after creating a Checkout session from the app or the function.
-- The pricing page buttons still say "Coming soon": `startCheckout` and `openBillingPortal` exist in `src/lib/api.js` and are not wired.
+- **App side (built, dark by default):** the profile has a "My plan" section (plan, status, renewal date, AI requests used this month against the limit, a link to all plans and, for a paying account, "Manage my subscription" which opens the Stripe portal). It is visible to everyone and today shows the launch plan with the request count. After a payment, Stripe returns to `#/billing?status=success`, which opens the profile and checks every 3 seconds (8 times at most) until the webhook has written the subscription.
+- **Pricing page buttons** are wired (signed out: create an account first; signed in: Stripe Checkout; already subscribed: the portal; seats field for the work plan, 3 minimum) but **disabled unless the build has `VITE_BILLING_OPEN=true`**, so production still shows "Coming soon". Tested with a build that has the flag on, a temporary account and the Stripe test account: the buttons, the plan section before and after a (API-created) subscription, the meter (3 / 150), the portal link and the return page.
 
 ### Who sells: Collyo (decided 18 November 2026)
 
@@ -62,9 +63,9 @@ Consequences, to settle before launch (with an accountant):
 
 ## What is still missing before anyone can pay
 
-1. **A manual Checkout test** in a normal browser, then wiring the buttons (`startCheckout`, `openBillingPortal`) and a "my plan" section in the profile with the usage meter.
+1. **A manual Checkout test** in a normal browser (test card 4242 4242 4242 4242), then opening the buttons by setting `VITE_BILLING_OPEN=true` in Vercel at launch.
 2. **Switching the grid on**: `default_plan()` returns `free`, accounts move from `launch` to their plan, with a notice period for the people already using the AI; create the live Stripe objects with the script and the live key; a live webhook endpoint; store the live key as `STRIPE_BILLING_API_KEY`.
 3. **Limits other than the AI**: the number of shared calendars and members per calendar are stored in `plans` but **not enforced yet** (database triggers, to be tested carefully because personal and team calendars share one table). Team well-being analysis (`wellbeing-team`) is not metered or gated yet.
 4. **Education**: Stripe Identity proves who a person is, not that they teach. Verify the teacher status with a school e-mail domain or a manual check of a document to start; then give the teacher a promotion code on the coupon `edu_50`. Schools need a contract and a data-processing agreement, and the AI for pupils stays off by default.
 5. **Legal**: terms (price change and notice, refunds, 14-day withdrawal for consumers, cancellation, who the seller is under Managed Payments), privacy (payment processor), invoices. The pricing page wording must be reviewed with the terms.
-6. **A usage meter** in the app ("42 / 150 requests this month") and the upgrade path in the message at the limit.
+6. **The upgrade path in the message at the limit** (the meter and the plans link exist; the limit message could link to the plans page).

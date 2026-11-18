@@ -436,6 +436,19 @@ export default function App({ user, initialCalendarId = null, minorMode = false 
   const [newTeam, setNewTeam] = useState(false)
   const [me, setMe] = useState(null)
   const [profileOpen, setProfileOpen] = useState(false)
+  const [justSubscribed, setJustSubscribed] = useState(false)
+  // Back from the payment page (#/billing?status=success): show the plan, which updates within seconds.
+  useEffect(() => {
+    const check = () => {
+      if (/^#\/billing\?status=success/.test(window.location.hash)) {
+        setProfileOpen(true); setJustSubscribed(true)
+        window.history.replaceState(null, '', window.location.pathname)
+      }
+    }
+    check()
+    window.addEventListener('hashchange', check)
+    return () => window.removeEventListener('hashchange', check)
+  }, [])
   const [passkeyOpen, setPasskeyOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [calendar, setCalendar] = useState(null)
@@ -661,7 +674,7 @@ export default function App({ user, initialCalendarId = null, minorMode = false 
 
         {user && !minorMode && <InvitesPanel onAnswered={() => setReloadKey((k) => k + 1)} />}
         {passkeyOpen && user && <PasskeyPanel user={user} onClose={() => setPasskeyOpen(false)} />}
-        {profileOpen && user && <ProfilePanel user={user} onClose={() => setProfileOpen(false)} onChanged={(url) => setMe((m) => ({ ...(m || {}), avatar_url: url }))} onHandleChanged={(h) => setMe((m) => ({ ...(m || {}), handle: h }))} />}
+        {profileOpen && user && <ProfilePanel user={user} justSubscribed={justSubscribed} onClose={() => { setProfileOpen(false); setJustSubscribed(false) }} onChanged={(url) => setMe((m) => ({ ...(m || {}), avatar_url: url }))} onHandleChanged={(h) => setMe((m) => ({ ...(m || {}), handle: h }))} />}
         {chat && user && activeCalendar && <ChatPanel key={activeCalendar.id} calendarId={activeCalendar.id} user={user} myHandle={me?.handle} minor={minorMode} canWrite={minorMode ? true : canWrite} isOwner={activeCalendar.my_role === 'owner'} onClose={() => setChat(false)} onApplied={() => setReloadKey((k) => k + 1)} />}
         {connector && user && <ConnectorGuide onClose={() => setConnector(false)} />}
         {assistant && user && <AssistantPanel user={user} onClose={() => setAssistant(false)} onApplied={() => setReloadKey((k) => k + 1)} onOpenWellbeing={() => { setAssistant(false); setWellbeing(true) }} />}

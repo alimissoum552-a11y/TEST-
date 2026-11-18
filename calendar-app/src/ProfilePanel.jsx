@@ -4,9 +4,10 @@ import Avatar from './Avatar.jsx'
 import { getMyProfile, uploadAvatar, removeAvatar, listMyGrants, revokeMyGrant, setMyHandle, getIdentityStatus, updateMyName, deleteMyAccount } from './lib/api.js'
 import { supabase } from './lib/supabase.js'
 import VerifiedBadge from './VerifiedBadge.jsx'
+import PlanSection from './PlanSection.jsx'
 
 // Lets the user see their avatar, change it to a photo, or remove it.
-export default function ProfilePanel({ user, onClose, onChanged, onHandleChanged }) {
+export default function ProfilePanel({ user, onClose, onChanged, onHandleChanged, justSubscribed = false }) {
   const { t } = useI18n()
   const [profile, setProfile] = useState(null)
   const [busy, setBusy] = useState(false)
@@ -170,6 +171,8 @@ export default function ProfilePanel({ user, onClose, onChanged, onHandleChanged
             ))}
           </ul>
         </section>
+
+        {profile && profile.account_type !== 'minor' && <PlanSection userId={user.id} justSubscribed={justSubscribed} />}
 
         {profile && profile.account_type !== 'minor' && (
           <section className="space-y-2 border-t border-neutral-100 pt-4">

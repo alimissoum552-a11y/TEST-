@@ -609,6 +609,26 @@ export const deleteMyAccount = (confirmEmail) => callFunction('delete-account', 
 export const startCheckout = (plan, interval, seats) => callFunction('billing', { action: 'checkout', plan, interval, seats })
 export const openBillingPortal = () => callFunction('billing', { action: 'portal' })
 
+// The caller's own subscription with the plan it points to (RLS: a user reads only their own row).
+export async function getMySubscription(userId) {
+  const { data: sub, error } = await supabase.from('subscriptions')
+    .select('plan_code, status, source, seats, current_period_end, stripe_customer_id').eq('user_id', userId).maybeSingle()
+  if (error) throw error
+  if (!sub) return null
+  const { data: plan, error: pErr } = await supabase.from('plans')
+    .select('code, ai_enabled, ai_monthly_requests, ai_per_seat').eq('code', sub.plan_code).maybeSingle()
+  if (pErr) throw pErr
+  return { ...sub, plan }
+}
+
+// AI requests counted on this account since the start of the UTC month (requests made in its calendars included).
+export async function countMyAiUsageThisMonth(userId, sinceIso) {
+  const { count, error } = await supabase.from('ai_usage').select('id', { count: 'exact', head: true })
+    .eq('billed_to', userId).gte('created_at', sinceIso)
+  if (error) throw error
+  return count ?? 0
+}
+
 // The owner names an adult responsible by e-mail. The server links the account (or stores an invitation) and sends an e-mail.
 export const inviteGuardian = (profileId, email) =>
   callFunction('minor-consent', { action: 'invite_guardian', profile_id: profileId, email })

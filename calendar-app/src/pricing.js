@@ -75,7 +75,25 @@ export const PRICING = {
           "3 seats minimum, billed per seat, no trial"
         ]
       }
-    }
+    },
+    "choose": "Choose",
+    "seatsLabel": "Seats (3 minimum)",
+    "signInToSubscribe": "Create an account to subscribe",
+    "opening": "Opening the payment page…",
+    "checkoutError": "The payment page could not be opened. Try again later.",
+    "alreadySubscribed": "You already have a subscription. Change plan from “Manage my subscription”.",
+    "planSection": "My plan",
+    "launchName": "Launch (free)",
+    "statusActive": "Active",
+    "statusPastDue": "Payment failed: update your card from “Manage my subscription”.",
+    "statusCanceled": "Ended",
+    "renews": "Renews on",
+    "aiMonth": "AI requests this month",
+    "unlimitedLaunch": "No monthly limit during the launch.",
+    "noAi": "The AI is not included in this plan.",
+    "seeAllPlans": "See all plans",
+    "manage": "Manage my subscription",
+    "billingError": "Your plan could not be loaded."
   },
   "fr": {
     "title": "Formules et tarifs",
@@ -152,7 +170,25 @@ export const PRICING = {
           "3 sièges minimum, facturé par siège, sans essai"
         ]
       }
-    }
+    },
+    "choose": "Choisir",
+    "seatsLabel": "Sièges (3 minimum)",
+    "signInToSubscribe": "Créez un compte pour vous abonner",
+    "opening": "Ouverture de la page de paiement…",
+    "checkoutError": "La page de paiement n’a pas pu s’ouvrir. Réessayez plus tard.",
+    "alreadySubscribed": "Vous avez déjà un abonnement. Changez de formule depuis « Gérer mon abonnement ».",
+    "planSection": "Ma formule",
+    "launchName": "Lancement (gratuit)",
+    "statusActive": "Active",
+    "statusPastDue": "Paiement échoué : mettez votre carte à jour depuis « Gérer mon abonnement ».",
+    "statusCanceled": "Terminée",
+    "renews": "Renouvellement le",
+    "aiMonth": "Demandes d’AI ce mois-ci",
+    "unlimitedLaunch": "Pas de limite mensuelle pendant le lancement.",
+    "noAi": "L’AI n’est pas incluse dans cette formule.",
+    "seeAllPlans": "Voir toutes les formules",
+    "manage": "Gérer mon abonnement",
+    "billingError": "Votre formule n’a pas pu être chargée."
   },
   "es": {
     "title": "Planes y precios",
@@ -229,7 +265,25 @@ export const PRICING = {
           "Mínimo 3 puestos, facturado por puesto, sin prueba"
         ]
       }
-    }
+    },
+    "choose": "Elegir",
+    "seatsLabel": "Puestos (mínimo 3)",
+    "signInToSubscribe": "Crea una cuenta para suscribirte",
+    "opening": "Abriendo la página de pago…",
+    "checkoutError": "No se pudo abrir la página de pago. Inténtalo más tarde.",
+    "alreadySubscribed": "Ya tienes una suscripción. Cambia de plan desde «Gestionar mi suscripción».",
+    "planSection": "Mi plan",
+    "launchName": "Lanzamiento (gratis)",
+    "statusActive": "Activo",
+    "statusPastDue": "Pago fallido: actualiza tu tarjeta desde «Gestionar mi suscripción».",
+    "statusCanceled": "Finalizado",
+    "renews": "Se renueva el",
+    "aiMonth": "Solicitudes de AI este mes",
+    "unlimitedLaunch": "Sin límite mensual durante el lanzamiento.",
+    "noAi": "La AI no está incluida en este plan.",
+    "seeAllPlans": "Ver todos los planes",
+    "manage": "Gestionar mi suscripción",
+    "billingError": "No se pudo cargar tu plan."
   },
   "de": {
     "title": "Tarife und Preise",
@@ -306,7 +360,25 @@ export const PRICING = {
           "Mindestens 3 Plätze, Abrechnung pro Platz, keine Testphase"
         ]
       }
-    }
+    },
+    "choose": "Wählen",
+    "seatsLabel": "Plätze (mindestens 3)",
+    "signInToSubscribe": "Erstelle ein Konto, um zu abonnieren",
+    "opening": "Zahlungsseite wird geöffnet…",
+    "checkoutError": "Die Zahlungsseite konnte nicht geöffnet werden. Versuche es später erneut.",
+    "alreadySubscribed": "Du hast bereits ein Abonnement. Wechsle den Tarif über „Mein Abonnement verwalten“.",
+    "planSection": "Mein Tarif",
+    "launchName": "Start (kostenlos)",
+    "statusActive": "Aktiv",
+    "statusPastDue": "Zahlung fehlgeschlagen: Aktualisiere deine Karte über „Mein Abonnement verwalten“.",
+    "statusCanceled": "Beendet",
+    "renews": "Verlängerung am",
+    "aiMonth": "AI-Anfragen in diesem Monat",
+    "unlimitedLaunch": "Keine Monatsgrenze während des Starts.",
+    "noAi": "Die AI ist in diesem Tarif nicht enthalten.",
+    "seeAllPlans": "Alle Tarife ansehen",
+    "manage": "Mein Abonnement verwalten",
+    "billingError": "Dein Tarif konnte nicht geladen werden."
   },
   "ar": {
     "title": "الباقات والأسعار",
@@ -383,7 +455,25 @@ export const PRICING = {
           "3 مقاعد على الأقل، الفوترة لكل مقعد، بلا فترة تجريبية"
         ]
       }
-    }
+    },
+    "choose": "اختيار",
+    "seatsLabel": "المقاعد (3 على الأقل)",
+    "signInToSubscribe": "أنشئ حسابًا للاشتراك",
+    "opening": "جارٍ فتح صفحة الدفع…",
+    "checkoutError": "تعذّر فتح صفحة الدفع. حاول لاحقًا.",
+    "alreadySubscribed": "لديك اشتراك بالفعل. غيّر الباقة من «إدارة اشتراكي».",
+    "planSection": "باقتي",
+    "launchName": "الإطلاق (مجاني)",
+    "statusActive": "نشطة",
+    "statusPastDue": "فشل الدفع: حدّث بطاقتك من «إدارة اشتراكي».",
+    "statusCanceled": "منتهية",
+    "renews": "يتجدد في",
+    "aiMonth": "طلبات الذكاء الاصطناعي هذا الشهر",
+    "unlimitedLaunch": "لا حد شهري خلال الإطلاق.",
+    "noAi": "الذكاء الاصطناعي غير مشمول في هذه الباقة.",
+    "seeAllPlans": "عرض كل الباقات",
+    "manage": "إدارة اشتراكي",
+    "billingError": "تعذّر تحميل باقتك."
   },
   "pt": {
     "title": "Planos e preços",
@@ -460,6 +550,24 @@ export const PRICING = {
           "Mínimo de 3 lugares, faturado por lugar, sem teste"
         ]
       }
-    }
+    },
+    "choose": "Escolher",
+    "seatsLabel": "Lugares (mínimo 3)",
+    "signInToSubscribe": "Crie uma conta para subscrever",
+    "opening": "A abrir a página de pagamento…",
+    "checkoutError": "Não foi possível abrir a página de pagamento. Tente mais tarde.",
+    "alreadySubscribed": "Já tem uma subscrição. Mude de plano em «Gerir a minha subscrição».",
+    "planSection": "O meu plano",
+    "launchName": "Lançamento (grátis)",
+    "statusActive": "Ativo",
+    "statusPastDue": "Pagamento falhado: atualize o cartão em «Gerir a minha subscrição».",
+    "statusCanceled": "Terminado",
+    "renews": "Renova em",
+    "aiMonth": "Pedidos de AI este mês",
+    "unlimitedLaunch": "Sem limite mensal durante o lançamento.",
+    "noAi": "A AI não está incluída neste plano.",
+    "seeAllPlans": "Ver todos os planos",
+    "manage": "Gerir a minha subscrição",
+    "billingError": "Não foi possível carregar o seu plano."
   }
 }

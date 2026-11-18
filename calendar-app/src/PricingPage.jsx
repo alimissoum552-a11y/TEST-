@@ -2,6 +2,10 @@ import { useEffect, useState } from 'react'
 import { useI18n } from './i18n/index.jsx'
 import { PRICING } from './pricing.js'
 import { supabase } from './lib/supabase.js'
+import { startCheckout, openBillingPortal } from './lib/api.js'
+
+// Payment buttons stay disabled until billing is opened for real (build setting VITE_BILLING_OPEN=true). docs/PRICING.md.
+const BILLING_OPEN = import.meta.env.VITE_BILLING_OPEN === 'true'
 
 const ORDER = ['free', 'starter', 'pro', 'team_groups', 'team_work']
 
@@ -12,6 +16,31 @@ export default function PricingPage({ onBack }) {
   const L = PRICING[lang] || PRICING.en
   const [plans, setPlans] = useState(null) // null = loading, false = error
   const [yearly, setYearly] = useState(true)
+  const [signedIn, setSignedIn] = useState(false)
+  const [seats, setSeats] = useState(3)
+  const [busyPlan, setBusyPlan] = useState(null)
+  const [note, setNote] = useState(null)
+
+  useEffect(() => {
+    if (!supabase) return
+    supabase.auth.getSession().then(({ data }) => setSignedIn(!!data?.session)).catch(() => {})
+  }, [])
+
+  // Signed out: go and create an account first. Signed in: open the Stripe payment page, or the portal if already subscribed.
+  const choose = async (code) => {
+    if (!signedIn) { window.location.hash = '#/signup'; return }
+    setBusyPlan(code); setNote(null)
+    try {
+      const { url } = await startCheckout(code, yearly ? 'year' : 'month', code === 'team_work' ? Math.max(3, Number(seats) || 3) : undefined)
+      window.location.href = url
+    } catch (ex) {
+      if (ex.message === 'already_subscribed') {
+        setNote(L.alreadySubscribed)
+        try { window.location.href = (await openBillingPortal()).url; return } catch { /* the note stays */ }
+      } else setNote(L.checkoutError)
+      setBusyPlan(null)
+    }
+  }
 
   useEffect(() => {
     let live = true
@@ -55,6 +84,7 @@ export default function PricingPage({ onBack }) {
           ))}
         </div>
 
+        {note && <p role="alert" className="text-sm font-medium text-neutral-900">{note}</p>}
         {plans === null && <p className="text-sm text-neutral-500">{L.loading}</p>}
         {plans === false && <p className="text-sm font-medium text-neutral-900">{L.error}</p>}
 
@@ -83,7 +113,22 @@ export default function PricingPage({ onBack }) {
                   </ul>
                   {code === 'free'
                     ? <a href="#/signup" className="mt-6 text-center px-4 py-2.5 rounded-2xl bg-neutral-900 text-sm font-medium text-white hover:bg-neutral-700">{L.startFree}</a>
-                    : <button type="button" disabled className="mt-6 px-4 py-2.5 rounded-2xl bg-neutral-100 text-sm font-medium text-neutral-500">{L.soon}</button>}
+                    : !BILLING_OPEN
+                      ? <button type="button" disabled className="mt-6 px-4 py-2.5 rounded-2xl bg-neutral-100 text-sm font-medium text-neutral-500">{L.soon}</button>
+                      : (
+                        <div className="mt-6 space-y-2">
+                          {code === 'team_work' && (
+                            <label className="flex items-center justify-between gap-3 text-xs text-neutral-600">{L.seatsLabel}
+                              <input type="number" min={3} max={500} value={seats} onChange={(e) => setSeats(e.target.value)}
+                                className="w-20 rounded-xl border border-neutral-200 px-2 py-1 text-sm text-neutral-900" />
+                            </label>
+                          )}
+                          <button type="button" onClick={() => choose(code)} disabled={busyPlan !== null} data-choose={code}
+                            className="w-full px-4 py-2.5 rounded-2xl bg-neutral-900 text-sm font-medium text-white hover:bg-neutral-700 disabled:opacity-50">
+                            {busyPlan === code ? L.opening : (signedIn ? L.choose : L.signInToSubscribe)}
+                          </button>
+                        </div>
+                      )}
                 </li>
               )
             })}
