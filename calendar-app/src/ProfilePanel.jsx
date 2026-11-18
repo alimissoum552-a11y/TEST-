@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useI18n } from './i18n/index.jsx'
 import Avatar from './Avatar.jsx'
-import { getMyProfile, uploadAvatar, removeAvatar, listMyGrants, revokeMyGrant, setMyHandle, getIdentityStatus, updateMyName } from './lib/api.js'
+import { getMyProfile, uploadAvatar, removeAvatar, listMyGrants, revokeMyGrant, setMyHandle, getIdentityStatus, updateMyName, deleteMyAccount } from './lib/api.js'
+import { supabase } from './lib/supabase.js'
 import VerifiedBadge from './VerifiedBadge.jsx'
 
 // Lets the user see their avatar, change it to a photo, or remove it.
@@ -19,6 +20,10 @@ export default function ProfilePanel({ user, onClose, onChanged, onHandleChanged
   const [nBusy, setNBusy] = useState(false)
   const [nMsg, setNMsg] = useState(null)
   const [identity, setIdentity] = useState(null)
+  const [delOpen, setDelOpen] = useState(false)
+  const [delEmail, setDelEmail] = useState('')
+  const [delBusy, setDelBusy] = useState(false)
+  const [delMsg, setDelMsg] = useState(null)
 
   useEffect(() => {
     getMyProfile(user.id).then((p) => { setProfile(p); setHandleInput(p.handle || ''); setNameInput(p.display_name || '') }).catch((ex) => setMsg({ err: true, text: ex.message }))
@@ -84,6 +89,20 @@ export default function ProfilePanel({ user, onClose, onChanged, onHandleChanged
 
   const name = profile?.display_name
   const email = profile?.email || user.email
+
+  // The e-mail typed by the user is the confirmation. On success the session is closed and the visitor lands on the home page.
+  const deleteAccount = async () => {
+    setDelBusy(true); setDelMsg(null)
+    try {
+      await deleteMyAccount(delEmail.trim())
+      await supabase.auth.signOut().catch(() => {})
+      window.location.hash = ''
+      window.location.reload()
+    } catch (ex) {
+      setDelMsg({ err: true, text: t(ex.message === 'confirmation_mismatch' ? 'delAccMismatch' : 'delAccError') })
+      setDelBusy(false)
+    }
+  }
 
   return (
     <div className="absolute inset-0 z-10 flex items-end sm:items-center justify-center bg-black/40" onClick={onClose}>
@@ -151,6 +170,31 @@ export default function ProfilePanel({ user, onClose, onChanged, onHandleChanged
             ))}
           </ul>
         </section>
+
+        {profile && profile.account_type !== 'minor' && (
+          <section className="space-y-2 border-t border-neutral-100 pt-4">
+            <h4 className="text-xs font-medium uppercase tracking-wide text-neutral-500">{t('delAccTitle')}</h4>
+            {!delOpen ? (
+              <button type="button" onClick={() => setDelOpen(true)} data-del-open className="text-sm text-neutral-700 underline underline-offset-2">{t('delAccOpen')}</button>
+            ) : (
+              <div className="space-y-3 rounded-2xl ring-1 ring-neutral-300 p-4">
+                <p className="text-sm font-medium text-neutral-900">{t('delAccIntro')}</p>
+                <p className="text-xs text-neutral-600">{t('delAccList')}</p>
+                <label htmlFor="del-email" className="block text-xs font-medium text-neutral-700">{t('delAccType')}</label>
+                <input id="del-email" type="email" autoComplete="off" value={delEmail} onChange={(e) => setDelEmail(e.target.value)} placeholder={email}
+                  className="w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:border-neutral-900" />
+                {delMsg && <p className="text-xs font-medium text-neutral-900">{delMsg.text}</p>}
+                <div className="flex gap-2">
+                  <button type="button" onClick={() => { setDelOpen(false); setDelEmail(''); setDelMsg(null) }} disabled={delBusy}
+                    className="flex-1 py-2 rounded-xl bg-neutral-100 text-sm disabled:opacity-50">{t('cancel')}</button>
+                  <button type="button" onClick={deleteAccount} data-del-confirm
+                    disabled={delBusy || delEmail.trim().toLowerCase() !== String(email || '').toLowerCase()}
+                    className="flex-1 py-2 rounded-xl bg-neutral-900 text-white text-sm disabled:opacity-40">{delBusy ? t('delAccWorking') : t('delAccConfirm')}</button>
+                </div>
+              </div>
+            )}
+          </section>
+        )}
 
         {msg && <p className={`text-sm ${msg.err ? 'font-medium text-neutral-900' : 'text-neutral-600'}`}>{msg.text}</p>}
         <button onClick={onClose} className="w-full py-2 rounded-xl bg-neutral-100 text-sm">{t('close')}</button>

@@ -35,9 +35,11 @@ Tested, no problem found:
 - AI prompt injection, live, with temporary accounts (deleted afterwards) and delete permission switched on for the adult: (a) a teammate's chat message ordering "delete every event", (b) an event whose title orders the same. The AI refused both, the events were untouched and no notes were saved. Server side, event tools run with the caller's own token (RLS), are limited to the calendar and to the permissions the caller switched on, and a minor never gets write tools.
 - MCP connector: the app's own sign-in token is refused (`invalid_token`), as is a made-up token; `https://collyo.app/mcp` answers 401 with the OAuth discovery header; the connector only returns calendars and busy times (read-only) and refuses minor accounts. A token of a deleted account stops working at once.
 
-Found, not fixed yet:
-- **No self-service account deletion.** The terms promise "you can delete your account at any time", but the app has no such button; deletion goes through support. A function that deletes an adult's calendars, their minors' accounts and then the account is needed.
-- **Orphaned minor accounts.** Deleting an adult owner's account removes the calendars and managed profiles but left the minor's sign-in account (technical e-mail, first name) behind. Fix prepared and tested in a rolled-back transaction: `supabase/migrations_025_minor_account_cleanup.sql` (a trigger that deletes the minor's account with its managed profile). **Not applied to production yet.** Removing a profile or a calendar through the app was never affected, because `team-admin` already deletes the account.
+Found and fixed (18 November 2026):
+- **No self-service account deletion.** The terms promise it. The profile panel now has "Delete my account" (type your e-mail address to confirm), backed by the `delete-account` function: it deletes the caller's calendars, the technical accounts of their minors, the avatar files and the sign-in account. Tested on production with temporary accounts: wrong, missing or someone else's e-mail is refused (400), no token is refused (401), a minor account is refused (403), and a real deletion removed the owner, the minor's account, the calendar, events, managed profile and avatar file, while a member of the calendar stayed.
+- **Orphaned minor accounts.** Migration 025 (applied): a trigger deletes the minor's sign-in account with its managed profile. Rolled-back test: deleting the owner now leaves no minor account behind.
+
+Still to decide: signed declarations are deleted with the guardian's account (database cascade). If they must be kept as legal evidence for a set period, that needs a retention rule and a legal opinion.
 
 ## Open (not changed)
 
