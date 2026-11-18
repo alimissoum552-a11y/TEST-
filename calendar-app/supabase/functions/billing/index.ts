@@ -12,7 +12,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { verifyStripeSignature } from '../identity/stripe.ts'
 import { EDUCATION_PLANS, EDUCATION_COUPON } from '../_shared/education.ts'
-import { validateCheckout, subscriptionRow, nextSubscriptionRow, refundAllowed, lookupKey, formEncode, MAX_SEATS } from '../_shared/billing.ts'
+import { validateCheckout, subscriptionRow, nextSubscriptionRow, refundAllowed, lookupKey, formEncode, MAX_SEATS, webhookTargetExists } from '../_shared/billing.ts'
 import { reportError } from '../_shared/ops.ts'
 
 const cors = {
@@ -189,6 +189,11 @@ async function webhook(req: Request, admin: any, signature: string): Promise<Res
     userId = byCustomer?.user_id ?? null
   }
   if (!userId) return json({ ok: true, ignored: true })
+
+  // The account may have been deleted (its subscriptions row goes with the profile): Stripe then cancels the
+  // subscription and tells us. Nothing is left to update, so acknowledge instead of failing and making Stripe retry.
+  const { data: profile } = await admin.from('profiles').select('id').eq('id', userId).maybeSingle()
+  if (!webhookTargetExists(profile)) return json({ ok: true, ignored: 'no_profile' })
 
   // While it runs: the paid plan. When it has ended: back to the plan the account had before (launch or free).
   const { data: existing } = await admin.from('subscriptions').select('plan_code, source, plan_before_stripe').eq('user_id', userId).maybeSingle()

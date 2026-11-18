@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { lookupKey, parseLookupKey, validateCheckout, mapStripeStatus, subscriptionRow, formEncode, nextSubscriptionRow, refundAllowed, refundWindowDays } from './billing.ts'
+import { lookupKey, parseLookupKey, validateCheckout, mapStripeStatus, subscriptionRow, formEncode, nextSubscriptionRow, refundAllowed, refundWindowDays, webhookTargetExists } from './billing.ts'
 
 const min = (p: string) => (p === 'team_work' ? 3 : 1)
 
@@ -113,5 +113,12 @@ describe('refund window', () => {
     expect(refundAllowed('pro', '2026-11-15T00:00:00Z', now)).toBe(false)
     expect(refundAllowed('team_work', '2026-11-05T00:00:00Z', now)).toBe(true)
     expect(refundAllowed('pro', null, now)).toBe(false)
+  })
+})
+
+describe('webhookTargetExists', () => {
+  it('writes only for an account whose profile still exists', () => {
+    expect(webhookTargetExists({ id: 'u1' })).toBe(true)
+    for (const gone of [null, undefined, {}, { id: null }, { id: '' }]) expect(webhookTargetExists(gone as any), JSON.stringify(gone)).toBe(false)
   })
 })

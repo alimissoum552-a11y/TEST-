@@ -328,6 +328,7 @@ Unexpected errors are collected and an e-mail digest is sent when something need
 - **Retention**: `ops_errors` rows are deleted after 90 days (`ops-errors-retention` job).
 - **Checked**: a test error sent by a browser was stored with the address and token masked, and the job sent its digest (`sent: true`).
 - Stripe also e-mails the account owner when a webhook endpoint keeps failing.
+- **Deleted accounts and Stripe (18 November 2026)**: after an account is deleted, Stripe cancels its subscription and sends `customer.subscription.deleted`. The webhook used to try to write a `subscriptions` row for a profile that no longer exists (error 23503 on `subscriptions_user_id_fkey`), answered 500, and Stripe retried for days. The webhook now acknowledges such events (`ignored: 'no_profile'`) without writing (`webhookTargetExists()` in `_shared/billing.ts`).
 - **Crash protection (18 November 2026)**: the first real alert showed a Chrome visitor on Windows whose landing page crashed (`useI18n must be used inside I18nProvider`, then `removeChild` errors): the signature of a page changed under React by the browser (page translation or an extension). Since then: the page opts out of browser translation (`translate="no"`, `<meta name="google" content="notranslate">`; the app has its own six languages), `useI18n()` falls back to English instead of throwing, language storage that the browser blocks no longer stops the app, and a top-level error screen (`src/ErrorBoundary.jsx`) offers a reload and reports the error as `boundary`.
 
 ## Backups

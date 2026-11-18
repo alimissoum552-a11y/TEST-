@@ -113,3 +113,9 @@ export function refundAllowed(plan: string, startedAtIso: string | null, now: Da
   const started = Date.parse(startedAtIso)
   return Number.isFinite(started) && now.getTime() - started <= refundWindowDays(plan) * 86400_000
 }
+
+// A Stripe event is written only for an account that still exists. When an account is deleted, its profile and its
+// subscriptions row are gone, and the later customer.subscription.deleted event has nothing to update.
+export function webhookTargetExists(profile: { id?: string | null } | null | undefined): boolean {
+  return !!profile?.id
+}
