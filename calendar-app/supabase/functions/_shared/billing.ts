@@ -41,10 +41,13 @@ export function mapStripeStatus(status: string): 'active' | 'trialing' | 'past_d
 }
 
 // Fields to store for a Stripe subscription object (with items.data[].price expanded). null when it is not one of our plans.
-export function subscriptionRow(sub: any): null | {
+export type StripeRow = {
   plan_code: PaidPlan; status: 'active' | 'trialing' | 'past_due' | 'canceled'; seats: number
-  current_period_end: string | null; stripe_customer_id: string; stripe_subscription_id: string
-} {
+  current_period_end: string | null; cancel_at: string | null; started_at: string | null
+  stripe_customer_id: string; stripe_subscription_id: string
+}
+
+export function subscriptionRow(sub: any): null | StripeRow {
   const status = mapStripeStatus(String(sub?.status ?? ''))
   const item = sub?.items?.data?.[0]
   const parsed = parseLookupKey(item?.price?.lookup_key)
@@ -55,6 +58,8 @@ export function subscriptionRow(sub: any): null | {
     status,
     seats: parsed.plan === 'team_work' ? Math.max(1, Number(item?.quantity) || 1) : 1,
     current_period_end: Number.isFinite(end) && end > 0 ? new Date(end * 1000).toISOString() : null,
+    cancel_at: isoOrNull(sub?.cancel_at ?? (sub?.cancel_at_period_end ? end : null)),
+    started_at: isoOrNull(sub?.start_date),
     stripe_customer_id: String(typeof sub.customer === 'string' ? sub.customer : sub.customer?.id ?? ''),
     stripe_subscription_id: String(sub.id),
   }
@@ -74,4 +79,37 @@ export function formEncode(value: Record<string, unknown>, prefix = ''): string[
     else out.push(`${encodeURIComponent(key)}=${encodeURIComponent(String(v))}`)
   }
   return out
+}
+
+const isoOrNull = (t: unknown): string | null => {
+  const n = Number(t)
+  return Number.isFinite(n) && n > 0 ? new Date(n * 1000).toISOString() : null
+}
+
+// What to write in `subscriptions` for a Stripe subscription, given the account's current row.
+// While the subscription runs, the paid plan applies and the plan the account had before (launch or free) is kept.
+// When it has ended, the account goes back to that plan; a paid plan is never restored.
+export function nextSubscriptionRow(existing: { plan_code?: string | null; source?: string | null; plan_before_stripe?: string | null } | null, row: StripeRow) {
+  const before = existing?.source === 'stripe'
+    ? (existing?.plan_before_stripe ?? 'free')
+    : (existing?.plan_code && !(PAID_PLANS as readonly string[]).includes(existing.plan_code) ? existing.plan_code : 'free')
+  if (row.status === 'canceled') {
+    return {
+      plan_code: before, status: 'active' as const, source: before === 'launch' ? 'launch' : 'manual', seats: 1,
+      current_period_end: null, cancel_at: null, started_at: null, stripe_subscription_id: null,
+      stripe_customer_id: row.stripe_customer_id, plan_before_stripe: null,
+    }
+  }
+  return { ...row, source: 'stripe', plan_before_stripe: before }
+}
+
+// Refund window, counted from the start of the paid subscription: the legal 14-day withdrawal for consumers,
+// 30 days for work teams (terms, section 12).
+export function refundWindowDays(plan: string): number {
+  return plan === 'team_work' ? 30 : 14
+}
+export function refundAllowed(plan: string, startedAtIso: string | null, now: Date = new Date()): boolean {
+  if (!startedAtIso) return false
+  const started = Date.parse(startedAtIso)
+  return Number.isFinite(started) && now.getTime() - started <= refundWindowDays(plan) * 86400_000
 }

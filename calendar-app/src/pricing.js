@@ -21,7 +21,7 @@ export const PRICING = {
     "notesTitle": "Good to know",
     "notes": [
       "The AI follows the calendar: a request made in a team calendar counts on the owner’s plan, and members never need a paid plan to use it there.",
-      "Work teams: no trial. The free plan lets you try everything but the AI, and you can cancel monthly plans at any time (30-day refund announced).",
+      "Work teams: no trial. The free plan lets you try everything but the AI, and you can cancel monthly plans at any time (refund from your profile within 30 days).",
       "Safety is never paid: guardian consent, minors’ protections and deleting your account are in every plan."
     ],
     "plans": {
@@ -93,7 +93,16 @@ export const PRICING = {
     "noAi": "The AI is not included in this plan.",
     "seeAllPlans": "See all plans",
     "manage": "Manage my subscription",
-    "billingError": "Your plan could not be loaded."
+    "billingError": "Your plan could not be loaded.",
+    "endsOn": "Ends on",
+    "refundUntil": "Refund possible until",
+    "refundAsk": "Refund and stop my subscription",
+    "refundConfirm": "You will be refunded and the subscription stops now; your previous plan comes back. Confirm?",
+    "refundYes": "Confirm the refund",
+    "refundCancel": "Keep my subscription",
+    "refundDone": "Refund made. It shows on your statement within 5 to 10 days.",
+    "refundError": "The refund could not be made. Write to support@collyo.app.",
+    "refundLate": "The refund period is over. You can still cancel from “Manage my subscription”."
   },
   "fr": {
     "title": "Formules et tarifs",
@@ -116,7 +125,7 @@ export const PRICING = {
     "notesTitle": "Bon à savoir",
     "notes": [
       "L’AI suit le calendrier : une demande faite dans un calendrier d’équipe compte sur la formule du propriétaire, et les membres n’ont jamais besoin d’une formule payante pour l’utiliser dans ce calendrier.",
-      "Équipes de travail : pas d’essai. La formule gratuite permet de tout essayer sauf l’AI, et les formules mensuelles se résilient à tout moment (remboursement sous 30 jours annoncé).",
+      "Équipes de travail : pas d’essai. La formule gratuite permet de tout essayer sauf l’AI, et les formules mensuelles se résilient à tout moment (remboursement depuis votre profil sous 30 jours).",
       "La sécurité n’est jamais payante : le consentement des parents, la protection des mineurs et la suppression du compte sont dans toutes les formules."
     ],
     "plans": {
@@ -188,7 +197,16 @@ export const PRICING = {
     "noAi": "L’AI n’est pas incluse dans cette formule.",
     "seeAllPlans": "Voir toutes les formules",
     "manage": "Gérer mon abonnement",
-    "billingError": "Votre formule n’a pas pu être chargée."
+    "billingError": "Votre formule n’a pas pu être chargée.",
+    "endsOn": "Se termine le",
+    "refundUntil": "Remboursement possible jusqu’au",
+    "refundAsk": "Me faire rembourser et arrêter l’abonnement",
+    "refundConfirm": "Vous serez remboursé et l’abonnement s’arrête maintenant ; votre formule précédente revient. Confirmer ?",
+    "refundYes": "Confirmer le remboursement",
+    "refundCancel": "Garder mon abonnement",
+    "refundDone": "Remboursement effectué. Il apparaît sur votre relevé sous 5 à 10 jours.",
+    "refundError": "Le remboursement n’a pas pu être fait. Écrivez à support@collyo.app.",
+    "refundLate": "Le délai de remboursement est passé. Vous pouvez toujours résilier depuis « Gérer mon abonnement »."
   },
   "es": {
     "title": "Planes y precios",
@@ -211,7 +229,7 @@ export const PRICING = {
     "notesTitle": "Conviene saber",
     "notes": [
       "La AI sigue al calendario: una solicitud hecha en un calendario de equipo cuenta en el plan del propietario, y los miembros nunca necesitan un plan de pago para usarla allí.",
-      "Equipos de trabajo: sin prueba. El plan gratis permite probarlo todo salvo la AI, y los planes mensuales se cancelan en cualquier momento (reembolso de 30 días anunciado).",
+      "Equipos de trabajo: sin prueba. El plan gratis permite probarlo todo salvo la AI, y los planes mensuales se cancelan en cualquier momento (reembolso desde tu perfil en 30 días).",
       "La seguridad nunca se paga: el consentimiento de los tutores, la protección de los menores y la eliminación de la cuenta están en todos los planes."
     ],
     "plans": {
@@ -283,7 +301,16 @@ export const PRICING = {
     "noAi": "La AI no está incluida en este plan.",
     "seeAllPlans": "Ver todos los planes",
     "manage": "Gestionar mi suscripción",
-    "billingError": "No se pudo cargar tu plan."
+    "billingError": "No se pudo cargar tu plan.",
+    "endsOn": "Termina el",
+    "refundUntil": "Reembolso posible hasta el",
+    "refundAsk": "Reembolsarme y detener la suscripción",
+    "refundConfirm": "Se te reembolsará y la suscripción se detiene ahora; vuelve tu plan anterior. ¿Confirmar?",
+    "refundYes": "Confirmar el reembolso",
+    "refundCancel": "Mantener mi suscripción",
+    "refundDone": "Reembolso hecho. Aparecerá en tu extracto en 5 a 10 días.",
+    "refundError": "No se pudo hacer el reembolso. Escribe a support@collyo.app.",
+    "refundLate": "El plazo de reembolso ha pasado. Aún puedes cancelar desde «Gestionar mi suscripción»."
   },
   "de": {
     "title": "Tarife und Preise",
@@ -306,7 +333,7 @@ export const PRICING = {
     "notesTitle": "Gut zu wissen",
     "notes": [
       "Die AI folgt dem Kalender: Eine Anfrage in einem Teamkalender zählt auf den Tarif des Eigentümers, und Mitglieder brauchen dort nie einen bezahlten Tarif.",
-      "Arbeitsteams: keine Testphase. Der kostenlose Tarif erlaubt alles außer der AI, und Monatstarife sind jederzeit kündbar (30 Tage Rückerstattung angekündigt).",
+      "Arbeitsteams: keine Testphase. Der kostenlose Tarif erlaubt alles außer der AI, und Monatstarife sind jederzeit kündbar (Erstattung im Profil innerhalb von 30 Tagen).",
       "Sicherheit kostet nie extra: Einwilligung der Erziehungsberechtigten, Schutz Minderjähriger und das Löschen des Kontos sind in jedem Tarif enthalten."
     ],
     "plans": {
@@ -378,7 +405,16 @@ export const PRICING = {
     "noAi": "Die AI ist in diesem Tarif nicht enthalten.",
     "seeAllPlans": "Alle Tarife ansehen",
     "manage": "Mein Abonnement verwalten",
-    "billingError": "Dein Tarif konnte nicht geladen werden."
+    "billingError": "Dein Tarif konnte nicht geladen werden.",
+    "endsOn": "Endet am",
+    "refundUntil": "Erstattung möglich bis",
+    "refundAsk": "Erstatten und Abonnement beenden",
+    "refundConfirm": "Du erhältst eine Erstattung und das Abonnement endet sofort; dein vorheriger Tarif gilt wieder. Bestätigen?",
+    "refundYes": "Erstattung bestätigen",
+    "refundCancel": "Abonnement behalten",
+    "refundDone": "Erstattung ausgeführt. Sie erscheint in 5 bis 10 Tagen auf deinem Kontoauszug.",
+    "refundError": "Die Erstattung war nicht möglich. Schreibe an support@collyo.app.",
+    "refundLate": "Die Erstattungsfrist ist abgelaufen. Du kannst weiterhin über „Mein Abonnement verwalten“ kündigen."
   },
   "ar": {
     "title": "الباقات والأسعار",
@@ -401,7 +437,7 @@ export const PRICING = {
     "notesTitle": "مفيد أن تعرف",
     "notes": [
       "الذكاء الاصطناعي يتبع التقويم: الطلب في تقويم الفريق يُحتسب على باقة المالك، ولا يحتاج الأعضاء إلى باقة مدفوعة لاستخدامه هناك.",
-      "فرق العمل: بلا فترة تجريبية. الباقة المجانية تتيح تجربة كل شيء عدا الذكاء الاصطناعي، ويمكن إلغاء الباقات الشهرية في أي وقت (استرداد خلال 30 يومًا معلن).",
+      "فرق العمل: بلا فترة تجريبية. الباقة المجانية تتيح تجربة كل شيء عدا الذكاء الاصطناعي، ويمكن إلغاء الباقات الشهرية في أي وقت (استرداد من ملفك الشخصي خلال 30 يومًا).",
       "الأمان لا يُدفع مقابله: موافقة الأولياء وحماية القاصرين وحذف الحساب موجودة في كل الباقات."
     ],
     "plans": {
@@ -473,7 +509,16 @@ export const PRICING = {
     "noAi": "الذكاء الاصطناعي غير مشمول في هذه الباقة.",
     "seeAllPlans": "عرض كل الباقات",
     "manage": "إدارة اشتراكي",
-    "billingError": "تعذّر تحميل باقتك."
+    "billingError": "تعذّر تحميل باقتك.",
+    "endsOn": "ينتهي في",
+    "refundUntil": "الاسترداد ممكن حتى",
+    "refundAsk": "استرداد المبلغ وإيقاف الاشتراك",
+    "refundConfirm": "سيُعاد إليك المبلغ ويتوقف الاشتراك الآن، وتعود باقتك السابقة. هل تؤكد؟",
+    "refundYes": "تأكيد الاسترداد",
+    "refundCancel": "الإبقاء على اشتراكي",
+    "refundDone": "تم الاسترداد. سيظهر في كشف حسابك خلال 5 إلى 10 أيام.",
+    "refundError": "تعذّر الاسترداد. راسل support@collyo.app.",
+    "refundLate": "انتهت مهلة الاسترداد. لا يزال بإمكانك الإلغاء من «إدارة اشتراكي»."
   },
   "pt": {
     "title": "Planos e preços",
@@ -496,7 +541,7 @@ export const PRICING = {
     "notesTitle": "Bom saber",
     "notes": [
       "A AI acompanha o calendário: um pedido feito num calendário de equipa conta no plano do proprietário, e os membros nunca precisam de um plano pago para a usar aí.",
-      "Equipas de trabalho: sem período de teste. O plano grátis permite experimentar tudo menos a AI, e os planos mensais cancelam-se a qualquer momento (reembolso de 30 dias anunciado).",
+      "Equipas de trabalho: sem período de teste. O plano grátis permite experimentar tudo menos a AI, e os planos mensais cancelam-se a qualquer momento (reembolso no seu perfil em 30 dias).",
       "A segurança nunca se paga: o consentimento dos responsáveis, a proteção dos menores e a eliminação da conta estão em todos os planos."
     ],
     "plans": {
@@ -568,6 +613,15 @@ export const PRICING = {
     "noAi": "A AI não está incluída neste plano.",
     "seeAllPlans": "Ver todos os planos",
     "manage": "Gerir a minha subscrição",
-    "billingError": "Não foi possível carregar o seu plano."
+    "billingError": "Não foi possível carregar o seu plano.",
+    "endsOn": "Termina a",
+    "refundUntil": "Reembolso possível até",
+    "refundAsk": "Ser reembolsado e parar a subscrição",
+    "refundConfirm": "Será reembolsado e a subscrição termina agora; o seu plano anterior volta. Confirmar?",
+    "refundYes": "Confirmar o reembolso",
+    "refundCancel": "Manter a subscrição",
+    "refundDone": "Reembolso feito. Aparece no seu extrato em 5 a 10 dias.",
+    "refundError": "Não foi possível fazer o reembolso. Escreva para support@collyo.app.",
+    "refundLate": "O prazo de reembolso terminou. Ainda pode cancelar em «Gerir a minha subscrição»."
   }
 }

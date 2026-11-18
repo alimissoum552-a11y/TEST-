@@ -12,6 +12,13 @@
 - Deleting an account cancels its Stripe subscription first (tested: a test-mode subscription was canceled when its account was deleted).
 - Terms section 12 "Subscriptions and payment" and privacy section 16 "Payments" (six languages, dated 19 November 2026). Drafts: to be reviewed by a lawyer.
 
+## Cancellation, refund and downgrade (19 November 2026)
+
+- **Cancel**: from "Manage my subscription" (Stripe portal), at the end of the paid period. The profile then shows "Ends on <date>" instead of "Renews on". No refund is made by a cancellation.
+- **Refund**: the profile shows "Refund possible until <date>" and a "Refund and stop my subscription" button during the first 14 days (30 for the work plan), as the terms promise. It refunds the subscription's payments in Stripe and ends it at once (`billing` action `refund`, migration 028). After the window the server refuses (`refund_window_passed`). Outside the app, refunds are made in the Stripe dashboard (Payments > the payment > Refund).
+- **Downgrade**: when a subscription ends (end of period, immediate cancellation or refund), the webhook puts the account back on the plan it had before its first payment: `launch` for the accounts created before 19 November, `free` otherwise. A paid plan is never restored by mistake. The portal link stays for invoices.
+- Tested with temporary accounts and test subscriptions (live mode on): a launch account subscribes (`plan_before_stripe = launch`), schedules the cancellation (end date shown), refunds from the profile (3 EUR refunded, back to launch); a free account goes back to free when the subscription ends; a refund after the window is refused. The owner's own live test purchase (3 EUR, 18 November) was refunded and his account put back on launch.
+
 ## Still to do
 
 1. **One real purchase** (Starter monthly, 3 EUR) to check the live card payment and the live webhook end to end, then refund and cancel it in the Stripe dashboard. Not done: the live payment page cannot be driven by a script.

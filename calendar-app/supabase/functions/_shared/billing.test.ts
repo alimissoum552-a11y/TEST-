@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { lookupKey, parseLookupKey, validateCheckout, mapStripeStatus, subscriptionRow, formEncode } from './billing.ts'
+import { lookupKey, parseLookupKey, validateCheckout, mapStripeStatus, subscriptionRow, formEncode, nextSubscriptionRow, refundAllowed, refundWindowDays } from './billing.ts'
 
 const min = (p: string) => (p === 'team_work' ? 3 : 1)
 
@@ -48,7 +48,7 @@ describe('subscriptionRow', () => {
   it('reads the plan, status, period end and ids', () => {
     expect(subscriptionRow(sub())).toEqual({
       plan_code: 'pro', status: 'active', seats: 1, current_period_end: new Date(1800000000 * 1000).toISOString(),
-      stripe_customer_id: 'cus_1', stripe_subscription_id: 'sub_1',
+      cancel_at: null, started_at: null, stripe_customer_id: 'cus_1', stripe_subscription_id: 'sub_1',
     })
   })
   it('uses the quantity as seats only on the work plan', () => {
@@ -74,5 +74,44 @@ describe('formEncode', () => {
     expect(out).toContain(encodeURIComponent('line_items[0][adjustable_quantity][enabled]') + '=true')
     expect(out).toContain(encodeURIComponent('metadata[user_id]') + '=u%201')
     expect(out.join('&')).not.toContain('skip')
+  })
+})
+
+describe('cancellation date', () => {
+  it('reads cancel_at, or the period end when cancel_at_period_end is set', () => {
+    const base = { id: 's', status: 'active', customer: 'c', start_date: 1790000000, items: { data: [{ current_period_end: 1800000000, price: { lookup_key: 'pro_month' } }] } }
+    expect(subscriptionRow({ ...base, cancel_at: 1799000000 })?.cancel_at).toBe(new Date(1799000000 * 1000).toISOString())
+    expect(subscriptionRow({ ...base, cancel_at_period_end: true })?.cancel_at).toBe(new Date(1800000000 * 1000).toISOString())
+    expect(subscriptionRow(base)?.cancel_at).toBeNull()
+    expect(subscriptionRow(base)?.started_at).toBe(new Date(1790000000 * 1000).toISOString())
+  })
+})
+
+describe('nextSubscriptionRow', () => {
+  const row = (status: any) => ({ plan_code: 'starter' as const, status, seats: 1, current_period_end: 'x', cancel_at: null, started_at: 's', stripe_customer_id: 'cus', stripe_subscription_id: 'sub' })
+  it('remembers the plan the account had before paying', () => {
+    expect(nextSubscriptionRow({ plan_code: 'launch', source: 'launch' }, row('active'))).toMatchObject({ plan_code: 'starter', source: 'stripe', plan_before_stripe: 'launch' })
+    expect(nextSubscriptionRow({ plan_code: 'free', source: 'launch' }, row('active')).plan_before_stripe).toBe('free')
+    expect(nextSubscriptionRow(null, row('active')).plan_before_stripe).toBe('free')
+  })
+  it('keeps the remembered plan across updates of a running subscription', () => {
+    expect(nextSubscriptionRow({ plan_code: 'starter', source: 'stripe', plan_before_stripe: 'launch' }, row('past_due')).plan_before_stripe).toBe('launch')
+  })
+  it('goes back to the previous plan when the subscription ends, never to a paid one', () => {
+    expect(nextSubscriptionRow({ plan_code: 'starter', source: 'stripe', plan_before_stripe: 'launch' }, row('canceled'))).toMatchObject({ plan_code: 'launch', status: 'active', source: 'launch', stripe_subscription_id: null, stripe_customer_id: 'cus' })
+    expect(nextSubscriptionRow({ plan_code: 'starter', source: 'stripe', plan_before_stripe: null }, row('canceled'))).toMatchObject({ plan_code: 'free', source: 'manual' })
+    expect(nextSubscriptionRow({ plan_code: 'pro', source: 'manual' }, row('canceled')).plan_code).toBe('free')
+  })
+})
+
+describe('refund window', () => {
+  const now = new Date('2026-11-30T00:00:00Z')
+  it('is 14 days for consumer plans and 30 for the work plan', () => {
+    expect(refundWindowDays('starter')).toBe(14)
+    expect(refundWindowDays('team_work')).toBe(30)
+    expect(refundAllowed('pro', '2026-11-17T00:00:00Z', now)).toBe(true)
+    expect(refundAllowed('pro', '2026-11-15T00:00:00Z', now)).toBe(false)
+    expect(refundAllowed('team_work', '2026-11-05T00:00:00Z', now)).toBe(true)
+    expect(refundAllowed('pro', null, now)).toBe(false)
   })
 })

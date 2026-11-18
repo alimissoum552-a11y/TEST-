@@ -608,11 +608,13 @@ export const deleteMyAccount = (confirmEmail) => callFunction('delete-account', 
 // Not wired to a button yet: billing is closed until the launch (docs/PRICING.md).
 export const startCheckout = (plan, interval, seats) => callFunction('billing', { action: 'checkout', plan, interval, seats })
 export const openBillingPortal = () => callFunction('billing', { action: 'portal' })
+// Within 14 days of the start (30 for work teams): refund and end the subscription now.
+export const requestRefund = () => callFunction('billing', { action: 'refund' })
 
 // The caller's own subscription with the plan it points to (RLS: a user reads only their own row).
 export async function getMySubscription(userId) {
   const { data: sub, error } = await supabase.from('subscriptions')
-    .select('plan_code, status, source, seats, current_period_end, stripe_customer_id').eq('user_id', userId).maybeSingle()
+    .select('plan_code, status, source, seats, current_period_end, cancel_at, started_at, stripe_customer_id').eq('user_id', userId).maybeSingle()
   if (error) throw error
   if (!sub) return null
   const { data: plan, error: pErr } = await supabase.from('plans')

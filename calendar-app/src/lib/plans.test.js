@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { meterState, monthStartIso } from './plans.js'
+import { meterState, monthStartIso, refundDeadline } from './plans.js'
 
 const plan = (o = {}) => ({ ai_enabled: true, ai_monthly_requests: 150, ai_per_seat: false, ...o })
 
@@ -24,5 +24,13 @@ describe('meterState', () => {
 describe('monthStartIso', () => {
   it('is the first instant of the UTC month', () => {
     expect(monthStartIso(new Date('2026-11-30T23:00:00Z'))).toBe('2026-11-01T00:00:00.000Z')
+  })
+})
+
+describe('refundDeadline', () => {
+  it('is 14 days after the start, 30 for the work plan, null without a start', () => {
+    expect(refundDeadline('pro', '2026-11-01T00:00:00Z').toISOString()).toBe('2026-11-15T00:00:00.000Z')
+    expect(refundDeadline('team_work', '2026-11-01T00:00:00Z').toISOString()).toBe('2026-12-01T00:00:00.000Z')
+    expect(refundDeadline('pro', null)).toBeNull()
   })
 })

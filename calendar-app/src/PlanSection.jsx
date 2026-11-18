@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useI18n } from './i18n/index.jsx'
 import { PRICING } from './pricing.js'
-import { getMySubscription, countMyAiUsageThisMonth, openBillingPortal } from './lib/api.js'
-import { meterState, monthStartIso } from './lib/plans.js'
+import { getMySubscription, countMyAiUsageThisMonth, openBillingPortal, requestRefund } from './lib/api.js'
+import { meterState, monthStartIso, refundDeadline } from './lib/plans.js'
 
 // "My plan" in the profile: the plan, the AI requests used this month and the way to manage the subscription.
 // justSubscribed: the person has just come back from the payment page; the webhook may need a few seconds.
@@ -13,6 +13,8 @@ export default function PlanSection({ userId, justSubscribed = false }) {
   const [used, setUsed] = useState(0)
   const [failed, setFailed] = useState(false)
   const [busy, setBusy] = useState(false)
+  const [confirmRefund, setConfirmRefund] = useState(false)
+  const [refundMsg, setRefundMsg] = useState(null)
 
   const load = useCallback(async () => {
     try {
@@ -45,8 +47,21 @@ export default function PlanSection({ userId, justSubscribed = false }) {
     try { window.location.href = (await openBillingPortal()).url } catch { setFailed(true); setBusy(false) }
   }
 
+  const refund = async () => {
+    setBusy(true); setRefundMsg(null)
+    try {
+      await requestRefund()
+      setRefundMsg(L.refundDone); setConfirmRefund(false)
+      // The webhook puts the previous plan back within seconds.
+      setTimeout(load, 4000); setTimeout(load, 9000)
+    } catch (ex) {
+      setRefundMsg(ex.message === 'refund_window_passed' ? L.refundLate : L.refundError)
+    } finally { setBusy(false) }
+  }
+
   const planName = sub ? (sub.plan_code === 'launch' ? L.launchName : (L.plans[sub.plan_code]?.name || sub.plan_code)) : ''
   const meter = sub ? meterState(sub.plan, sub.status, sub.seats, used) : null
+  const deadline = sub && sub.source === 'stripe' && sub.status !== 'canceled' ? refundDeadline(sub.plan_code, sub.started_at) : null
   const date = (iso) => new Intl.DateTimeFormat(locale, { dateStyle: 'long' }).format(new Date(iso))
 
   return (
@@ -64,8 +79,8 @@ export default function PlanSection({ userId, justSubscribed = false }) {
             )}
           </p>
           {sub.status === 'past_due' && <p className="text-xs font-medium text-neutral-900">{L.statusPastDue}</p>}
-          {sub.source === 'stripe' && sub.status !== 'canceled' && sub.current_period_end && (
-            <p className="text-xs text-neutral-500">{L.renews} {date(sub.current_period_end)}</p>
+          {sub.source === 'stripe' && sub.status !== 'canceled' && (sub.cancel_at || sub.current_period_end) && (
+            <p className="text-xs text-neutral-500" data-plan-date>{sub.cancel_at ? `${L.endsOn} ${date(sub.cancel_at)}` : `${L.renews} ${date(sub.current_period_end)}`}</p>
           )}
 
           <div className="space-y-1" data-ai-meter>
@@ -82,9 +97,27 @@ export default function PlanSection({ userId, justSubscribed = false }) {
             )}
           </div>
 
+          {deadline && deadline > new Date() && (
+            <div className="space-y-2 pt-1" data-refund>
+              <p className="text-xs text-neutral-500">{L.refundUntil} {date(deadline.toISOString())}</p>
+              {!confirmRefund ? (
+                <button type="button" onClick={() => setConfirmRefund(true)} className="text-sm text-neutral-700 underline underline-offset-2">{L.refundAsk}</button>
+              ) : (
+                <div className="space-y-2 rounded-2xl ring-1 ring-neutral-300 p-3">
+                  <p className="text-xs text-neutral-700">{L.refundConfirm}</p>
+                  <div className="flex gap-2">
+                    <button type="button" onClick={() => setConfirmRefund(false)} disabled={busy} className="flex-1 py-1.5 rounded-xl bg-neutral-100 text-xs">{L.refundCancel}</button>
+                    <button type="button" onClick={refund} disabled={busy} data-refund-confirm className="flex-1 py-1.5 rounded-xl bg-neutral-900 text-white text-xs disabled:opacity-50">{L.refundYes}</button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+          {refundMsg && <p className="text-xs font-medium text-neutral-900" role="status">{refundMsg}</p>}
+
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1">
             <a href="#/pricing" className="text-sm text-neutral-700 underline underline-offset-2">{L.seeAllPlans}</a>
-            {sub.source === 'stripe' && sub.stripe_customer_id && (
+            {sub.stripe_customer_id && (
               <button type="button" onClick={portal} disabled={busy} data-manage-subscription
                 className="text-sm text-neutral-700 underline underline-offset-2 disabled:opacity-50">{L.manage}</button>
             )}

@@ -12,3 +12,10 @@ export function meterState(plan, status, seats, used) {
   const limit = plan.ai_monthly_requests * (plan.ai_per_seat ? Math.max(1, seats || 1) : 1)
   return { kind: 'limited', used, limit, percent: limit > 0 ? Math.min(100, Math.round((used / limit) * 100)) : 100 }
 }
+
+// Last day of the refund window: 14 days after the start, 30 for the work plan (same rule as the server).
+export function refundDeadline(planCode, startedAtIso) {
+  const start = Date.parse(startedAtIso || '')
+  if (!Number.isFinite(start)) return null
+  return new Date(start + (planCode === 'team_work' ? 30 : 14) * 86400_000)
+}

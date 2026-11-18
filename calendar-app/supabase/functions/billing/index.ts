@@ -1,6 +1,7 @@
 // Stripe Billing (docs/PRICING.md): subscriptions for the paid plans.
 //   checkout : the signed-in user starts a Checkout session for a plan and an interval (returns the Stripe URL).
 //   portal   : the signed-in user opens the Stripe customer portal (change plan, cancel, invoices, card).
+//   refund   : within 14 days of the start (30 for work teams), refunds the payment and ends the subscription now.
 //   webhook  : Stripe tells us the subscription changed (Stripe-Signature header); we read the subscription from Stripe
 //              and write the `subscriptions` row. Reading it again from Stripe makes the order of events irrelevant.
 // Deployed with --no-verify-jwt (the webhook has no session); the user actions check the session themselves.
@@ -10,7 +11,7 @@
 // STRIPE_BILLING_LIVE_WEBHOOK_SECRET (live), BILLING_MODE, APP_URL.
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { verifyStripeSignature } from '../identity/stripe.ts'
-import { validateCheckout, subscriptionRow, lookupKey, formEncode, MAX_SEATS } from '../_shared/billing.ts'
+import { validateCheckout, subscriptionRow, nextSubscriptionRow, refundAllowed, lookupKey, formEncode, MAX_SEATS } from '../_shared/billing.ts'
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -36,6 +37,7 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}))
     if (body?.action === 'checkout') return await checkout(admin, user, body, key)
     if (body?.action === 'portal') return await portal(admin, user, key)
+    if (body?.action === 'refund') return await refund(admin, user)
     return json({ error: 'unknown_action' }, 400)
   } catch (_e) {
     return json({ error: 'server_error' }, 500)
@@ -48,7 +50,7 @@ const keyFor = (mode: Mode) => Deno.env.get(mode === 'live' ? 'STRIPE_BILLING_LI
 const webhookSecretFor = (mode: Mode) => Deno.env.get(mode === 'live' ? 'STRIPE_BILLING_LIVE_WEBHOOK_SECRET' : 'STRIPE_BILLING_WEBHOOK_SECRET') ?? ''
 const appUrl = () => (Deno.env.get('APP_URL') ?? 'https://collyo.app').replace(/\/+$/, '')
 
-async function stripe(key: string, path: string, params?: Record<string, unknown>, method: 'GET' | 'POST' = 'POST'): Promise<any> {
+async function stripe(key: string, path: string, params?: Record<string, unknown>, method: 'GET' | 'POST' | 'DELETE' = 'POST'): Promise<any> {
   const query = method === 'GET' && params ? '?' + formEncode(params).join('&') : ''
   const res = await fetch(`${STRIPE}${path}${query}`, {
     method,
@@ -116,6 +118,35 @@ async function portal(admin: any, user: any, key: string): Promise<Response> {
   return json({ url: session.url })
 }
 
+// Self-service refund inside the withdrawal window: the payments of this subscription are refunded and it ends now.
+// The webhook then puts the account back on its previous plan.
+async function refund(admin: any, user: any): Promise<Response> {
+  const { data: sub } = await admin.from('subscriptions')
+    .select('plan_code, source, status, started_at, stripe_customer_id, stripe_subscription_id').eq('user_id', user.id).maybeSingle()
+  if (!sub || sub.source !== 'stripe' || !sub.stripe_subscription_id) return json({ error: 'no_subscription' }, 404)
+  if (!refundAllowed(sub.plan_code, sub.started_at)) return json({ error: 'refund_window_passed' }, 403)
+
+  // The subscription may belong to the live or the test mode (accounts created while testing): use the mode that knows it.
+  let key = ''
+  for (const mode of [currentMode(), currentMode() === 'live' ? 'test' : 'live'] as Mode[]) {
+    const k = keyFor(mode)
+    if (!k) continue
+    try { await stripe(k, `/subscriptions/${encodeURIComponent(sub.stripe_subscription_id)}`, undefined, 'GET'); key = k; break } catch { /* not in this mode */ }
+  }
+  if (!key) return json({ error: 'no_subscription' }, 404)
+
+  const startedSec = Math.floor(Date.parse(sub.started_at) / 1000)
+  const charges = await stripe(key, '/charges', { customer: sub.stripe_customer_id, limit: 10, created: { gte: startedSec - 3600 } }, 'GET')
+  let refunded = 0
+  for (const c of charges?.data ?? []) {
+    if (!c.paid || c.refunded || c.amount_refunded >= c.amount) continue
+    await stripe(key, '/refunds', { charge: c.id, reason: 'requested_by_customer', metadata: { user_id: user.id } })
+    refunded += c.amount - c.amount_refunded
+  }
+  await stripe(key, `/subscriptions/${encodeURIComponent(sub.stripe_subscription_id)}`, undefined, 'DELETE')
+  return json({ ok: true, refunded_cents: refunded })
+}
+
 async function webhook(req: Request, admin: any, signature: string): Promise<Response> {
   const payload = await req.text()
   // The mode only chooses which secret the signature must match: a forged event cannot pass either way.
@@ -152,8 +183,10 @@ async function webhook(req: Request, admin: any, signature: string): Promise<Res
   }
   if (!userId) return json({ ok: true, ignored: true })
 
+  // While it runs: the paid plan. When it has ended: back to the plan the account had before (launch or free).
+  const { data: existing } = await admin.from('subscriptions').select('plan_code, source, plan_before_stripe').eq('user_id', userId).maybeSingle()
   const { error } = await admin.from('subscriptions').upsert({
-    user_id: userId, ...row, source: 'stripe', updated_at: new Date().toISOString(),
+    user_id: userId, ...nextSubscriptionRow(existing, row), updated_at: new Date().toISOString(),
   }, { onConflict: 'user_id' })
   if (error) return json({ error: 'db_error' }, 500) // Stripe retries
   return json({ ok: true })
