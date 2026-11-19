@@ -131,7 +131,6 @@ export function renderPage(lang) {
       <p class="cta"><a class="btn" href="/#/signup">${esc(L.signup)}</a></p>
     </main>
     <footer>
-      <span>${esc(L.footer)}</span>
       <a href="/#/pricing">${esc(L.pricing)}</a>
     </footer>
   </body>
