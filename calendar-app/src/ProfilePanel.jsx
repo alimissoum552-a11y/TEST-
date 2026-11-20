@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useI18n } from './i18n/index.jsx'
 import Avatar from './Avatar.jsx'
-import { getMyProfile, uploadAvatar, removeAvatar, listMyGrants, revokeMyGrant, setMyHandle, getIdentityStatus, updateMyName, deleteMyAccount } from './lib/api.js'
+import { revokeConnector } from './passkeys.js'
+import { getMyProfile, uploadAvatar, removeAvatar, listMyGrants, setMyHandle, getIdentityStatus, updateMyName, deleteMyAccount } from './lib/api.js'
 import { supabase } from './lib/supabase.js'
 import VerifiedBadge from './VerifiedBadge.jsx'
 import PlanSection from './PlanSection.jsx'
@@ -60,8 +61,16 @@ export default function ProfilePanel({ user, onClose, onChanged, onHandleChanged
   }
 
   async function revoke(g) {
-    try { await revokeMyGrant(g.client.id); setGrants((l) => l.filter((x) => x.client.id !== g.client.id)) }
-    catch (ex) { setMsg({ err: true, text: ex.message }) }
+    setBusy(true); setMsg(null)
+    try {
+      const result = await revokeConnector(g.client.id)
+      setGrants((l) => l.filter((x) => x.client.id !== g.client.id))
+      // The connector can no longer read Collyo data; only the external permission may remain.
+      if (!result.oauthRevoked) setMsg({ text: t('revokePartial') })
+    } catch (ex) {
+      // The Collyo grant could not be revoked: keep it listed and show the error.
+      setMsg({ err: true, text: ex?.message || t('revokeFailed') })
+    } finally { setBusy(false) }
   }
 
   async function onFile(e) {

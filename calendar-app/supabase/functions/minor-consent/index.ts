@@ -9,6 +9,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2'
 import { sha256Hex, consentRequired, validEmail, maskEmail } from '../_shared/access.ts'
 import { brandHeader } from '../_shared/brand.ts'
 import { reportError } from '../_shared/ops.ts'
+import { stepUpSatisfied } from '../_shared/stepup.ts'
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -37,6 +38,8 @@ async function requestConsent(req: Request, admin: any, body: any): Promise<Resp
   })
   const { data: { user } } = await supa.auth.getUser()
   if (!user) return json({ error: 'unauthorized' }, 401)
+
+  if (!(await stepUpSatisfied(admin, req, user.id))) return json({ error: 'stepup_required' }, 403)
 
   const profileId = typeof body.profile_id === 'string' ? body.profile_id : ''
   if (!/^[0-9a-f-]{36}$/i.test(profileId)) return json({ error: 'invalid_profile' }, 400)
@@ -107,6 +110,8 @@ async function inviteGuardian(req: Request, admin: any, body: any): Promise<Resp
   })
   const { data: { user } } = await supa.auth.getUser()
   if (!user) return json({ error: 'unauthorized' }, 401)
+
+  if (!(await stepUpSatisfied(admin, req, user.id))) return json({ error: 'stepup_required' }, 403)
 
   const profileId = typeof body.profile_id === 'string' ? body.profile_id : ''
   if (!/^[0-9a-f-]{36}$/i.test(profileId)) return json({ error: 'invalid_profile' }, 400)

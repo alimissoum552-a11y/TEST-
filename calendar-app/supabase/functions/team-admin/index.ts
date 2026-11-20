@@ -6,6 +6,7 @@
 // Both check that the caller owns the calendar. Deployed with the user's JWT checked inside the function.
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { reportError } from '../_shared/ops.ts'
+import { stepUpSatisfied } from '../_shared/stepup.ts'
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -24,6 +25,8 @@ Deno.serve(async (req) => {
     const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
 
     const body = await req.json().catch(() => ({}))
+    // Both actions change a team or a minor's access: they are privileged, not data reads.
+    if (!(await stepUpSatisfied(admin, req, user.id))) return json({ error: 'stepup_required' }, 403)
     if (body?.action === 'remove_profile') return await removeProfile(admin, user.id, String(body.profile_id ?? ''))
     if (body?.action === 'delete_calendar') return await deleteCalendar(admin, user.id, String(body.calendar_id ?? ''))
     return json({ error: 'unknown_action' }, 400)

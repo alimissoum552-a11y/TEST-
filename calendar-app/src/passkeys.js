@@ -28,18 +28,27 @@ export async function addPasskey(label) {
 }
 
 export async function removePasskey(id) {
-  const { error } = await supabase.from('webauthn_credentials').delete().eq('id', id)
+  // select() returns the deleted rows: RLS silently deletes nothing without a step-up, and the
+  // user must not be told the passkey is gone when it is still there.
+  const { data, error } = await supabase.from('webauthn_credentials').delete().eq('id', id).select('id')
   if (error) throw error
+  if (!data?.length) throw new Error('stepup_required')
 }
 
 export async function signInWithPasskey(email) {
   const { options, challengeToken } = await invoke('auth-options', { email })
   const response = await startAuthentication({ optionsJSON: options })
-  const { token_hash } = await invoke('auth-verify', { response, challengeToken })
-  const { data, error } = await supabase.auth.verifyOtp({ token_hash, type: 'magiclink' })
+  const { token_hash, stepup_claim } = await invoke('auth-verify', { response, challengeToken })
+  const { error } = await supabase.auth.verifyOtp({ token_hash, type: 'magiclink' })
   if (error) throw error
-  // The device just proved who it is: do not ask again for this session.
-  if (data?.user?.id) markPasskeyVerified(data.user.id)
+  // Bind the verified assertion to the new session. The claim is issued by the server and can be
+  // redeemed once; the browser cannot create one.
+  if (stepup_claim) await invoke('stepup-claim', { claim: stepup_claim })
+}
+
+// Server truth: does this session already carry a valid passkey step-up?
+export async function getStepupStatus() {
+  return await invoke('stepup-status')
 }
 
 export async function deviceSupportsPasskey() {
@@ -57,16 +66,37 @@ export async function verifyWithPasskey() {
   await invoke('stepup-verify', { response, challengeToken })
 }
 
-const VERIFIED_PREFIX = 'calendar-app.passkey-verified:'
-export const markPasskeyVerified = (userId) => { try { sessionStorage.setItem(VERIFIED_PREFIX + userId, '1') } catch { /* ignore */ } }
-export const isPasskeyVerified = (userId) => { try { return sessionStorage.getItem(VERIFIED_PREFIX + userId) === '1' } catch { return false } }
-export const clearPasskeyVerifications = () => {
-  try {
-    for (const k of Object.keys(sessionStorage)) if (k.startsWith(VERIFIED_PREFIX)) sessionStorage.removeItem(k)
-  } catch { /* ignore */ }
+export async function removeAllPasskeys(userId) {
+  const { data, error } = await supabase.from('webauthn_credentials').delete().eq('user_id', userId).select('id')
+  if (error) throw error
+  if (!data?.length) throw new Error('stepup_required')
 }
 
-export async function removeAllPasskeys(userId) {
-  const { error } = await supabase.from('webauthn_credentials').delete().eq('user_id', userId)
-  if (error) throw error
+// OAuth consent: the passkey proof is tied to the client and its scopes, then stored server-side.
+export async function grantMcp(clientId, scopes) {
+  const { options, challengeToken } = await invoke('stepup-options')
+  const response = await startAuthentication({ optionsJSON: options })
+  await invoke('grant-mcp', { client_id: clientId, scopes, challengeToken, response })
+}
+
+export async function revokeMcpGrant(clientId) {
+  // Errors are surfaced on purpose: a connector must never look disconnected while it still works.
+  return await invoke('revoke-mcp', { client_id: clientId })
+}
+
+// Collyo's grant is revoked first: that is what gates the data. The OAuth grant at Supabase is
+// revoked second. A failure of the second step is reported, not hidden.
+export async function revokeConnector(clientId, { revokeGrant, revokeOauth } = {}) {
+  const grant = revokeGrant || revokeMcpGrant
+  const oauth = revokeOauth || (async (id) => {
+    const { error } = await supabase.auth.oauth.revokeGrant({ clientId: id })
+    if (error) throw error
+  })
+  await grant(clientId)
+  try {
+    await oauth(clientId)
+    return { grantRevoked: true, oauthRevoked: true }
+  } catch (error) {
+    return { grantRevoked: true, oauthRevoked: false, error }
+  }
 }
