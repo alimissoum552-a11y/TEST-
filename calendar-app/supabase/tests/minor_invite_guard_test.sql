@@ -26,10 +26,11 @@ begin
   select id into owner_cal from public.calendars where owner_id = v_owner and is_default order by created_at limit 1;
   if owner_cal is null then raise exception 'fixture: adult has no default calendar'; end if;
 
-  insert into public.calendar_invites(calendar_id, invitee_email, role, invited_by)
-  values (owner_cal, 'minor@example.test', 'reader', v_owner) returning id into minor_inv;
-  insert into public.calendar_invites(calendar_id, invitee_email, role, invited_by)
-  values (owner_cal, 'other@example.test', 'contributor', v_owner) returning id into adult_inv;
+  -- Same shape as invite_to_calendar in production: invitee_id is set when the invite is created.
+  insert into public.calendar_invites(calendar_id, invitee_email, invitee_id, role, invited_by)
+  values (owner_cal, 'minor@example.test', '33333333-3333-3333-3333-333333333333', 'reader', v_owner) returning id into minor_inv;
+  insert into public.calendar_invites(calendar_id, invitee_email, invitee_id, role, invited_by)
+  values (owner_cal, 'other@example.test', '22222222-2222-2222-2222-222222222222', 'contributor', v_owner) returning id into adult_inv;
 
   perform set_config('test.minor_inv', minor_inv::text, true);
   perform set_config('test.adult_inv', adult_inv::text, true);
@@ -82,9 +83,11 @@ declare r public.calendar_invites;
 begin
   select * into r from public.calendar_invites where id = current_setting('test.minor_inv')::uuid;
   if r.status <> 'pending' then raise exception 'FAIL C: status changed to %', r.status; end if;
-  if r.invitee_id is not null then raise exception 'FAIL C: invitee_id was set to %', r.invitee_id; end if;
+  if r.invitee_id is distinct from '33333333-3333-3333-3333-333333333333' then
+    raise exception 'FAIL C: invitee_id changed to %', r.invitee_id;
+  end if;
   if r.responded_at is not null then raise exception 'FAIL C: responded_at was set to %', r.responded_at; end if;
-  raise notice 'PASS C: invitation still pending, invitee_id and responded_at untouched';
+  raise notice 'PASS C: invitation still pending, invitee_id unchanged, responded_at null';
 end $$;
 
 -- ---------- Unauthenticated caller ----------
