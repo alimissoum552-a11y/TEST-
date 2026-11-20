@@ -8,6 +8,7 @@
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2'
 import { overloadedDays, clampThreshold, parseReview, MIN_MESSAGES_TO_REVIEW, type Review } from './analysis.ts'
 import { reportError } from '../_shared/ops.ts'
+import { minorAiAllows } from '../_shared/ai-guard.ts'
 
 const MODEL = 'claude-sonnet-5-5'
 const LOOKAHEAD_DAYS = 7
@@ -41,8 +42,8 @@ async function analyseCalendar(admin: SupabaseClient, apiKey: string, team: any)
   const { data: cal } = await admin.from('calendars').select('id, owner_id').eq('id', calId).maybeSingle()
   if (!cal) return
   // Minors: no analysis unless the legal approval and the signed AI declaration are in place (migrations_017).
-  const { data: minorsOk } = await admin.rpc('minor_ai_allowed', { p_calendar: calId })
-  if (minorsOk === false) return
+  const { data: minorsOk, error: minorsErr } = await admin.rpc('minor_ai_allowed', { p_calendar: calId })
+  if (!minorAiAllows(minorsOk, minorsErr)) return
 
   const sources: string[] = []
   let load: { day: string; hours: number }[] = []
