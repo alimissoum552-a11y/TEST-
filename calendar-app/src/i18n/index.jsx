@@ -401,6 +401,7 @@ const DICT = {
     passkeyWaiting: "Waiting for your device…",
     passkeyNeedEmail: "Enter your email first.",
     resetLinkSent: "If this address has an account, a reset link is on its way. Check your inbox.",
+    passkeyStepupRequired: "Confirm with your passkey before removing it.",
   },
   fr: {
     forgotPassword: "Mot de passe oublié ?",
@@ -791,6 +792,7 @@ const DICT = {
     passkeyWaiting: "En attente de votre appareil…",
     passkeyNeedEmail: "Saisissez d’abord votre email.",
     resetLinkSent: "Si cette adresse a un compte, un lien de réinitialisation est en route. Vérifiez votre boîte de réception.",
+    passkeyStepupRequired: "Confirmez avec votre passkey avant de la supprimer.",
   },
   es: {
     forgotPassword: "¿Olvidaste tu contraseña?",
@@ -1181,6 +1183,7 @@ const DICT = {
     passkeyWaiting: "Esperando a tu dispositivo…",
     passkeyNeedEmail: "Introduce tu email primero.",
     resetLinkSent: "Si esta dirección tiene una cuenta, el enlace de restablecimiento está en camino. Revisa tu correo.",
+    passkeyStepupRequired: "Confirma con tu passkey antes de eliminarla.",
   },
   de: {
     forgotPassword: "Passwort vergessen?",
@@ -1571,6 +1574,7 @@ const DICT = {
     passkeyWaiting: "Warte auf dein Gerät…",
     passkeyNeedEmail: "Gib zuerst deine E-Mail ein.",
     resetLinkSent: "Wenn zu dieser Adresse ein Konto besteht, ist ein Link zum Zurücksetzen unterwegs. Prüfe dein Postfach.",
+    passkeyStepupRequired: "Bestätige mit deiner Passkey, bevor du sie entfernst.",
   },
   ar: {
     forgotPassword: "نسيت كلمة المرور؟",
@@ -1961,6 +1965,7 @@ const DICT = {
     passkeyWaiting: "في انتظار جهازك…",
     passkeyNeedEmail: "أدخل بريدك الإلكتروني أولاً.",
     resetLinkSent: "إذا كان لهذا العنوان حساب، فقد أُرسل رابط إعادة التعيين. تحقّق من بريدك.",
+    passkeyStepupRequired: "أكّد بمفتاح المرور قبل إزالته.",
   },
   pt: {
     forgotPassword: "Esqueceu-se da palavra-passe?",
@@ -2376,6 +2381,7 @@ const DICT = {
     passkeyWaiting: "A aguardar o seu dispositivo…",
     passkeyNeedEmail: "Introduza primeiro o seu email.",
     resetLinkSent: "Se este endereço tiver conta, o link de reposição está a caminho. Verifique a sua caixa de entrada.",
+    passkeyStepupRequired: "Confirme com a sua passkey antes de a remover.",
   },
 }
 

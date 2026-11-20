@@ -21,18 +21,23 @@ export default function PasskeyPanel({ user, onClose }) {
       await addPasskey(navigator.platform || null)
       setMsg(t('passkeyAdded')); await load()
     } catch (e) {
-      setErr(e?.name === 'NotAllowedError' || e?.name === 'AbortError' ? t('passkeyCancelled') : t('passkeyFailed'))
+      if (e?.message === 'stepup_required') setErr(t('passkeyStepupRequired'))
+      else setErr(e?.name === 'NotAllowedError' || e?.name === 'AbortError' ? t('passkeyCancelled') : t('passkeyFailed'))
     } finally { setBusy(false) }
   }
 
   async function removeAll() {
     setBusy(true); setErr(null); setMsg(null)
-    try { await removeAllPasskeys(user.id); await load() } catch (e) { setErr(e.message) } finally { setBusy(false) }
+    try { await removeAllPasskeys(user.id); await load() }
+    catch (e) { setErr(e?.message === 'stepup_required' ? t('passkeyStepupRequired') : e.message) }
+    finally { setBusy(false) }
   }
 
   async function remove(id) {
     setBusy(true); setErr(null); setMsg(null)
-    try { await removePasskey(id); await load() } catch (e) { setErr(e.message) } finally { setBusy(false) }
+    try { await removePasskey(id); await load() }
+    catch (e) { setErr(e?.message === 'stepup_required' ? t('passkeyStepupRequired') : e.message) }
+    finally { setBusy(false) }
   }
 
   return (

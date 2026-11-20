@@ -28,8 +28,11 @@ export async function addPasskey(label) {
 }
 
 export async function removePasskey(id) {
-  const { error } = await supabase.from('webauthn_credentials').delete().eq('id', id)
+  // select() returns the deleted rows: RLS silently deletes nothing without a step-up, and the
+  // user must not be told the passkey is gone when it is still there.
+  const { data, error } = await supabase.from('webauthn_credentials').delete().eq('id', id).select('id')
   if (error) throw error
+  if (!data?.length) throw new Error('stepup_required')
 }
 
 export async function signInWithPasskey(email) {
@@ -64,6 +67,7 @@ export async function verifyWithPasskey() {
 }
 
 export async function removeAllPasskeys(userId) {
-  const { error } = await supabase.from('webauthn_credentials').delete().eq('user_id', userId)
+  const { data, error } = await supabase.from('webauthn_credentials').delete().eq('user_id', userId).select('id')
   if (error) throw error
+  if (!data?.length) throw new Error('stepup_required')
 }
