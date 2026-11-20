@@ -4,7 +4,7 @@ import { supabase, supabaseConfigured } from './lib/supabase.js'
 import { useLegalRoute, goBackFromLegal, parseRoute } from './router.js'
 import { getMyProfile } from './lib/api.js'
 import { useI18n } from './i18n/index.jsx'
-import { listPasskeys, verifyWithPasskey, isPasskeyVerified, markPasskeyVerified, clearPasskeyVerifications } from './passkeys.js'
+import { getStepupStatus, verifyWithPasskey } from './passkeys.js'
 import lazyPanel from './lazyPanel.jsx'
 
 // Pages are loaded when they are opened: a visitor of the landing page does not download the app, and the reverse.
@@ -62,23 +62,20 @@ export default function Root() {
   }, [session])
 
   // A passkey account must confirm with the device before the calendar opens.
-  // No extra screen: the device shows its own prompt; meanwhile the app stays blank.
+  // The answer comes from the server (step-up bound to this session), never from the browser.
   useEffect(() => {
-    if (!session) { clearPasskeyVerifications(); setPasskeyGate('loading'); return }
-    if (isPasskeyVerified(session.user.id)) { setPasskeyGate('ok'); return }
-    // After an e-mail recovery the user may have lost the device: the reset page comes first and can remove the passkeys.
+    if (!session) { setPasskeyGate('loading'); return }
+    // After an e-mail recovery the user may have lost the device: the reset page comes first.
     if (recovery) { setPasskeyGate('ok'); return }
     let cancelled = false
     ;(async () => {
       try {
-        const keys = await listPasskeys(session.user.id)
+        const status = await getStepupStatus()
         if (cancelled) return
-        if (!keys.length) { setPasskeyGate('ok'); return }
-        // Only now is the device needed: the waiting screen appears only for accounts that have a passkey.
+        if (!status?.required || status?.valid) { setPasskeyGate('ok'); return }
         setPasskeyGate('checking')
         await verifyWithPasskey()
         if (cancelled) return
-        markPasskeyVerified(session.user.id)
         setAuthError(null)
         setPasskeyGate('ok')
       } catch (ex) {
@@ -90,6 +87,7 @@ export default function Root() {
     })()
     return () => { cancelled = true }
   }, [session, recovery])
+
   useEffect(() => {
     if (routeInvite) { savePendingInvite(routeInvite); setPending(routeInvite) }
   }, [routeInvite])

@@ -24,7 +24,19 @@ const secret = (): string => {
   if (!value) throw new Error('missing secret')
   return value
 }
+const STEPUP_MS = 12 * 3600_000 // one session, renewed by a new passkey check at the next sign-in
 const signToken = (payload: Record<string, unknown>) => signChallenge(secret(), payload)
+
+// The JWT has already been validated by Supabase (supa.auth.getUser), so reading its session id is safe.
+function sessionIdFromRequest(req: Request): string | null {
+  const token = (req.headers.get('Authorization') ?? '').replace(/^Bearer\s+/i, '')
+  const part = token.split('.')[1]
+  if (!part) return null
+  try {
+    const payload = JSON.parse(new TextDecoder().decode(fromB64url(part)))
+    return typeof payload.session_id === 'string' ? payload.session_id : null
+  } catch { return null }
+}
 const readToken = (token: string, kind: string) => readChallenge(secret(), token, kind)
 
 const admin = () => createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
@@ -148,7 +160,56 @@ Deno.serve(async (req) => {
       await db.from('webauthn_credentials')
         .update({ counter: verification.authenticationInfo.newCounter, last_used_at: new Date().toISOString() })
         .eq('id', cred.id)
-      return json({ ok: true })
+
+      const sessionId = sessionIdFromRequest(req)
+      if (!sessionId) return json({ error: 'no_session' }, 400)
+      const expiresAt = new Date(Date.now() + STEPUP_MS).toISOString()
+      const { error: stepupError } = await db.from('passkey_stepups')
+        .upsert({ session_id: sessionId, user_id: user.id, expires_at: expiresAt }, { onConflict: 'session_id' })
+      if (stepupError) return json({ error: 'stepup_store_unavailable' }, 500)
+      return json({ ok: true, expires_at: expiresAt })
+    }
+
+    // The session exists: is this browser allowed into the data yet?
+    if (action === 'stepup-status') {
+      const supa = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!, {
+        global: { headers: { Authorization: req.headers.get('Authorization') ?? '' } },
+      })
+      const user = await signedInUser(req, supa)
+      const { data: keys } = await db.from('webauthn_credentials').select('id').eq('user_id', user.id).limit(1)
+      const required = Boolean(keys?.length)
+      if (!required) return json({ required: false, valid: true })
+      const sessionId = sessionIdFromRequest(req)
+      if (!sessionId) return json({ required: true, valid: false })
+      const { data: row } = await db.from('passkey_stepups').select('session_id')
+        .eq('session_id', sessionId).eq('user_id', user.id).gt('expires_at', new Date().toISOString()).maybeSingle()
+      return json({ required: true, valid: Boolean(row) })
+    }
+
+    // A passkey sign-in created a session after the assertion was verified. Redeem the server-side
+    // claim once, for that session only; the client cannot forge or replay it.
+    if (action === 'stepup-claim') {
+      const supa = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!, {
+        global: { headers: { Authorization: req.headers.get('Authorization') ?? '' } },
+      })
+      const user = await signedInUser(req, supa)
+      const claimId = String(body?.claim || '')
+      if (!claimId) return json({ error: 'missing_claim' }, 400)
+      const sessionId = sessionIdFromRequest(req)
+      if (!sessionId) return json({ error: 'no_session' }, 400)
+
+      const now = new Date().toISOString()
+      const { data: used } = await db.from('passkey_stepup_claims')
+        .update({ used_at: now })
+        .eq('id', claimId).eq('user_id', user.id).is('used_at', null).gt('expires_at', now)
+        .select('id').maybeSingle()
+      if (!used) return json({ error: 'invalid_claim' }, 403)
+
+      const expiresAt = new Date(Date.now() + STEPUP_MS).toISOString()
+      const { error: stepupError } = await db.from('passkey_stepups')
+        .upsert({ session_id: sessionId, user_id: user.id, expires_at: expiresAt }, { onConflict: 'session_id' })
+      if (stepupError) return json({ error: 'stepup_store_unavailable' }, 500)
+      return json({ ok: true, expires_at: expiresAt })
     }
 
     // ---- sign-in (no session yet) ----
@@ -200,7 +261,13 @@ Deno.serve(async (req) => {
       // Exchange the verified passkey for a normal Supabase session.
       const { data: link, error } = await db.auth.admin.generateLink({ type: 'magiclink', email: profile.email })
       if (error || !link?.properties?.hashed_token) return json({ error: 'session_failed' }, 500)
-      return json({ token_hash: link.properties.hashed_token })
+
+      // The session does not exist yet, so the step-up is bound through a single-use server claim.
+      const { data: claim, error: claimError } = await db.from('passkey_stepup_claims')
+        .insert({ user_id: payload.u, expires_at: new Date(Date.now() + 5 * 60_000).toISOString() })
+        .select('id').single()
+      if (claimError || !claim) return json({ error: 'stepup_store_unavailable' }, 500)
+      return json({ token_hash: link.properties.hashed_token, stepup_claim: claim.id })
     }
 
     return json({ error: 'unknown_action' }, 400)

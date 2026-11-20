@@ -35,11 +35,17 @@ export async function removePasskey(id) {
 export async function signInWithPasskey(email) {
   const { options, challengeToken } = await invoke('auth-options', { email })
   const response = await startAuthentication({ optionsJSON: options })
-  const { token_hash } = await invoke('auth-verify', { response, challengeToken })
-  const { data, error } = await supabase.auth.verifyOtp({ token_hash, type: 'magiclink' })
+  const { token_hash, stepup_claim } = await invoke('auth-verify', { response, challengeToken })
+  const { error } = await supabase.auth.verifyOtp({ token_hash, type: 'magiclink' })
   if (error) throw error
-  // The device just proved who it is: do not ask again for this session.
-  if (data?.user?.id) markPasskeyVerified(data.user.id)
+  // Bind the verified assertion to the new session. The claim is issued by the server and can be
+  // redeemed once; the browser cannot create one.
+  if (stepup_claim) await invoke('stepup-claim', { claim: stepup_claim })
+}
+
+// Server truth: does this session already carry a valid passkey step-up?
+export async function getStepupStatus() {
+  return await invoke('stepup-status')
 }
 
 export async function deviceSupportsPasskey() {
@@ -55,15 +61,6 @@ export async function verifyWithPasskey() {
   const { options, challengeToken } = await invoke('stepup-options')
   const response = await startAuthentication({ optionsJSON: options })
   await invoke('stepup-verify', { response, challengeToken })
-}
-
-const VERIFIED_PREFIX = 'calendar-app.passkey-verified:'
-export const markPasskeyVerified = (userId) => { try { sessionStorage.setItem(VERIFIED_PREFIX + userId, '1') } catch { /* ignore */ } }
-export const isPasskeyVerified = (userId) => { try { return sessionStorage.getItem(VERIFIED_PREFIX + userId) === '1' } catch { return false } }
-export const clearPasskeyVerifications = () => {
-  try {
-    for (const k of Object.keys(sessionStorage)) if (k.startsWith(VERIFIED_PREFIX)) sessionStorage.removeItem(k)
-  } catch { /* ignore */ }
 }
 
 export async function removeAllPasskeys(userId) {
