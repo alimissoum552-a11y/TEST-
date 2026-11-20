@@ -402,6 +402,8 @@ const DICT = {
     passkeyNeedEmail: "Enter your email first.",
     resetLinkSent: "If this address has an account, a reset link is on its way. Check your inbox.",
     passkeyStepupRequired: "Confirm with your passkey before removing it.",
+    revokePartial: "Access revoked in Collyo. The external permission could not be removed; it will stop working at its expiry.",
+    revokeFailed: "The connection could not be revoked. Try again.",
   },
   fr: {
     forgotPassword: "Mot de passe oublié ?",
@@ -793,6 +795,8 @@ const DICT = {
     passkeyNeedEmail: "Saisissez d’abord votre email.",
     resetLinkSent: "Si cette adresse a un compte, un lien de réinitialisation est en route. Vérifiez votre boîte de réception.",
     passkeyStepupRequired: "Confirmez avec votre passkey avant de la supprimer.",
+    revokePartial: "Accès révoqué dans Collyo. L’autorisation externe n’a pas pu être retirée ; elle cessera de fonctionner à son expiration.",
+    revokeFailed: "La connexion n’a pas pu être révoquée. Réessayez.",
   },
   es: {
     forgotPassword: "¿Olvidaste tu contraseña?",
@@ -1184,6 +1188,8 @@ const DICT = {
     passkeyNeedEmail: "Introduce tu email primero.",
     resetLinkSent: "Si esta dirección tiene una cuenta, el enlace de restablecimiento está en camino. Revisa tu correo.",
     passkeyStepupRequired: "Confirma con tu passkey antes de eliminarla.",
+    revokePartial: "Acceso revocado en Collyo. El permiso externo no se pudo eliminar; dejará de funcionar al caducar.",
+    revokeFailed: "No se pudo revocar la conexión. Inténtalo de nuevo.",
   },
   de: {
     forgotPassword: "Passwort vergessen?",
@@ -1575,6 +1581,8 @@ const DICT = {
     passkeyNeedEmail: "Gib zuerst deine E-Mail ein.",
     resetLinkSent: "Wenn zu dieser Adresse ein Konto besteht, ist ein Link zum Zurücksetzen unterwegs. Prüfe dein Postfach.",
     passkeyStepupRequired: "Bestätige mit deiner Passkey, bevor du sie entfernst.",
+    revokePartial: "Zugriff in Collyo widerrufen. Die externe Berechtigung konnte nicht entfernt werden; sie läuft mit dem Ablauf aus.",
+    revokeFailed: "Die Verbindung konnte nicht widerrufen werden. Versuche es erneut.",
   },
   ar: {
     forgotPassword: "نسيت كلمة المرور؟",
@@ -1966,6 +1974,8 @@ const DICT = {
     passkeyNeedEmail: "أدخل بريدك الإلكتروني أولاً.",
     resetLinkSent: "إذا كان لهذا العنوان حساب، فقد أُرسل رابط إعادة التعيين. تحقّق من بريدك.",
     passkeyStepupRequired: "أكّد بمفتاح المرور قبل إزالته.",
+    revokePartial: "تم إلغاء الوصول في Collyo. تعذّر إزالة الإذن الخارجي؛ سيتوقف عند انتهاء صلاحيته.",
+    revokeFailed: "تعذّر إلغاء الاتصال. حاول مرة أخرى.",
   },
   pt: {
     forgotPassword: "Esqueceu-se da palavra-passe?",
@@ -2382,6 +2392,8 @@ const DICT = {
     passkeyNeedEmail: "Introduza primeiro o seu email.",
     resetLinkSent: "Se este endereço tiver conta, o link de reposição está a caminho. Verifique a sua caixa de entrada.",
     passkeyStepupRequired: "Confirme com a sua passkey antes de a remover.",
+    revokePartial: "Acesso revogado no Collyo. A permissão externa não pôde ser removida; deixará de funcionar na expiração.",
+    revokeFailed: "Não foi possível revogar a ligação. Tente novamente.",
   },
 }
 

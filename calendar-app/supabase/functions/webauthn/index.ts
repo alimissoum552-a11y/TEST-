@@ -250,9 +250,13 @@ Deno.serve(async (req) => {
       const user = await signedInUser(req, supa)
       const clientId = String(body?.client_id || '')
       if (!clientId) return json({ error: 'missing_client' }, 400)
-      await db.from('mcp_grants').update({ revoked_at: new Date().toISOString() })
+      const { data: revoked, error: revokeError } = await db.from('mcp_grants')
+        .update({ revoked_at: new Date().toISOString() })
         .eq('user_id', user.id).eq('client_id', clientId)
-      return json({ ok: true })
+        .select('user_id')
+      if (revokeError) return json({ error: 'revoke_failed' }, 500)
+      // Zero rows means there was no grant (nothing to revoke), which is a success.
+      return json({ ok: true, revoked: revoked?.length ?? 0 })
     }
 
     // ---- sign-in (no session yet) ----

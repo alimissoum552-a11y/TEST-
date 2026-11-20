@@ -80,5 +80,23 @@ export async function grantMcp(clientId, scopes) {
 }
 
 export async function revokeMcpGrant(clientId) {
-  try { await invoke('revoke-mcp', { client_id: clientId }) } catch { /* revocation is best effort */ }
+  // Errors are surfaced on purpose: a connector must never look disconnected while it still works.
+  return await invoke('revoke-mcp', { client_id: clientId })
+}
+
+// Collyo's grant is revoked first: that is what gates the data. The OAuth grant at Supabase is
+// revoked second. A failure of the second step is reported, not hidden.
+export async function revokeConnector(clientId, { revokeGrant, revokeOauth } = {}) {
+  const grant = revokeGrant || revokeMcpGrant
+  const oauth = revokeOauth || (async (id) => {
+    const { error } = await supabase.auth.oauth.revokeGrant({ clientId: id })
+    if (error) throw error
+  })
+  await grant(clientId)
+  try {
+    await oauth(clientId)
+    return { grantRevoked: true, oauthRevoked: true }
+  } catch (error) {
+    return { grantRevoked: true, oauthRevoked: false, error }
+  }
 }
