@@ -27,6 +27,12 @@ const READ_ONLY = { readOnlyHint: true, destructiveHint: false, idempotentHint: 
 
 const TOOLS = [
   {
+    name: 'whoami_collyo',
+    description: 'Report the identity and connection state of the current Collyo account. Read-only diagnostic: call it to check the connection before using other tools.',
+    inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+    annotations: { title: 'Who am I', ...READ_ONLY },
+  },
+  {
     name: 'list_calendars',
     description: 'List the calendars the user can access: id, name, role, and whether they are shared.',
     inputSchema: { type: 'object', properties: {}, additionalProperties: false },
@@ -161,8 +167,27 @@ Deno.serve(async (req) => {
 
 // ---- tools (read-only; same rules as the in-app assistant) ----
 
+
 async function runTool(name: string, input: any, supa: SupabaseClient): Promise<unknown> {
   try {
+    // Diagnostic first: it must answer even when the rest of the account is unavailable.
+    if (name === 'whoami_collyo') {
+      const { data: { user }, error: authError } = await supa.auth.getUser()
+      if (authError) return { authenticated: false, connected: false, error: 'auth_check_failed' }
+      if (!user) return { authenticated: false, connected: false, error: 'not_authenticated' }
+      const { data: me, error: profileError } = await supa.from('profiles')
+        .select('display_name, email').eq('id', user.id).maybeSingle()
+      if (profileError) return { authenticated: true, connected: false, error: 'profile_unavailable' }
+      return {
+        authenticated: true,
+        connected: true,
+        user_id: user.id,
+        email: me?.email ?? null,
+        name: me?.display_name ?? null,
+        workspace_id: null,
+        checked_at: new Date().toISOString(),
+      }
+    }
     const cals = await accessibleCalendars(supa)
     const byId = new Map(cals.map((c) => [c.id, c]))
     const calendarFor = (id: unknown): Cal => {
