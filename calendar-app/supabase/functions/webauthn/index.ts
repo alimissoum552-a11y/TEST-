@@ -28,12 +28,12 @@ async function hmacKey(): Promise<CryptoKey> {
 }
 
 async function signToken(payload: Record<string, unknown>): Promise<string> {
-  const body = b64url(enc.encode(JSON.stringify({ ...payload, e: Date.now() + MAX_AGE_MS })))
+  const body = b64url(enc.encode(JSON.stringify({ ...payload, e: Date.now() + MAX_AGE_MS, j: crypto.randomUUID() })))
   const sig = await crypto.subtle.sign('HMAC', await hmacKey(), enc.encode(body))
   return `${body}.${b64url(new Uint8Array(sig))}`
 }
 
-async function readToken(token: string, kind: string): Promise<{ c: string; u?: string }> {
+async function readToken(token: string, kind: string): Promise<{ c: string; u?: string; j: string }> {
   const [body, sig] = String(token || '').split('.')
   if (!body || !sig) throw new Error('bad token')
   const ok = await crypto.subtle.verify('HMAC', await hmacKey(), fromB64url(sig), enc.encode(body))
@@ -41,10 +41,19 @@ async function readToken(token: string, kind: string): Promise<{ c: string; u?: 
   const data = JSON.parse(new TextDecoder().decode(fromB64url(body)))
   if (data.k !== kind) throw new Error('wrong token kind')
   if (!data.e || Date.now() > data.e) throw new Error('expired')
-  return { c: data.c, u: data.u }
+  return { c: data.c, u: data.u, j: data.j }
 }
 
 const admin = () => createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
+
+// A challenge may be verified once. The primary key makes the second attempt fail, which is a
+// refusal: an assertion captured on the wire cannot be replayed inside the 5-minute window.
+async function consumeChallenge(db: SupabaseClient, jti: string): Promise<void> {
+  const { error } = await db.from('webauthn_used_challenges').insert({ jti })
+  if (error) throw new Error('challenge_already_used')
+  // Opportunistic cleanup: the table only needs to remember recent challenges.
+  await db.from('webauthn_used_challenges').delete().lt('used_at', new Date(Date.now() - 86400_000).toISOString())
+}
 
 async function signedInUser(req: Request, supa: SupabaseClient) {
   const { data: { user } } = await supa.auth.getUser()
@@ -90,6 +99,7 @@ Deno.serve(async (req) => {
 
       const payload = await readToken(body.challengeToken, 'reg')
       if (payload.u !== user.id) return json({ error: 'not_allowed' }, 403)
+      await consumeChallenge(db, payload.j)
       const verification = await verifyRegistrationResponse({
         response: body.response,
         expectedChallenge: payload.c,
@@ -133,6 +143,7 @@ Deno.serve(async (req) => {
 
       const payload = await readToken(body.challengeToken, 'stepup')
       if (payload.u !== user.id) return json({ error: 'not_allowed' }, 403)
+      await consumeChallenge(db, payload.j)
       const credId = String(body?.response?.id || '')
       const { data: cred } = await db.from('webauthn_credentials')
         .select('*').eq('credential_id', credId).eq('user_id', user.id).maybeSingle()
@@ -178,6 +189,7 @@ Deno.serve(async (req) => {
 
     if (action === 'auth-verify') {
       const payload = await readToken(body.challengeToken, 'auth')
+      await consumeChallenge(db, payload.j)
       const credId = String(body?.response?.id || '')
       const { data: cred } = await db.from('webauthn_credentials')
         .select('*').eq('credential_id', credId).eq('user_id', payload.u).maybeSingle()

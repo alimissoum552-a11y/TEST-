@@ -6,6 +6,7 @@ import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2'
 import { findFreeSlots, type Interval } from './slots.ts'
 import { checkAiQuota } from '../_shared/plans.ts'
 import { reportError } from '../_shared/ops.ts'
+import { minorAiAllows } from '../_shared/ai-guard.ts'
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -178,8 +179,8 @@ Deno.serve(async (req) => {
     // Calendars with minors are hidden from the assistant unless the minor AI rules are met (migrations_017).
     const cals: Cal[] = []
     for (const c of await accessibleCalendars(supa, user.id)) {
-      const { data: minorsOk } = await supa.rpc('minor_ai_allowed', { p_calendar: c.id })
-      if (minorsOk !== false) cals.push(c)
+      const { data: minorsOk, error: minorsErr } = await supa.rpc('minor_ai_allowed', { p_calendar: c.id })
+      if (minorAiAllows(minorsOk, minorsErr)) cals.push(c)
     }
     const byId = new Map(cals.map((c) => [c.id, c]))
     const consulted = new Set<string>()

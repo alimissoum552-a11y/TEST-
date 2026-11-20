@@ -3,6 +3,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { brandHeader } from '../_shared/brand.ts'
 import { reportError } from '../_shared/ops.ts'
+import { canSendInvite } from '../_shared/invite-guard.ts'
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -22,6 +23,9 @@ Deno.serve(async (req) => {
     if (!invite_id) return json({ error: 'missing invite_id' }, 400)
     const inviteId = invite_id as string
     if (!calendar_id || !email || !role) return json({ error: 'missing fields' }, 400)
+    if (!/^[0-9a-f-]{36}$/i.test(inviteId) || !/^[0-9a-f-]{36}$/i.test(String(calendar_id))) {
+      return json({ error: 'invalid_request' }, 400)
+    }
 
     // The caller must be able to manage this calendar (RLS-enforced read of the calendar).
     const { data: cal, error: calErr } = await supa
@@ -29,7 +33,27 @@ Deno.serve(async (req) => {
     if (calErr || !cal) return json({ error: 'not allowed' }, 403)
 
     const { data: { user } } = await supa.auth.getUser()
-    const inviter = user?.user_metadata?.display_name || user?.email || 'Someone'
+    if (!user) return json({ error: 'unauthorized' }, 401)
+
+    // Only the owner or an administrator of that calendar may trigger the e-mail, and only for
+    // the exact pending invitation that exists for this calendar, address and role.
+    const { data: cal2 } = await supa.from('calendars').select('owner_id').eq('id', calendar_id).maybeSingle()
+    const { data: member } = await supa.from('calendar_members')
+      .select('role').eq('calendar_id', calendar_id).eq('user_id', user.id).maybeSingle()
+    const isOwner = cal2?.owner_id === user.id
+    const callerRole = (member?.role as string | null) ?? null
+
+    const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
+    const { data: inviteRow } = await admin.from('calendar_invites')
+      .select('calendar_id, invitee_email, role, status').eq('id', inviteId).maybeSingle()
+    const check = canSendInvite({
+      isOwner, callerRole, calendarId: calendar_id, email, role, invite: inviteRow,
+    })
+    if (!check.ok) {
+      return json({ error: check.reason === 'not_manager' ? 'not_allowed' : 'invite_mismatch' }, check.reason === 'not_manager' ? 403 : 409)
+    }
+
+    const inviter = user.user_metadata?.display_name || user.email || 'Someone'
 
     const appUrl = Deno.env.get('APP_URL') ?? 'https://collyo.app'
     const from = Deno.env.get('INVITE_FROM') ?? 'Calendar <onboarding@resend.dev>'
