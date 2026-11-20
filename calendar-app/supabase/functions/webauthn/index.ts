@@ -10,6 +10,7 @@ import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2'
 import {
   signToken as signChallenge, readToken as readChallenge, b64url, fromB64url,
 } from '../_shared/webauthn-token.ts'
+import { sessionIdFromRequest } from '../_shared/stepup.ts'
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -27,27 +28,47 @@ const secret = (): string => {
 const STEPUP_MS = 12 * 3600_000 // one session, renewed by a new passkey check at the next sign-in
 const signToken = (payload: Record<string, unknown>) => signChallenge(secret(), payload)
 
-// The JWT has already been validated by Supabase (supa.auth.getUser), so reading its session id is safe.
-function sessionIdFromRequest(req: Request): string | null {
-  const token = (req.headers.get('Authorization') ?? '').replace(/^Bearer\s+/i, '')
-  const part = token.split('.')[1]
-  if (!part) return null
-  try {
-    const payload = JSON.parse(new TextDecoder().decode(fromB64url(part)))
-    return typeof payload.session_id === 'string' ? payload.session_id : null
-  } catch { return null }
-}
 const readToken = (token: string, kind: string) => readChallenge(secret(), token, kind)
 
 const admin = () => createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
 
-// A challenge may be verified once. The primary key makes the second attempt fail, which is a
-// refusal: an assertion captured on the wire cannot be replayed inside the 5-minute window.
+// A challenge may be verified once: the primary key rejects a second use.
 async function consumeChallenge(db: SupabaseClient, jti: string): Promise<void> {
   const { error } = await db.from('webauthn_used_challenges').insert({ jti })
   if (error) throw new Error((error as { code?: string }).code === '23505' ? 'challenge_already_used' : 'challenge_store_unavailable')
   // Opportunistic cleanup: the table only needs to remember recent challenges.
   await db.from('webauthn_used_challenges').delete().lt('used_at', new Date(Date.now() - 86400_000).toISOString())
+}
+
+
+// Verifies a user's assertion for the given signed challenge. Used by the step-up and by the
+// OAuth consent, so both require exactly the same cryptographic proof.
+async function verifyAssertion(
+  db: SupabaseClient, userId: string, payload: { c: string; u?: string; j: string }, response: unknown,
+): Promise<void> {
+  if (payload.u !== userId) throw new Error('not_allowed')
+  await consumeChallenge(db, payload.j)
+  const credId = String((response as { id?: string } | null)?.id || '')
+  const { data: cred } = await db.from('webauthn_credentials')
+    .select('*').eq('credential_id', credId).eq('user_id', userId).maybeSingle()
+  if (!cred) throw new Error('not_allowed')
+  const verification = await verifyAuthenticationResponse({
+    response: response as any,
+    expectedChallenge: payload.c,
+    expectedOrigin: origin(),
+    expectedRPID: rpID(),
+    requireUserVerification: true,
+    credential: {
+      id: cred.credential_id,
+      publicKey: fromB64url(cred.public_key),
+      counter: Number(cred.counter),
+      transports: cred.transports ?? [],
+    },
+  })
+  if (!verification.verified) throw new Error('not_allowed')
+  await db.from('webauthn_credentials')
+    .update({ counter: verification.authenticationInfo.newCounter, last_used_at: new Date().toISOString() })
+    .eq('id', cred.id)
 }
 
 async function signedInUser(req: Request, supa: SupabaseClient) {
@@ -137,29 +158,7 @@ Deno.serve(async (req) => {
       }
 
       const payload = await readToken(body.challengeToken, 'stepup')
-      if (payload.u !== user.id) return json({ error: 'not_allowed' }, 403)
-      await consumeChallenge(db, payload.j)
-      const credId = String(body?.response?.id || '')
-      const { data: cred } = await db.from('webauthn_credentials')
-        .select('*').eq('credential_id', credId).eq('user_id', user.id).maybeSingle()
-      if (!cred) return json({ error: 'not_allowed' }, 403)
-      const verification = await verifyAuthenticationResponse({
-        response: body.response,
-        expectedChallenge: payload.c,
-        expectedOrigin: origin(),
-        expectedRPID: rpID(),
-        requireUserVerification: true,
-        credential: {
-          id: cred.credential_id,
-          publicKey: fromB64url(cred.public_key),
-          counter: Number(cred.counter),
-          transports: cred.transports ?? [],
-        },
-      })
-      if (!verification.verified) return json({ error: 'not_allowed' }, 403)
-      await db.from('webauthn_credentials')
-        .update({ counter: verification.authenticationInfo.newCounter, last_used_at: new Date().toISOString() })
-        .eq('id', cred.id)
+      await verifyAssertion(db, user.id, payload, body.response)
 
       const sessionId = sessionIdFromRequest(req)
       if (!sessionId) return json({ error: 'no_session' }, 400)
@@ -210,6 +209,50 @@ Deno.serve(async (req) => {
         .upsert({ session_id: sessionId, user_id: user.id, expires_at: expiresAt }, { onConflict: 'session_id' })
       if (stepupError) return json({ error: 'stepup_store_unavailable' }, 500)
       return json({ ok: true, expires_at: expiresAt })
+    }
+
+    // Consent of an OAuth connector: the passkey proof is tied to the client and its scopes.
+    if (action === 'grant-mcp') {
+      const supa = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!, {
+        global: { headers: { Authorization: req.headers.get('Authorization') ?? '' } },
+      })
+      const user = await signedInUser(req, supa)
+      const clientId = String(body?.client_id || '')
+      const scopes = Array.isArray(body?.scopes) ? body.scopes.filter((x: unknown) => typeof x === 'string') : []
+      if (!/^[0-9a-f-]{36}$/i.test(clientId) || scopes.length > 20 || scopes.some((x: string) => !/^[a-z:_-]{1,40}$/i.test(x))) {
+        return json({ error: 'invalid_request' }, 400)
+      }
+      const payload = await readToken(body.challengeToken, 'stepup')
+      await verifyAssertion(db, user.id, payload, body.response)
+
+      const expiresAt = new Date(Date.now() + 30 * 24 * 3600_000).toISOString()
+      const { error } = await db.from('mcp_grants').upsert({
+        user_id: user.id, client_id: clientId, scopes, expires_at: expiresAt, revoked_at: null,
+        created_at: new Date().toISOString(),
+      }, { onConflict: 'user_id,client_id' })
+      if (error) return json({ error: 'grant_store_unavailable' }, 500)
+
+      const sessionId = sessionIdFromRequest(req)
+      if (sessionId) {
+        await db.from('passkey_stepups').upsert(
+          { session_id: sessionId, user_id: user.id, expires_at: new Date(Date.now() + STEPUP_MS).toISOString() },
+          { onConflict: 'session_id' },
+        )
+      }
+      return json({ ok: true, expires_at: expiresAt })
+    }
+
+    // Revoking a connector: the app also revokes the OAuth grant at Supabase; this kills our grant.
+    if (action === 'revoke-mcp') {
+      const supa = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!, {
+        global: { headers: { Authorization: req.headers.get('Authorization') ?? '' } },
+      })
+      const user = await signedInUser(req, supa)
+      const clientId = String(body?.client_id || '')
+      if (!clientId) return json({ error: 'missing_client' }, 400)
+      await db.from('mcp_grants').update({ revoked_at: new Date().toISOString() })
+        .eq('user_id', user.id).eq('client_id', clientId)
+      return json({ ok: true })
     }
 
     // ---- sign-in (no session yet) ----

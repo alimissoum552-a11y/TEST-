@@ -9,6 +9,7 @@ import {
   generateAccessId, formatAccessId, normalizeAccessId, isValidAccessIdShape, hmacHex, tooManyAttempts, WINDOW_MINUTES, validEmail,
 } from '../_shared/access.ts'
 import { reportError } from '../_shared/ops.ts'
+import { stepUpSatisfied } from '../_shared/stepup.ts'
 import { brandHeader } from '../_shared/brand.ts'
 
 const cors = {
@@ -41,6 +42,10 @@ async function manage(req: Request, admin: any, secret: string, body: any): Prom
   })
   const { data: { user } } = await supa.auth.getUser()
   if (!user) return json({ error: 'unauthorized' }, 401)
+
+  // Managing a minor's access is a security-state change: a password-only session of a passkey
+  // account must not do it without the device.
+  if (!(await stepUpSatisfied(admin, req, user.id))) return json({ error: 'stepup_required' }, 403)
 
   const profileId = typeof body.profile_id === 'string' ? body.profile_id : ''
   if (!/^[0-9a-f-]{36}$/i.test(profileId)) return json({ error: 'invalid_profile' }, 400)

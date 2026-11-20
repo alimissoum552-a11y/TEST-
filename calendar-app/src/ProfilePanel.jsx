@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useI18n } from './i18n/index.jsx'
 import Avatar from './Avatar.jsx'
+import { revokeMcpGrant } from './passkeys.js'
 import { getMyProfile, uploadAvatar, removeAvatar, listMyGrants, revokeMyGrant, setMyHandle, getIdentityStatus, updateMyName, deleteMyAccount } from './lib/api.js'
 import { supabase } from './lib/supabase.js'
 import VerifiedBadge from './VerifiedBadge.jsx'

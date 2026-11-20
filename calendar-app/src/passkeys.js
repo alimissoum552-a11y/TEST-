@@ -71,3 +71,14 @@ export async function removeAllPasskeys(userId) {
   if (error) throw error
   if (!data?.length) throw new Error('stepup_required')
 }
+
+// OAuth consent: the passkey proof is tied to the client and its scopes, then stored server-side.
+export async function grantMcp(clientId, scopes) {
+  const { options, challengeToken } = await invoke('stepup-options')
+  const response = await startAuthentication({ optionsJSON: options })
+  await invoke('grant-mcp', { client_id: clientId, scopes, challengeToken, response })
+}
+
+export async function revokeMcpGrant(clientId) {
+  try { await invoke('revoke-mcp', { client_id: clientId }) } catch { /* revocation is best effort */ }
+}

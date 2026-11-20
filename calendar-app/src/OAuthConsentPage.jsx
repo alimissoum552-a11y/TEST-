@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from './lib/supabase.js'
 import { useI18n } from './i18n/index.jsx'
+import { getStepupStatus, grantMcp } from './passkeys.js'
 
 // Consent screen for apps that connect to the calendar through OAuth (for example Claude).
 // Reached from #/oauth/consent?authorization_id=<id>, after sign-in. Supabase Auth issues the code
@@ -30,6 +31,14 @@ export default function OAuthConsentPage({ authorizationId }) {
   async function decide(approve) {
     setBusy(true); setErr(null)
     try {
+      // A passkey account proves its device right before the connector is approved: that proof is
+      // stored as a grant bound to this client, and it is what the connector will rely on later.
+      if (approve) {
+        const status = await getStepupStatus()
+        if (status?.required) {
+          await grantMcp(details.client.id, scopes)
+        }
+      }
       const api = supabase.auth.oauth
       const opts = { skipBrowserRedirect: true }
       const { data, error } = approve
@@ -38,7 +47,9 @@ export default function OAuthConsentPage({ authorizationId }) {
       if (error) throw error
       window.location.href = data.redirect_url
     } catch (ex) {
-      setErr(ex.message)
+      if (ex?.name === 'NotAllowedError') setErr(t('passkeyCancelled'))
+      else if (ex?.message === 'not_allowed' || ex?.message === 'passkeyFailed') setErr(t('passkeyFailed'))
+      else setErr(ex.message)
       setBusy(false)
     }
   }
