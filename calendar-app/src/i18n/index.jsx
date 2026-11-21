@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { negotiateLanguage } from './negotiate.js'
 
 export const LANGUAGES = [
   { code: 'en', label: 'English' },
@@ -2405,7 +2406,8 @@ export function I18nProvider({ children }) {
     // Storage can be blocked (private windows, strict cookie settings): the app must still start.
     let saved = null
     try { saved = typeof localStorage !== 'undefined' && localStorage.getItem(STORAGE_KEY) } catch { /* blocked */ }
-    return saved && DICT[saved] ? saved : 'en'
+    if (saved && DICT[saved]) return saved
+    return negotiateLanguage(typeof navigator !== 'undefined' ? (navigator.languages || [navigator.language]) : [])
   })
 
   useEffect(() => {
