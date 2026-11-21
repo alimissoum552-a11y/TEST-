@@ -507,9 +507,9 @@ export default function Landing() {
         </div>
       </section>
 
-      <footer className="px-6 md:px-10 pb-10 max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-x-6 gap-y-3 text-xs text-neutral-500">
-        <nav className="flex flex-wrap items-baseline gap-x-5 gap-y-2" aria-label="Legal">
-          <FollowUs label="Follow us" />
+      <footer className="px-6 md:px-10 pb-10 max-w-6xl mx-auto space-y-3 text-xs text-neutral-500">
+        <FollowUs label="Follow us" />
+        <nav className="flex flex-nowrap items-center gap-x-5 whitespace-nowrap overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Legal">
           <a href="#/pricing" className="hover:text-neutral-900 underline-offset-2 hover:underline">{L.pricing}</a>
           <a href="#/ai-guide" className="hover:text-neutral-900 underline-offset-2 hover:underline">{cap(t('aiGuide'))}</a>
           <a href="#/terms?from=landing" className="hover:text-neutral-900 underline-offset-2 hover:underline">{cap(t('termsLink'))}</a>
