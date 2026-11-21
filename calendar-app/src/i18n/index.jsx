@@ -405,6 +405,8 @@ const DICT = {
     passkeyStepupRequired: "Confirm with your passkey before removing it.",
     revokePartial: "Access revoked in Collyo. The external permission could not be removed; it will stop working at its expiry.",
     revokeFailed: "The connection could not be revoked. Try again.",
+    openLinkTitle: "Open this link?",
+    openLink: "Open",
   },
   fr: {
     forgotPassword: "Mot de passe oublié ?",
@@ -798,6 +800,8 @@ const DICT = {
     passkeyStepupRequired: "Confirmez avec votre passkey avant de la supprimer.",
     revokePartial: "Accès révoqué dans Collyo. L’autorisation externe n’a pas pu être retirée ; elle cessera de fonctionner à son expiration.",
     revokeFailed: "La connexion n’a pas pu être révoquée. Réessayez.",
+    openLinkTitle: "Ouvrir ce lien ?",
+    openLink: "Ouvrir",
   },
   es: {
     forgotPassword: "¿Olvidaste tu contraseña?",
@@ -1191,6 +1195,8 @@ const DICT = {
     passkeyStepupRequired: "Confirma con tu passkey antes de eliminarla.",
     revokePartial: "Acceso revocado en Collyo. El permiso externo no se pudo eliminar; dejará de funcionar al caducar.",
     revokeFailed: "No se pudo revocar la conexión. Inténtalo de nuevo.",
+    openLinkTitle: "¿Abrir este enlace?",
+    openLink: "Abrir",
   },
   de: {
     forgotPassword: "Passwort vergessen?",
@@ -1584,6 +1590,8 @@ const DICT = {
     passkeyStepupRequired: "Bestätige mit deiner Passkey, bevor du sie entfernst.",
     revokePartial: "Zugriff in Collyo widerrufen. Die externe Berechtigung konnte nicht entfernt werden; sie läuft mit dem Ablauf aus.",
     revokeFailed: "Die Verbindung konnte nicht widerrufen werden. Versuche es erneut.",
+    openLinkTitle: "Diesen Link öffnen?",
+    openLink: "Öffnen",
   },
   ar: {
     forgotPassword: "نسيت كلمة المرور؟",
@@ -1977,6 +1985,8 @@ const DICT = {
     passkeyStepupRequired: "أكّد بمفتاح المرور قبل إزالته.",
     revokePartial: "تم إلغاء الوصول في Collyo. تعذّر إزالة الإذن الخارجي؛ سيتوقف عند انتهاء صلاحيته.",
     revokeFailed: "تعذّر إلغاء الاتصال. حاول مرة أخرى.",
+    openLinkTitle: "فتح هذا الرابط؟",
+    openLink: "فتح",
   },
   pt: {
     forgotPassword: "Esqueceu-se da palavra-passe?",
@@ -2395,6 +2405,8 @@ const DICT = {
     passkeyStepupRequired: "Confirme com a sua passkey antes de a remover.",
     revokePartial: "Acesso revogado no Collyo. A permissão externa não pôde ser removida; deixará de funcionar na expiração.",
     revokeFailed: "Não foi possível revogar a ligação. Tente novamente.",
+    openLinkTitle: "Abrir esta ligação?",
+    openLink: "Abrir",
   },
 }
 

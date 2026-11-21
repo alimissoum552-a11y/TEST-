@@ -3,6 +3,8 @@ import { PRICING } from './pricing.js'
 import { useI18n } from './i18n/index.jsx'
 import Avatar from './Avatar.jsx'
 import AiAvatar from './AiAvatar.jsx'
+import LinkChip from './LinkChip.jsx'
+import { linkParts } from './lib/linkify.js'
 import SparkleIcon from './SparkleIcon.jsx'
 import { TeamWellbeingInfo } from './TeamWellbeing.jsx'
 import { supabase } from './lib/supabase.js'
@@ -196,11 +198,18 @@ export default function ChatPanel({ calendarId, user, myHandle, canWrite, isOwne
   // @name is highlighted when it names the signed-in user.
   function render(content) {
     const me = (myHandle || '').toLowerCase()
-    return content.split(/(@[^\s@]{1,60})/g).map((part, i) => (
-      part.startsWith('@') && me && part.slice(1).toLowerCase() === me
-        ? <strong key={i} className="font-semibold underline underline-offset-2">{part}</strong>
-        : <span key={i}>{part}</span>
-    ))
+    return linkParts(content).map((part, i) => {
+      if (part.type === 'link') return <LinkChip key={i} url={part.value} label={part.label} />
+      return (
+        <span key={i}>
+          {part.value.split(/(@[^\s@]{1,60})/g).map((piece, j) => (
+            piece.startsWith('@') && me && piece.slice(1).toLowerCase() === me
+              ? <strong key={j} className="font-semibold underline underline-offset-2">{piece}</strong>
+              : <span key={j}>{piece}</span>
+          ))}
+        </span>
+      )
+    })
   }
 
   const typingLabels = Object.values(typing).filter(Boolean)
