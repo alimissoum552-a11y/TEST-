@@ -1,7 +1,7 @@
 // Collyo's public social accounts. Order = order shown.
 export const SOCIAL_LINKS = [
   { id: 'instagram', name: 'Instagram', href: 'https://www.instagram.com/collyo_app' },
-  { id: 'facebook', name: 'Facebook', href: 'https://www.fb.com/l/6lp1kJRRR' },
+  { id: 'facebook', name: 'Facebook', href: 'https://www.facebook.com/profile.php?id=61596928190770' },
   { id: 'linkedin', name: 'LinkedIn', href: 'https://www.linkedin.com/company/collyo/' },
   { id: 'tiktok', name: 'TikTok', href: 'https://www.tiktok.com/@collyo_app' },
   { id: 'snapchat', name: 'Snapchat', href: 'https://www.snapchat.com/add/collyo_app?share_id=-8uHJt5e7IY&locale=en-GB' },
