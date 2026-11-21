@@ -16,7 +16,7 @@ import {
 // The owner can switch the AI on for this chat. Once on, a message that mentions @AI gets a reply from the AI.
 const TYPING_SEND_MS = 2000
 const TYPING_HIDE_MS = 3000
-const MENTION = /@(ai|ia|ki)\b/i
+export const MENTION = /@(adam|ai|ia|ki)\b/i
 // ai_not_approved_for_minors: the calendar has a minor who is not covered by a signed declaration that includes AI.
 const AI_ERRORS = { ai_disabled: 'chatAiDisabled', daily_limit: 'assistantLimit', plan_required: 'aiPlanRequired', quota_reached: 'aiQuotaReached', assistant_not_configured: 'assistantNotConfigured', ai_not_approved_for_minors: 'chatAiNotApproved' }
 
@@ -313,6 +313,12 @@ export default function ChatPanel({ calendarId, user, myHandle, canWrite, isOwne
         )}
         {suggestions.length > 0 && (
           <ul className="flex flex-wrap gap-2" aria-label={t('mentionSuggest')}>
+            {aiOn && (
+              <li key="adam">
+                <button type="button" onClick={() => setText(text.replace(/@\w*$/, '@Adam '))}
+                  className="px-3 py-1 rounded-full bg-neutral-900 text-white hover:bg-neutral-700 text-xs">{t('chatAiName')}</button>
+              </li>
+            )}
             {suggestions.map((c) => (
               <li key={c.id}>
                 <button type="button" onClick={() => setText(text.replace(/@\w*$/, `@${c.handle} `))}
