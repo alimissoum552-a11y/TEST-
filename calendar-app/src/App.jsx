@@ -433,8 +433,26 @@ export default function App({ user, initialCalendarId = null, minorMode = false 
   const [langOpen, setLangOpen] = useState(false)
   const [sharing, setSharing] = useState(false)
   const [team, setTeam] = useState(false)
-  const [assistant, setAssistant] = useState(false)
-  const [chat, setChat] = useState(false)
+  const [assistant, setAssistant] = useState(() => panelFromHash(window.location.hash) === 'assistant')
+  const [chat, setChat] = useState(() => panelFromHash(window.location.hash) === 'chat')
+
+  // Keep the URL in sync with the open panel, so a refresh reopens the same section.
+  useEffect(() => {
+    const want = hashForPanels({ assistant, chat })
+    const current = window.location.hash
+    if (want && current !== want) window.location.hash = want
+    else if (!want && panelFromHash(current)) window.location.hash = ''
+  }, [assistant, chat])
+
+  useEffect(() => {
+    const onHash = () => {
+      const panel = panelFromHash(window.location.hash)
+      setAssistant(panel === 'assistant')
+      setChat(panel === 'chat')
+    }
+    window.addEventListener('hashchange', onHash)
+    return () => window.removeEventListener('hashchange', onHash)
+  }, [])
   const [connector, setConnector] = useState(false)
   const [wellbeing, setWellbeing] = useState(false)
   const [newTeam, setNewTeam] = useState(false)

@@ -17,7 +17,17 @@ const ERROR_KEYS = {
 export default function AssistantPanel({ user, onClose, onApplied, onOpenWellbeing }) {
   const { t, locale, lang } = useI18n()
   const [accepted, setAccepted] = useState(undefined) // undefined = loading
-  const [messages, setMessages] = useState([])
+  const storageKey = `calendar-app.assistant.${user.id}`
+  const [messages, setMessages] = useState(() => {
+    try {
+      const raw = localStorage.getItem(storageKey)
+      const saved = raw ? JSON.parse(raw) : []
+      return Array.isArray(saved) ? saved : []
+    } catch { return [] }
+  })
+  useEffect(() => {
+    try { localStorage.setItem(storageKey, JSON.stringify(messages.slice(-50))) } catch { /* quota or blocked */ }
+  }, [messages, storageKey])
   const [text, setText] = useState('')
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState(null)
