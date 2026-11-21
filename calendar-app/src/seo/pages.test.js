@@ -32,7 +32,7 @@ describe('static SEO pages', () => {
 
   it('lists every page in the sitemap and points robots.txt at it', () => {
     const xml = sitemap('2026-11-19')
-    expect(xml.match(/<url>/g)).toHaveLength(SEO_LANGS.length + 1)
+    expect(xml.match(/<url>/g)).toHaveLength(SEO_LANGS.length + 1 + SEO_LANGS.length * 2 + 3 * 7)
     for (const l of SEO_LANGS) expect(xml).toContain(`<loc>https://collyo.app/${l}/</loc>`)
     expect(robots()).toContain('Sitemap: https://collyo.app/sitemap.xml')
     expect(robots()).toContain('Disallow: /mcp')

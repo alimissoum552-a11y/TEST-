@@ -3,6 +3,8 @@
 // These pages carry the same text as the landing page in plain HTML, with hreflang links,
 // structured data, a sitemap and robots.txt. Pure functions: scripts/seo-pages.mjs writes the files.
 import { LANDING } from '../landing.js'
+import { PRICING } from '../pricing.js'
+import { TOPICS, TOPIC_LANGS, TOPIC_SLUGS } from './topics.js'
 
 export const SITE = 'https://collyo.app'
 export const SEO_LANGS = ['en', 'fr', 'es', 'de', 'ar', 'pt']
@@ -131,7 +133,9 @@ export function renderPage(lang) {
       <p class="cta"><a class="btn" href="/#/signup">${esc(L.signup)}</a></p>
     </main>
     <footer>
-      <a href="/#/pricing">${esc(L.pricing)}</a>
+      <a href="/${lang}/pricing">${esc(L.pricing)}</a>
+      <a href="/${lang}/signup">${esc(L.signup)}</a>
+      ${TOPIC_LANGS.includes(lang) ? TOPIC_SLUGS.map((s) => `<a href="${topicUrl(lang, s)}">${esc(TOPIC_NAV[s][lang])}</a>`).join('\n      ') : ''}
     </footer>
   </body>
 </html>
@@ -139,12 +143,24 @@ export function renderPage(lang) {
 }
 
 export function sitemap(lastmod) {
+  const routeEntry = (fn) => SEO_LANGS.map((l) => {
+    const links = SEO_LANGS.map((x) => `<xhtml:link rel="alternate" hreflang="${x}" href="${fn(x)}"/>`).join('') +
+      `<xhtml:link rel="alternate" hreflang="x-default" href="${fn('en')}"/>`
+    return `  <url><loc>${fn(l)}</loc><lastmod>${lastmod}</lastmod>${links}</url>`
+  }).join('\n')
   const urls = [`${SITE}/`, ...SEO_LANGS.map(pageUrl)]
   const links = SEO_LANGS.map((l) => `<xhtml:link rel="alternate" hreflang="${l}" href="${pageUrl(l)}"/>`).join('') +
     `<xhtml:link rel="alternate" hreflang="x-default" href="${SITE}/"/>`
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 ${urls.map((u) => `  <url><loc>${u}</loc><lastmod>${lastmod}</lastmod>${links}</url>`).join('\n')}
+${routeEntry(pricingUrl)}
+${routeEntry(signupUrl)}
+${TOPIC_SLUGS.map((slug) => TOPIC_LANGS.map((l) => {
+  const links = TOPIC_LANGS.map((x) => `<xhtml:link rel="alternate" hreflang="${x}" href="${topicUrl(x, slug)}"/>`).join('') +
+    `<xhtml:link rel="alternate" hreflang="x-default" href="${topicUrl('en', slug)}"/>`
+  return `  <url><loc>${topicUrl(l, slug)}</loc><lastmod>${lastmod}</lastmod>${links}</url>`
+}).join('\n')).join('\n')}
 </urlset>
 `
 }
@@ -162,4 +178,160 @@ Sitemap: ${SITE}/sitemap.xml
 export function langScript() {
   return `(function(){try{var s=document.currentScript;var l=s&&s.getAttribute('data-lang');if(l)localStorage.setItem(${JSON.stringify(LANG_STORAGE_KEY)},l)}catch(e){}})();
 `
+}
+
+// ---- Pricing and Signup routes ----
+export const pricingUrl = (lang) => `${SITE}/${lang}/pricing`
+export const signupUrl = (lang) => `${SITE}/${lang}/signup`
+
+// hreflang for one route, across all languages. x-default points to the English route.
+function alternatesFor(pathFn) {
+  return [
+    ...SEO_LANGS.map((l) => `<link rel="alternate" hreflang="${l}" href="${pathFn(l)}" />`),
+    `<link rel="alternate" hreflang="x-default" href="${pathFn('en')}" />`,
+  ].join('\n    ')
+}
+
+function routeShell({ lang, title, description, canonical, alt, jsonld, body }) {
+  const dir = RTL.has(lang) ? 'rtl' : 'ltr'
+  return `<!doctype html>
+<html lang="${lang}" dir="${dir}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>${esc(title)}</title>
+    <meta name="description" content="${esc(description)}" />
+    <link rel="canonical" href="${canonical}" />
+    ${alt}
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#f5f5f5" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Collyo" />
+    <meta property="og:url" content="${canonical}" />
+    <meta property="og:title" content="${esc(title)}" />
+    <meta property="og:description" content="${esc(description)}" />
+    <meta property="og:image" content="${SITE}/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    ${jsonld || ''}
+    <style>${CSS}</style>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="/${lang}/"><img src="/logo-192.png" alt="" width="36" height="36" />Collyo</a>
+      <nav class="langs" aria-label="Language">${SEO_LANGS.map((l) => `<a href="/${l}/" hreflang="${l}" lang="${l}">${l.toUpperCase()}</a>`).join('')}</nav>
+    </header>
+    <main>${body}</main>
+    <footer>
+      <a href="/${lang}/">${esc(LANDING[lang].title)}</a>
+      <a href="${pricingUrl(lang)}">${esc(PRICING[lang].title)}</a>
+      <a href="${signupUrl(lang)}">${esc(LANDING[lang].signup)}</a>
+    </footer>
+  </body>
+</html>
+`
+}
+
+// The free plan is the only price stated in the repository; no paid price is claimed here.
+function pricingJsonLd(lang) {
+  return `<script type="application/ld+json">${JSON.stringify({
+    '@context': 'https://schema.org', '@type': 'SoftwareApplication', name: 'Collyo',
+    url: pricingUrl(lang), inLanguage: lang, applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Web', description: PRICING[lang].banner,
+  }).replace(/</g, '\\u003c')}</script>`
+}
+
+export function renderPricing(lang) {
+  const P = PRICING[lang]
+  if (!P) throw new Error(`No pricing copy for ${lang}`)
+  const plans = Object.entries(P.plans).map(([, plan]) => `
+        <section class="card"><p class="tag">${esc(plan.tag)}</p><h3>${esc(plan.name)}</h3>
+          <ul>${plan.items.map((i) => `<li>${esc(i)}</li>`).join('')}</ul></section>`).join('')
+  const body = `
+      <p class="eyebrow">${esc(P.title)}</p>
+      <h1>${esc(P.title)}</h1>
+      <p class="sub">${esc(P.banner)}</p>
+      <div class="grid">${plans}
+      </div>
+      <p class="cta"><a class="btn" href="${signupUrl(lang)}">${esc(LANDING[lang].signup)}</a>
+        <a class="link" href="/${lang}/">${esc(LANDING[lang].title)}</a></p>`
+  return routeShell({
+    lang, title: `${P.title} · Collyo`, description: P.banner, canonical: pricingUrl(lang),
+    alt: alternatesFor(pricingUrl), jsonld: pricingJsonLd(lang), body,
+  })
+}
+
+export function renderSignup(lang) {
+  const L = LANDING[lang]
+  if (!L) throw new Error(`No landing copy for ${lang}`)
+  const body = `
+      <p class="eyebrow">${esc(L.signup)}</p>
+      <h1>${esc(L.signup)}</h1>
+      <p class="sub">${esc(L.sub)}</p>
+      <h2>${esc(L.howTitle)}</h2>
+      <ol>${L.steps.map((s) => `<li>${esc(s)}</li>`).join('')}</ol>
+      <p class="cta"><a class="btn" href="/#/signup">${esc(L.signup)}</a>
+        <a class="link" href="/#/signin">${esc(L.signin)}</a>
+        <a class="link" href="${pricingUrl(lang)}">${esc(L.pricing)}</a></p>`
+  return routeShell({
+    lang, title: `${L.signup} · Collyo`, description: L.sub, canonical: signupUrl(lang),
+    alt: alternatesFor(signupUrl), jsonld: '', body,
+  })
+}
+
+// ---- Audience and feature pages (EN/FR/PT) ----
+export const topicUrl = (lang, slug) => `${SITE}/${lang}/${slug}`
+
+const NOT_PROVIDED = {
+  en: 'What Collyo does not provide',
+  fr: 'Ce que Collyo ne fait pas',
+  pt: 'O que o Collyo não faz',
+}
+const TOPIC_NAV = {
+  families: { en: 'Families', fr: 'Familles', pt: 'Famílias' },
+  'sports-clubs': { en: 'Sports clubs', fr: 'Clubs sportifs', pt: 'Clubes' },
+  'school-classes': { en: 'School classes', fr: 'Classes', pt: 'Turmas' },
+  'work-teams': { en: 'Work teams', fr: 'Équipes', pt: 'Equipas' },
+  'ai-assistant': { en: 'AI assistant', fr: 'Assistant IA', pt: 'Assistente de IA' },
+  'signed-declarations': { en: 'Signed declarations', fr: 'Déclarations signées', pt: 'Declarações' },
+  'mcp-connector': { en: 'MCP connector', fr: 'Connecteur MCP', pt: 'Conector MCP' },
+}
+
+function topicAlternates(slug) {
+  return [
+    ...TOPIC_LANGS.map((l) => `<link rel="alternate" hreflang="${l}" href="${topicUrl(l, slug)}" />`),
+    `<link rel="alternate" hreflang="x-default" href="${topicUrl('en', slug)}" />`,
+  ].join('\n    ')
+}
+
+function topicJsonLd(lang, slug) {
+  return `<script type="application/ld+json">${JSON.stringify({
+    '@context': 'https://schema.org', '@type': 'WebPage', name: TOPICS[slug][lang].title,
+    description: TOPICS[slug][lang].desc, url: topicUrl(lang, slug), inLanguage: lang,
+  }).replace(/</g, '\\u003c')}</script>`
+}
+
+export function renderTopic(lang, slug) {
+  const topic = TOPICS[slug]?.[lang]
+  if (!topic) throw new Error(`No ${slug} copy for ${lang}`)
+  const L = LANDING[lang]
+  const related = topic.related
+    .filter((r) => TOPICS[r])
+    .map((r) => `<li><a href="${topicUrl(lang, r)}">${esc(TOPICS[r][lang].title)}</a></li>`).join('')
+  const body = `
+      <p class="eyebrow">${esc(topic.title)}</p>
+      <h1>${esc(topic.title)}</h1>
+      <p class="sub">${esc(topic.lead)}</p>
+      ${topic.sections.map(([h, p]) => `<h2>${esc(h)}</h2>
+      <p>${esc(p)}</p>`).join('')}
+      <h2>${esc(NOT_PROVIDED[lang])}</h2>
+      <ul>${topic.limits.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
+      <p class="cta"><a class="btn" href="/#/signup">${esc(L.signup)}</a>
+        <a class="link" href="${pricingUrl(lang)}">${esc(PRICING[lang].title)}</a></p>
+      <h2>${esc(L.cardsTitle)}</h2>
+      <ul>${related}</ul>`
+  return routeShell({
+    lang, title: topic.title, description: topic.desc, canonical: topicUrl(lang, slug),
+    alt: topicAlternates(slug), jsonld: topicJsonLd(lang, slug), body,
+  })
 }
