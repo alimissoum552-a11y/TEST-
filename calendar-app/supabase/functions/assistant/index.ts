@@ -7,6 +7,7 @@ import { findFreeSlots, type Interval } from './slots.ts'
 import { checkAiQuota } from '../_shared/plans.ts'
 import { reportError } from '../_shared/ops.ts'
 import { minorAiAllows } from '../_shared/ai-guard.ts'
+import { ADAM_LINES } from '../_shared/adam.ts'
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -491,6 +492,7 @@ function systemPrompt(p: { now: Date; timeZone: string; locale: string; allowed:
     '- Explain briefly why a slot works (which calendars were checked, working hours used).',
     '- If the tools return no slot, say so and suggest a wider window or a shorter duration.',
     '- Keep answers short and concrete. Times are shown in the user time zone.',
+    ...ADAM_LINES,
   ].join('\n')
 }
 
