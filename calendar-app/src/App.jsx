@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { panelFromHash, hashForPanels } from './lib/panelRoute.js'
 import { useI18n, LanguageSelect } from './i18n/index.jsx'
 import NotificationBell from './NotificationBell.jsx'
 import Avatar from './Avatar.jsx'
