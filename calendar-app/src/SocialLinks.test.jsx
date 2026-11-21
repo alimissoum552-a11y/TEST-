@@ -3,6 +3,9 @@ import { renderToString } from 'react-dom/server'
 import SocialLinks, { SOCIAL_LINKS } from './SocialLinks.jsx'
 import { LANDING } from './landing.js'
 
+// HTML escapes '&' in attributes.
+const escHref = (u) => u.replace(/&/g, '&amp;')
+
 describe('social links', () => {
   const html = renderToString(<SocialLinks label="Follow Collyo" />)
 
@@ -14,7 +17,7 @@ describe('social links', () => {
   it('links every account exactly once, opening in a new tab', () => {
     for (const s of SOCIAL_LINKS) {
       expect(s.href.startsWith('https://')).toBe(true)
-      expect(html.split(`href="${s.href}"`)).toHaveLength(2) // one occurrence
+      expect(html.split(`href="${escHref(s.href)}"`)).toHaveLength(2) // one occurrence
       expect(html.match(new RegExp(`data-social-link="${s.id}"`, 'g'))).toHaveLength(1)
     }
     expect(html.match(/rel="noopener noreferrer me"/g)).toHaveLength(SOCIAL_LINKS.length)
